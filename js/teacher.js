@@ -127,7 +127,7 @@ const TeacherModule = {
               </span>
             </h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
-              학생들이 로그인 화면에서 가입한 정보(성명, 학번, 가입 상태)가 실시간 동기화됩니다.
+              학생들이 로그인 화면에서 선택하여 가입한 학년 및 학반 정보가 실시간 반영됩니다.
             </p>
           </div>
           <button class="btn btn-secondary teacher-tab-btn" data-tab="analytics" style="font-size: 0.8rem;">
@@ -147,11 +147,19 @@ const TeacherModule = {
               </tr>
             </thead>
             <tbody>
-              ${AppState.demoStudents.slice(0, 8).map(st => `
+              ${totalStudents === 0 ? `
+                <tr>
+                  <td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                    등록된 신규 회원가입 학생이 없습니다.
+                  </td>
+                </tr>
+              ` : AppState.demoStudents.slice(0, 10).map(st => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
                   <td style="padding: 0.6rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
                   <td style="padding: 0.6rem; font-weight: 700;">${st.name}</td>
-                  <td style="padding: 0.6rem; color: var(--text-muted);">영서중 2학년 3반</td>
+                  <td style="padding: 0.6rem; color: var(--text-main); font-weight: 600;">
+                    영서중 ${st.grade || '1'}학년 ${st.classNum || '1'}반
+                  </td>
                   <td style="padding: 0.6rem;">
                     <span style="font-size: 0.75rem; background: rgba(16,185,129,0.12); color: var(--accent-emerald); padding: 2px 7px; border-radius: 10px;">
                       ● 정상 가입됨
@@ -240,10 +248,10 @@ const TeacherModule = {
         <div>
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span class="status-indicator live"><span class="dot"></span> Live Session</span>
-            <h2 style="font-size: 1.5rem; font-weight: 800;">[2학년 3반] 일차함수 그래프 실시간 모니터링</h2>
+            <h2 style="font-size: 1.5rem; font-weight: 800;">[전 학년] 일차함수 그래프 실시간 모니터링</h2>
           </div>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
-            영서중학교 2학년 3반 | 담당: 임종윤 교사 | 수업 PIN: <span class="pin-code-badge" style="font-size: 0.8rem;">YS-2041</span>
+            영서중학교 | 담당: 임종윤 교사 | 수업 PIN: <span class="pin-code-badge" style="font-size: 0.8rem;">YS-2041</span>
           </p>
         </div>
 
@@ -251,7 +259,7 @@ const TeacherModule = {
           <button class="btn btn-outline-violet" id="toggle-sim-btn" onclick="TeacherModule.toggleLiveSimulation()">
             ⚡ 학생 응답 실시간 시뮬레이션
           </button>
-          <button class="btn btn-secondary" onclick="alert('2학년 3반에 힌트 메시지를 전송했습니다.');">
+          <button class="btn btn-secondary" onclick="alert('전체 학생에게 힌트 메시지를 전송했습니다.');">
             💡 전체 힌트 전송
           </button>
           <button class="btn btn-primary" onclick="alert('제출이 완료되었습니다.');">
@@ -277,7 +285,7 @@ const TeacherModule = {
 
           <div class="glass-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-              <h3 style="font-size: 1.1rem; font-weight: 700;">영서중 2학년 3반 학생 응답 현황 (${students.length}명)</h3>
+              <h3 style="font-size: 1.1rem; font-weight: 700;">영서중 가입 학생 응답 현황 (${students.length}명)</h3>
               <div style="display: flex; gap: 1rem; font-size: 0.8rem;">
                 <span style="color: var(--accent-emerald);">● 제출 완료 (${students.filter(s => s.status==='submitted').length})</span>
                 <span style="color: var(--accent-gold);">● 작성 중 (${students.filter(s => s.status==='in-progress').length})</span>
@@ -286,9 +294,13 @@ const TeacherModule = {
             </div>
 
             <div class="students-matrix-grid" id="students-grid-matrix">
-              ${students.map(st => `
+              ${students.length === 0 ? `
+                <div style="grid-column: 1 / -1; padding: 1rem; text-align: center; color: var(--text-muted);">
+                  회원가입한 학생이 아직 없습니다.
+                </div>
+              ` : students.map(st => `
                 <div class="student-status-chip ${st.status}" onclick="TeacherModule.showStudentDetail('${st.id}')">
-                  <div class="student-name">${st.name}</div>
+                  <div class="student-name">${st.name} <span style="font-size:0.7rem; color:var(--violet-bright);">(${st.grade || '1'}-${st.classNum || '1'})</span></div>
                   <div class="student-progress-text">
                     ${st.status === 'submitted' ? '✅ 제출 완료 (' + st.score + '점)' : st.status === 'in-progress' ? '✏️ 작성 중...' : '⏳ 미작성'}
                   </div>
@@ -308,11 +320,7 @@ const TeacherModule = {
           <div class="live-feed-list" id="live-activity-feed">
             <div class="feed-item">
               <span class="feed-timestamp">18:30</span>
-              <div><strong>김민준</strong> 학생이 기울기 $a = 1.0$ 제출</div>
-            </div>
-            <div class="feed-item">
-              <span class="feed-timestamp">18:29</span>
-              <div><strong>이서연</strong> 학생이 일차함수 $y = 2x - 3$ 완설!</div>
+              <div>가입된 학생들이 실시간 참여를 대기하고 있습니다.</div>
             </div>
           </div>
         </div>
@@ -364,7 +372,7 @@ const TeacherModule = {
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
             const item = document.createElement('div');
             item.className = 'feed-item';
-            item.innerHTML = `<span class="feed-timestamp">${timeStr}</span><div><strong>${randomStudent.name}</strong> 학생이 정답 제출 (${randomStudent.score}점)!</div>`;
+            item.innerHTML = `<span class="feed-timestamp">${timeStr}</span><div><strong>${randomStudent.name}</strong> (${randomStudent.grade}학년 ${randomStudent.classNum}반) 학생이 정답 제출 (${randomStudent.score}점)!</div>`;
             feed.prepend(item);
           }
 
@@ -372,7 +380,7 @@ const TeacherModule = {
           if (grid) {
             grid.innerHTML = AppState.demoStudents.map(st => `
               <div class="student-status-chip ${st.status}" onclick="TeacherModule.showStudentDetail('${st.id}')">
-                <div class="student-name">${st.name}</div>
+                <div class="student-name">${st.name} <span style="font-size:0.7rem; color:var(--violet-bright);">(${st.grade || '1'}-${st.classNum || '1'})</span></div>
                 <div class="student-progress-text">
                   ${st.status === 'submitted' ? '✅ 제출 완료 (' + st.score + '점)' : st.status === 'in-progress' ? '✏️ 작성 중...' : '⏳ 미작성'}
                 </div>
@@ -385,10 +393,10 @@ const TeacherModule = {
   },
 
   showStudentDetail(studentId) {
-    const student = AppState.demoStudents.find(s => s.id === studentId);
+    const student = AppState.demoStudents.find(s => String(s.id) === String(studentId));
     if (!student) return;
 
-    alert(`[영서중 2학년 3반 학생 제출 답안]\n학생명: ${student.name}\n학번: ${student.id}\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
+    alert(`[영서중 학생 정보 및 답안]\n학생명: ${student.name}\n학번: ${student.id}\n소속: 영서중학교 ${student.grade || '1'}학년 ${student.classNum || '1'}반\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
   },
 
   renderActivityBuilder() {
@@ -418,7 +426,7 @@ const TeacherModule = {
               <label class="form-label">대상 학반</label>
               <select class="input-control">
                 <option selected>2학년 3반</option>
-                <option>2학년 1반 ~ 8반 전체</option>
+                <option>1~3학년 (1~8반)전체 학급</option>
               </select>
             </div>
           </div>
@@ -450,10 +458,10 @@ const TeacherModule = {
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 style="font-size: 1.5rem; font-weight: 800;">영서중학교 2학년 3반 - 수학 학업 성취도 & 가입 명부</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">담당 교사: 임종윤 교사 | 2학년 3반 가입 학생 명부 및 형성평가 결과 리포트</p>
+            <h2 style="font-size: 1.5rem; font-weight: 800;">영서중학교 회원가입 학생 학업 성취도 & 전체 가입 명부</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">담당 교사: 임종윤 교사 | 1~3학년(1~8반) 회원가입 학생 명부 및 형성평가 결과 리포트</p>
           </div>
-          <button class="btn btn-outline-violet" onclick="alert('영서중 2학년 3반 전체 가입 명부 및 Excel 성적표가 다운로드되었습니다.');">
+          <button class="btn btn-outline-violet" onclick="alert('영서중 회원가입 학생 명부 및 Excel 성적표가 다운로드되었습니다.');">
             📥 Excel 명부 내보내기
           </button>
         </div>
@@ -464,6 +472,7 @@ const TeacherModule = {
               <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
                 <th style="padding: 0.8rem;">학번 / 아이디</th>
                 <th style="padding: 0.8rem;">학생 성명</th>
+                <th style="padding: 0.8rem;">소속 학급</th>
                 <th style="padding: 0.8rem;">최근 수행 과제</th>
                 <th style="padding: 0.8rem;">형성평가 점수</th>
                 <th style="padding: 0.8rem;">이해도 판별</th>
@@ -471,10 +480,19 @@ const TeacherModule = {
               </tr>
             </thead>
             <tbody>
-              ${students.map(st => `
+              ${students.length === 0 ? `
+                <tr>
+                  <td colspan="7" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    등록된 신규 회원가입 학생이 없습니다.
+                  </td>
+                </tr>
+              ` : students.map(st => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                   <td style="padding: 0.8rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
                   <td style="padding: 0.8rem; font-weight: 600;">${st.name}</td>
+                  <td style="padding: 0.8rem; font-weight: 600; color: var(--text-main);">
+                    영서중 ${st.grade || '1'}학년 ${st.classNum || '1'}반
+                  </td>
                   <td style="padding: 0.8rem;">일차함수 그래프</td>
                   <td style="padding: 0.8rem;">
                     <span style="font-weight: 700; color: ${st.score >= 90 ? 'var(--accent-emerald)' : 'var(--violet-bright)'};">

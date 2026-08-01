@@ -1,43 +1,11 @@
 /**
- * Yeongseo Middle School Math LMS - Mobile Responsive Sidebar Layout, Auth & Persistent Student Sign-Up
+ * Yeongseo Middle School Math LMS - Centralized Cloud DB Auth & Clean Slate
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
 const AppState = {
   currentUser: null, // { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' }
-
-  demoStudents: [
-    { id: '20301', name: '강도윤', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
-    { id: '20302', name: '김민준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 100 },
-    { id: '20303', name: '김서준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
-    { id: '20304', name: '김예준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 85 },
-    { id: '20305', name: '박현우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
-    { id: '20306', name: '이도현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
-    { id: '20307', name: '이서연', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 100 },
-    { id: '20308', name: '정지후', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
-    { id: '20309', name: '최지민', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 85 },
-    { id: '20310', name: '한지우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
-
-    { id: '20311', name: '권우진', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
-    { id: '20312', name: '나성민', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 80 },
-    { id: '20313', name: '노유진', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
-    { id: '20314', name: '문태현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 92 },
-    { id: '20315', name: '민준영', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 84 },
-
-    { id: '20316', name: '박세은', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 92 },
-    { id: '20317', name: '배주원', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
-    { id: '20318', name: '백하준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 96 },
-    { id: '20319', name: '송지호', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
-    { id: '20320', name: '신유나', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 94 },
-
-    { id: '20321', name: '안재현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 86 },
-    { id: '20322', name: '양시우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
-    { id: '20323', name: '오승민', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
-    { id: '20324', name: '유다은', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
-    { id: '20325', name: '윤하은', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
-    { id: '20326', name: '이준호', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
-    { id: '20327', name: '임태양', grade: '2', classNum: '3', password: '11', status: 'not-started', score: 0 }
-  ]
+  demoStudents: []   // Empty initial state - populated live from Central Cloud Database
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -45,45 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const App = {
-  init() {
-    this.loadStoredStudents();
+  async init() {
+    await this.syncCloudDatabase();
     this.renderAppShell();
   },
 
-  loadStoredStudents() {
+  async syncCloudDatabase() {
     try {
-      const stored = localStorage.getItem('ys_mathlab_registered_students');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          parsed.forEach(st => {
-            const existingIndex = AppState.demoStudents.findIndex(s => s.id === st.id);
-            if (existingIndex >= 0) {
-              AppState.demoStudents[existingIndex] = st;
-            } else {
-              AppState.demoStudents.unshift(st);
-            }
-          });
-        }
+      const cloudStudents = await CloudDB.fetchStudents();
+      if (Array.isArray(cloudStudents)) {
+        AppState.demoStudents = cloudStudents;
       }
-    } catch (err) {
-      console.warn('Failed to load registered students from localStorage', err);
-    }
-  },
-
-  saveStudentToStorage(student) {
-    try {
-      const stored = localStorage.getItem('ys_mathlab_registered_students');
-      let parsed = stored ? JSON.parse(stored) : [];
-      const existingIndex = parsed.findIndex(s => s.id === student.id);
-      if (existingIndex >= 0) {
-        parsed[existingIndex] = student;
-      } else {
-        parsed.unshift(student);
-      }
-      localStorage.setItem('ys_mathlab_registered_students', JSON.stringify(parsed));
-    } catch (err) {
-      console.warn('Failed to save student to localStorage', err);
+    } catch (e) {
+      console.warn('Sync failed', e);
     }
   },
 
@@ -231,12 +173,12 @@ const App = {
           <form onsubmit="App.handleLogin(event)">
             <div class="form-group">
               <label class="form-label">아이디 또는 학번</label>
-              <input type="text" id="login-id-input" class="input-control" placeholder="교사는 test, 학생은 학번(예: 20302)" value="test" required>
+              <input type="text" id="login-id-input" class="input-control" placeholder="교사는 test, 학생은 회원가입 학번" value="test" required>
             </div>
 
             <div class="form-group">
               <label class="form-label">비밀번호 (Password)</label>
-              <input type="password" id="login-pw-input" class="input-control" placeholder="비밀번호 입력 (테스트: 11111111)" value="11111111" required>
+              <input type="password" id="login-pw-input" class="input-control" placeholder="비밀번호 입력 (교사: 11111111)" value="11111111" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
@@ -254,17 +196,11 @@ const App = {
 
           <div class="demo-account-box">
             <div style="font-weight: 700; color: var(--violet-bright); margin-bottom: 0.3rem;">
-              💡 테스트 계정 빠른 접속 (클릭 시 자동 입력)
+              💡 테스트 교사 계정 빠른 접속
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">
-              제공해주신 테스트 계정 정보:
-            </p>
             <div class="demo-credentials">
               <div class="credential-chip" onclick="App.fillCredentials('test', '11111111')">
-                👤 교사: test / 11111111 (임종윤 교사)
-              </div>
-              <div class="credential-chip" onclick="App.fillCredentials('20302', '11111111')">
-                🎒 학생: 20302 (영서중 2학년 김민준)
+                👤 교사 로그인: test / 11111111 (임종윤 교사)
               </div>
             </div>
           </div>
@@ -307,17 +243,17 @@ const App = {
 
             <div class="form-group">
               <label class="form-label">학번 (로그인 아이디로 사용)</label>
-              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 20328" value="20328">
+              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 20328">
             </div>
 
             <div class="form-group">
               <label class="form-label">비밀번호 설정</label>
-              <input type="password" id="signup-pw-input" class="input-control" required placeholder="비밀번호 (4자리 이상)" value="11111111">
+              <input type="password" id="signup-pw-input" class="input-control" required placeholder="비밀번호 (4자리 이상)">
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
               <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
-              <button type="submit" class="btn btn-primary">✨ 회원가입 완료 및 바로 로그인</button>
+              <button type="submit" class="btn btn-primary">✨ 중앙 데이터베이스 가입 및 바로 로그인</button>
             </div>
           </form>
         </div>
@@ -335,7 +271,7 @@ const App = {
     if (modal) modal.classList.remove('active');
   },
 
-  handleStudentSignup(e) {
+  async handleStudentSignup(e) {
     e.preventDefault();
     const name = document.getElementById('signup-name-input').value.trim();
     const grade = document.getElementById('signup-grade-select').value;
@@ -343,8 +279,8 @@ const App = {
     const studentId = document.getElementById('signup-id-input').value.trim();
     const password = document.getElementById('signup-pw-input').value.trim();
 
-    if (!name || !studentId) {
-      alert('학생 이름과 학번을 입력하세요.');
+    if (!name || !studentId || !password) {
+      alert('학생 이름, 학번, 비밀번호를 모두 입력하세요.');
       return;
     }
 
@@ -353,20 +289,17 @@ const App = {
       name: name,
       grade: grade,
       classNum: classNum,
-      password: password || '11111111',
+      password: password,
       status: 'in-progress',
       score: 0,
       createdAt: new Date().toISOString()
     };
 
-    const existingIndex = AppState.demoStudents.findIndex(s => s.id === studentId);
-    if (existingIndex >= 0) {
-      AppState.demoStudents[existingIndex] = newStudent;
-    } else {
-      AppState.demoStudents.unshift(newStudent);
-    }
+    // Save to Central Shared Cloud Database
+    await CloudDB.registerStudent(newStudent);
 
-    this.saveStudentToStorage(newStudent);
+    // Refresh live student list from Central Cloud Database
+    await this.syncCloudDatabase();
 
     AppState.currentUser = {
       id: studentId,
@@ -375,9 +308,9 @@ const App = {
     };
 
     this.closeSignupModal();
-    this.init();
+    this.renderAppShell();
 
-    alert(`🎉 [회원가입 완료 및 계정 저장!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 안전하게 브라우저에 저장되었습니다.\n\n다음부터는 입력하신 학번(${studentId})으로 언제든 다시 로그인하실 수 있습니다.`);
+    alert(`🎉 [중앙 데이터베이스 회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 중앙 서버 DB에 등록되었습니다.\n이제 스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인할 수 있습니다.`);
   },
 
   fillCredentials(id, pw) {
@@ -387,12 +320,13 @@ const App = {
     if (pwInput) pwInput.value = pw;
   },
 
-  handleLogin(e) {
+  async handleLogin(e) {
     e.preventDefault();
     const id = document.getElementById('login-id-input').value.trim();
     const pw = document.getElementById('login-pw-input').value.trim();
 
-    this.loadStoredStudents();
+    // Always fetch latest data from Central Cloud Database
+    await this.syncCloudDatabase();
 
     if (id === 'test' && pw === '11111111') {
       AppState.currentUser = {
@@ -402,18 +336,28 @@ const App = {
       };
     } else {
       const foundStudent = AppState.demoStudents.find(s => s.id === id);
-      const studentName = foundStudent ? foundStudent.name : (id ? `${id}` : '신규 학생');
-      const studentGrade = foundStudent && foundStudent.grade ? foundStudent.grade : '2';
-      const studentClass = foundStudent && foundStudent.classNum ? foundStudent.classNum : '3';
 
-      AppState.currentUser = {
-        id: id || '20302',
-        name: `${studentName} 학생 (영서중 ${studentGrade}학년 ${studentClass}반)`,
-        role: 'student'
-      };
+      if (foundStudent) {
+        if (foundStudent.password && foundStudent.password !== pw) {
+          alert('⚠️ 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
+          return;
+        }
+        AppState.currentUser = {
+          id: id,
+          name: `${foundStudent.name} 학생 (영서중 ${foundStudent.grade || '2'}학년 ${foundStudent.classNum || '3'}반)`,
+          role: 'student'
+        };
+      } else {
+        // Allow dynamic student login with ID if newly registered
+        AppState.currentUser = {
+          id: id,
+          name: `${id} 학생 (영서중)`,
+          role: 'student'
+        };
+      }
     }
 
-    this.init();
+    this.renderAppShell();
   },
 
   loginAsDemo(role) {
@@ -426,25 +370,25 @@ const App = {
     } else {
       AppState.currentUser = {
         id: '20302',
-        name: '김민준 학생 (영서중)',
+        name: '학생 (영서중)',
         role: 'student'
       };
     }
-    this.init();
+    this.renderAppShell();
   },
 
   toggleRole() {
     if (!AppState.currentUser) return;
     if (AppState.currentUser.role === 'teacher') {
-      AppState.currentUser = { id: '20302', name: '김민준 학생 (영서중)', role: 'student' };
+      AppState.currentUser = { id: '20302', name: '학생 (영서중)', role: 'student' };
     } else {
       AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
     }
-    this.init();
+    this.renderAppShell();
   },
 
   logout() {
     AppState.currentUser = null;
-    this.init();
+    this.renderAppShell();
   }
 };

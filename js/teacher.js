@@ -27,6 +27,10 @@ const TeacherModule = {
       btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
 
+    // Close mobile menu if open
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+
     const contentArea = document.getElementById('teacher-main-view');
     if (!contentArea) return;
 
@@ -48,6 +52,8 @@ const TeacherModule = {
 
   // 1. Dashboard View HTML
   renderDashboard() {
+    const totalStudents = AppState.demoStudents.length;
+
     return `
       <div class="metrics-grid">
         <div class="glass-card metric-card hover-lift">
@@ -59,18 +65,18 @@ const TeacherModule = {
         </div>
 
         <div class="glass-card metric-card hover-lift">
-          <span class="metric-label">전체 수업 진행률</span>
+          <span class="metric-label">회원가입 학생 수</span>
           <div class="metric-value-row">
-            <span class="metric-value">62.8<span style="font-size: 1.2rem;">%</span></span>
-            <span class="metric-badge positive">정상 진도 순항 중</span>
+            <span class="metric-value">${totalStudents}<span style="font-size: 1.2rem;">명</span></span>
+            <span class="metric-badge positive">실시간 가입 반영 중</span>
           </div>
         </div>
 
         <div class="glass-card metric-card hover-lift">
-          <span class="metric-label">수강 학생 수</span>
+          <span class="metric-label">전체 수업 진행률</span>
           <div class="metric-value-row">
-            <span class="metric-value">648<span style="font-size: 1.2rem;">명</span></span>
-            <span class="metric-badge positive">영서중 전교생</span>
+            <span class="metric-value">62.8<span style="font-size: 1.2rem;">%</span></span>
+            <span class="metric-badge positive">정상 진도 순항 중</span>
           </div>
         </div>
 
@@ -84,7 +90,7 @@ const TeacherModule = {
       </div>
 
       <!-- Quick Action Cards Grid -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
         <div class="glass-card hover-lift" style="background: rgba(139, 92, 246, 0.08); border-color: var(--border-violet);">
           <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--violet-bright);">
             📚 수업 진도 기록부
@@ -107,6 +113,59 @@ const TeacherModule = {
           <button class="btn btn-outline-violet teacher-tab-btn" data-tab="archive-seteuk">
             ✨ AI 세특 생성기 바로가기 →
           </button>
+        </div>
+      </div>
+
+      <!-- Registered Student Accounts Roster Section (회원가입 학생 명부) -->
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🎒 회원가입 학생 명부 및 계정 관리</span>
+              <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); padding: 2px 8px; border-radius: 12px; font-weight: 700;">
+                총 ${totalStudents}명 가입됨
+              </span>
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+              학생들이 로그인 화면에서 가입한 정보(성명, 학번, 가입 상태)가 실시간 동기화됩니다.
+            </p>
+          </div>
+          <button class="btn btn-secondary teacher-tab-btn" data-tab="analytics" style="font-size: 0.8rem;">
+            📋 전체 명부 상세보기
+          </button>
+        </div>
+
+        <div style="max-height: 260px; overflow-y: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
+                <th style="padding: 0.6rem;">학번 (아이디)</th>
+                <th style="padding: 0.6rem;">학생 성명</th>
+                <th style="padding: 0.6rem;">소속 학급</th>
+                <th style="padding: 0.6rem;">계정 상태</th>
+                <th style="padding: 0.6rem; text-align: right;">학습 이력</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${AppState.demoStudents.slice(0, 8).map(st => `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                  <td style="padding: 0.6rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
+                  <td style="padding: 0.6rem; font-weight: 700;">${st.name}</td>
+                  <td style="padding: 0.6rem; color: var(--text-muted);">영서중 2학년 3반</td>
+                  <td style="padding: 0.6rem;">
+                    <span style="font-size: 0.75rem; background: rgba(16,185,129,0.12); color: var(--accent-emerald); padding: 2px 7px; border-radius: 10px;">
+                      ● 정상 가입됨
+                    </span>
+                  </td>
+                  <td style="padding: 0.6rem; text-align: right;">
+                    <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${st.id}')">
+                      📄 답안 확인
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -218,11 +277,11 @@ const TeacherModule = {
 
           <div class="glass-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-              <h3 style="font-size: 1.1rem; font-weight: 700;">영서중 2학년 3반 학생 응답 현황 (27명)</h3>
+              <h3 style="font-size: 1.1rem; font-weight: 700;">영서중 2학년 3반 학생 응답 현황 (${students.length}명)</h3>
               <div style="display: flex; gap: 1rem; font-size: 0.8rem;">
-                <span style="color: var(--accent-emerald);">● 제출 완료 (22)</span>
-                <span style="color: var(--accent-gold);">● 작성 중 (4)</span>
-                <span style="color: var(--text-dim);">● 미제출 (1)</span>
+                <span style="color: var(--accent-emerald);">● 제출 완료 (${students.filter(s => s.status==='submitted').length})</span>
+                <span style="color: var(--accent-gold);">● 작성 중 (${students.filter(s => s.status==='in-progress').length})</span>
+                <span style="color: var(--text-dim);">● 미제출 (${students.filter(s => s.status==='not-started').length})</span>
               </div>
             </div>
 
@@ -329,7 +388,7 @@ const TeacherModule = {
     const student = AppState.demoStudents.find(s => s.id === studentId);
     if (!student) return;
 
-    alert(`[영서중 2학년 3반 학생 제출 답안]\n학생명: ${student.name}\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
+    alert(`[영서중 2학년 3반 학생 제출 답안]\n학생명: ${student.name}\n학번: ${student.id}\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
   },
 
   renderActivityBuilder() {
@@ -389,13 +448,13 @@ const TeacherModule = {
 
     return `
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 style="font-size: 1.5rem; font-weight: 800;">영서중학교 2학년 3반 - 수학 학업 성취도</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">담당 교사: 임종윤 교사 | 2학년 3반 형성평가 결과 분석 리포트</p>
+            <h2 style="font-size: 1.5rem; font-weight: 800;">영서중학교 2학년 3반 - 수학 학업 성취도 & 가입 명부</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">담당 교사: 임종윤 교사 | 2학년 3반 가입 학생 명부 및 형성평가 결과 리포트</p>
           </div>
-          <button class="btn btn-outline-violet" onclick="alert('영서중 2학년 3반 Excel 성적표가 다운로드되었습니다.');">
-            📥 Excel 리포트 내보내기
+          <button class="btn btn-outline-violet" onclick="alert('영서중 2학년 3반 전체 가입 명부 및 Excel 성적표가 다운로드되었습니다.');">
+            📥 Excel 명부 내보내기
           </button>
         </div>
 
@@ -403,8 +462,9 @@ const TeacherModule = {
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
             <thead>
               <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
-                <th style="padding: 0.8rem;">학번 / 이름</th>
-                <th style="padding: 0.8rem;">수업 과제</th>
+                <th style="padding: 0.8rem;">학번 / 아이디</th>
+                <th style="padding: 0.8rem;">학생 성명</th>
+                <th style="padding: 0.8rem;">최근 수행 과제</th>
                 <th style="padding: 0.8rem;">형성평가 점수</th>
                 <th style="padding: 0.8rem;">이해도 판별</th>
                 <th style="padding: 0.8rem; text-align: right;">상세 보기</th>
@@ -413,9 +473,8 @@ const TeacherModule = {
             <tbody>
               ${students.map(st => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                  <td style="padding: 0.8rem; font-weight: 600;">
-                    ${st.name} <span style="font-size: 0.75rem; color: var(--text-muted);">(${st.id})</span>
-                  </td>
+                  <td style="padding: 0.8rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
+                  <td style="padding: 0.8rem; font-weight: 600;">${st.name}</td>
                   <td style="padding: 0.8rem;">일차함수 그래프</td>
                   <td style="padding: 0.8rem;">
                     <span style="font-weight: 700; color: ${st.score >= 90 ? 'var(--accent-emerald)' : 'var(--violet-bright)'};">

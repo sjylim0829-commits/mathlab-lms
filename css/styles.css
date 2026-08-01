@@ -1,9 +1,9 @@
-/* Yeongseo Middle School Math LMS - Vertical Sidebar & Violet Obsidian Design System */
+/* Yeongseo Middle School Math LMS - Mobile Responsive & Violet Obsidian Design System */
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --bg-dark: #090d16;
-  --bg-sidebar: rgba(13, 18, 30, 0.92);
+  --bg-sidebar: rgba(13, 18, 30, 0.95);
   --bg-card: rgba(19, 27, 46, 0.75);
   --bg-card-hover: rgba(30, 41, 69, 0.85);
   --border-card: rgba(255, 255, 255, 0.08);
@@ -98,13 +98,14 @@ html, body {
   100% { transform: translateY(12px) rotate(-4deg); }
 }
 
-/* Layout Containers: Vertical Sidebar Grid */
+/* Layout Containers: Desktop Sidebar Grid vs Mobile Top Header */
 .app-container {
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
-/* Vertical Sidebar Menu */
+/* Desktop Vertical Sidebar Menu */
 .sidebar {
   width: 270px;
   min-width: 270px;
@@ -120,12 +121,16 @@ html, body {
   height: 100vh;
   z-index: 50;
   padding: 1.25rem 1rem;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand {
@@ -161,6 +166,17 @@ html, body {
   padding: 2px 7px;
   border-radius: 20px;
   border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.mobile-nav-toggle-btn {
+  display: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-card);
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  cursor: pointer;
 }
 
 /* Vertical Sidebar Navigation Links */
@@ -276,10 +292,25 @@ html, body {
   width: calc(100% - 270px);
 }
 
+/* Mobile Header Bar for Small Screens */
+.mobile-header-bar {
+  display: none;
+  background: rgba(9, 13, 22, 0.95);
+  border-bottom: 1px solid var(--border-card);
+  padding: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  backdrop-filter: blur(16px);
+}
+
 /* Auth Screens */
 .auth-wrapper {
   max-width: 480px;
-  margin: 3rem auto;
+  margin: 2rem auto;
+  width: 100%;
 }
 
 .auth-header {
@@ -570,8 +601,8 @@ html, body {
 /* Activity Items List */
 .activities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
 }
 
 .activity-card-header {
@@ -637,12 +668,6 @@ html, body {
   display: grid;
   grid-template-columns: 1fr 340px;
   gap: 1.5rem;
-}
-
-@media (max-width: 992px) {
-  .monitor-matrix-container {
-    grid-template-columns: 1fr;
-  }
 }
 
 .students-matrix-grid {
@@ -713,8 +738,8 @@ html, body {
 
 .grapher-controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.8rem;
   background: rgba(9, 13, 22, 0.6);
   padding: 1rem;
   border-radius: var(--radius-md);
@@ -787,7 +812,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1rem;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -849,4 +874,102 @@ html, body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 92, 246, 0.4);
+}
+
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE MEDIA QUERIES (세로 스마트폰 화면 대폭 개선)
+   ========================================================================== */
+@media (max-width: 880px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  /* Top Mobile Bar */
+  .mobile-header-bar {
+    display: flex;
+  }
+
+  /* Mobile Slide-down Sidebar */
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    position: relative;
+    padding: 0 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border-card);
+    transition: max-height 0.35s ease, padding 0.35s ease;
+  }
+
+  .sidebar.mobile-open {
+    max-height: 600px;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    display: none; /* Hidden in mobile as mobile-header-bar takes over */
+  }
+
+  .mobile-nav-toggle-btn {
+    display: inline-flex;
+  }
+
+  /* Main Content Area adjustments for mobile */
+  .main-content-right {
+    width: 100%;
+    padding: 1.25rem 1rem;
+  }
+
+  /* Grid layout overrides for mobile */
+  .monitor-matrix-container {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .activities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grapher-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 580px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-wrapper {
+    margin: 1rem auto;
+    padding: 0 0.5rem;
+  }
+
+  .glass-card {
+    padding: 1.1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .math-keypad {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grapher-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .student-status-chip {
+    padding: 0.6rem 0.4rem;
+  }
 }

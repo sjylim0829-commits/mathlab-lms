@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Vertical Sidebar Layout, Auth & Student Sign-Up Module
+ * Yeongseo Middle School Math LMS - Mobile Responsive Sidebar Layout, Auth & Student Sign-Up Module
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -63,82 +63,101 @@ const App = {
       const isTeacher = AppState.currentUser.role === 'teacher';
 
       rootEl.innerHTML = `
-        <div class="app-container">
-          <!-- Left Vertical Sidebar Navigation -->
-          <aside class="sidebar">
-            <div>
-              <div class="sidebar-header">
-                <a class="brand" onclick="App.init()">
-                  <svg class="brand-icon" viewBox="0 0 48 48" fill="none">
-                    <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
-                    <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <div>
-                    <span class="brand-name">영서중 수학 LMS</span>
-                    <span class="brand-tag">${isTeacher ? '임종윤 교사' : '학생 탐구실'}</span>
-                  </div>
-                </a>
+        <div style="display: flex; flex-direction: column; min-height: 100vh;">
+          <!-- Mobile Top Navigation Header Bar -->
+          <div class="mobile-header-bar">
+            <a class="brand" onclick="App.init()">
+              <svg class="brand-icon" viewBox="0 0 48 48" fill="none">
+                <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
+                <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <span class="brand-name" style="font-size: 1.1rem;">영서중 수학 LMS</span>
               </div>
+            </a>
 
-              <!-- Vertical Sidebar Menu -->
-              <nav class="sidebar-nav">
-                ${isTeacher ? `
-                  <button class="sidebar-nav-item teacher-tab-btn active" data-tab="dashboard">
-                    📊 수업 메인 대시보드
-                  </button>
-                  <button class="sidebar-nav-item teacher-tab-btn" data-tab="progress-tracker">
-                    📚 수업 진도 관리
-                  </button>
-                  <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk">
-                    📜 학생 기록 및 세특 생성
-                  </button>
-                  <button class="sidebar-nav-item teacher-tab-btn" data-tab="live-monitor">
-                    🔴 실시간 수업 모니터링
-                  </button>
-                  <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder">
-                    ✨ 탐구 활동 생성기
-                  </button>
-                  <button class="sidebar-nav-item teacher-tab-btn" data-tab="analytics">
-                    📑 학업 이해도 분석
-                  </button>
-                ` : `
-                  <button class="sidebar-nav-item active">
-                    🎒 대화형 수학 탐구실
-                  </button>
-                `}
-              </nav>
-            </div>
+            <button class="mobile-nav-toggle-btn" onclick="App.toggleMobileSidebar()">
+              ☰ 메뉴
+            </button>
+          </div>
 
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-              <button class="btn btn-outline-violet" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.toggleRole()">
-                🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 화면으로 전환'}
-              </button>
-
-              <div class="user-profile-badge">
-                <div class="user-avatar">${AppState.currentUser.name[0]}</div>
-                <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                  <div style="font-weight: 600; font-size: 0.85rem;">${AppState.currentUser.name}</div>
-                  <span class="role-pill ${AppState.currentUser.role}">${isTeacher ? '교사' : '학생'}</span>
+          <div class="app-container">
+            <!-- Vertical Sidebar Navigation -->
+            <aside class="sidebar">
+              <div>
+                <div class="sidebar-header">
+                  <a class="brand" onclick="App.init()">
+                    <svg class="brand-icon" viewBox="0 0 48 48" fill="none">
+                      <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
+                      <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div>
+                      <span class="brand-name">영서중 수학 LMS</span>
+                      <span class="brand-tag">${isTeacher ? '임종윤 교사' : '학생 탐구실'}</span>
+                    </div>
+                  </a>
                 </div>
+
+                <!-- Vertical Sidebar Menu -->
+                <nav class="sidebar-nav">
+                  ${isTeacher ? `
+                    <button class="sidebar-nav-item teacher-tab-btn active" data-tab="dashboard">
+                      📊 수업 메인 대시보드
+                    </button>
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="progress-tracker">
+                      📚 수업 진도 관리
+                    </button>
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk">
+                      📜 학생 기록 및 세특 생성
+                    </button>
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="live-monitor">
+                      🔴 실시간 수업 모니터링
+                    </button>
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder">
+                      ✨ 탐구 활동 생성기
+                    </button>
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="analytics">
+                      📑 학업 이해도 분석
+                    </button>
+                  ` : `
+                    <button class="sidebar-nav-item active">
+                      🎒 대화형 수학 탐구실
+                    </button>
+                  `}
+                </nav>
               </div>
 
-              <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.logout()">
-                🚪 로그아웃
-              </button>
-            </div>
-          </aside>
+              <!-- Sidebar Footer -->
+              <div class="sidebar-footer">
+                <button class="btn btn-outline-violet" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.toggleRole()">
+                  🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 화면으로 전환'}
+                </button>
 
-          <!-- Right Content View Area -->
-          <main id="main-container" class="main-content-right">
-            ${isTeacher ? `
-              <div id="teacher-main-view">
-                ${TeacherModule.renderDashboard()}
+                <div class="user-profile-badge">
+                  <div class="user-avatar">${AppState.currentUser.name[0]}</div>
+                  <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <div style="font-weight: 600; font-size: 0.85rem;">${AppState.currentUser.name}</div>
+                    <span class="role-pill ${AppState.currentUser.role}">${isTeacher ? '교사' : '학생'}</span>
+                  </div>
+                </div>
+
+                <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.logout()">
+                  🚪 로그아웃
+                </button>
               </div>
-            ` : `
-              <div id="student-main-view"></div>
-            `}
-          </main>
+            </aside>
+
+            <!-- Right Content View Area -->
+            <main id="main-container" class="main-content-right">
+              ${isTeacher ? `
+                <div id="teacher-main-view">
+                  ${TeacherModule.renderDashboard()}
+                </div>
+              ` : `
+                <div id="student-main-view"></div>
+              `}
+            </main>
+          </div>
         </div>
       `;
 
@@ -147,6 +166,13 @@ const App = {
       } else {
         StudentModule.init();
       }
+    }
+  },
+
+  toggleMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('mobile-open');
     }
   },
 
@@ -290,12 +316,10 @@ const App = {
       score: 0
     };
 
-    // Add to demo students list if not present
     if (!AppState.demoStudents.some(s => s.id === studentId)) {
       AppState.demoStudents.unshift(newStudent);
     }
 
-    // Auto login as new student
     AppState.currentUser = {
       id: studentId,
       name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,

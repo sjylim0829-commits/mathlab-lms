@@ -87,7 +87,7 @@ const App = {
                     📊 수업 메인 대시보드
                   </button>
                   <button class="sidebar-nav-item teacher-tab-btn" data-tab="progress-tracker">
-                    📚 1~3학년 (1~8반) 수업 진도 관리
+                    📚 수업 진도 관리
                   </button>
                   <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk">
                     📜 학생 기록 및 세특 생성

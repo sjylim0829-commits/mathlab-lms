@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Vertical Sidebar Layout & Core Logic
+ * Yeongseo Middle School Math LMS - Vertical Sidebar Layout, Auth & Student Sign-Up Module
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -166,8 +166,8 @@ const App = {
 
           <form onsubmit="App.handleLogin(event)">
             <div class="form-group">
-              <label class="form-label">아이디 (ID)</label>
-              <input type="text" id="login-id-input" class="input-control" placeholder="아이디 입력 (테스트: test)" value="test" required>
+              <label class="form-label">아이디 또는 학번</label>
+              <input type="text" id="login-id-input" class="input-control" placeholder="교사는 test, 학생은 학번(예: 20302)" value="test" required>
             </div>
 
             <div class="form-group">
@@ -179,6 +179,14 @@ const App = {
               🔓 로그인하기
             </button>
           </form>
+
+          <!-- Student Registration Prompt -->
+          <div style="margin-top: 1.25rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-card); padding-top: 1rem;">
+            <span>처음 방문하셨나요?</span>
+            <button type="button" class="btn btn-outline-violet" style="padding: 0.35rem 0.9rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="App.openSignupModal()">
+              ✨ 신규 학생 회원가입
+            </button>
+          </div>
 
           <div class="demo-account-box">
             <div style="font-weight: 700; color: var(--violet-bright); margin-bottom: 0.3rem;">
@@ -198,7 +206,106 @@ const App = {
           </div>
         </div>
       </div>
+
+      <!-- Student Sign-Up Modal -->
+      <div id="signup-modal-overlay" class="modal-overlay">
+        <div class="glass-card modal-content" style="max-width: 480px;">
+          <div class="modal-header">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--violet-bright);">
+              🎒 영서중학교 신규 학생 회원가입
+            </h3>
+            <button class="close-btn" onclick="App.closeSignupModal()">×</button>
+          </div>
+
+          <form onsubmit="App.handleStudentSignup(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">학생 성명 (이름)</label>
+              <input type="text" id="signup-name-input" class="input-control" required placeholder="예: 홍길동">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">학년 선택</label>
+                <select id="signup-grade-select" class="input-control">
+                  <option value="1">1학년</option>
+                  <option value="2" selected>2학년</option>
+                  <option value="3">3학년</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">학반 선택</label>
+                <select id="signup-class-select" class="input-control">
+                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}" ${c === 3 ? 'selected' : ''}>${c}반</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">학번 (로그인 아이디로 사용)</label>
+              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 20328" value="20328">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">비밀번호 설정</label>
+              <input type="password" id="signup-pw-input" class="input-control" required placeholder="비밀번호 (4자리 이상)" value="11111111">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+              <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
+              <button type="submit" class="btn btn-primary">✨ 회원가입 완료 및 바로 로그인</button>
+            </div>
+          </form>
+        </div>
+      </div>
     `;
+  },
+
+  openSignupModal() {
+    const modal = document.getElementById('signup-modal-overlay');
+    if (modal) modal.classList.add('active');
+  },
+
+  closeSignupModal() {
+    const modal = document.getElementById('signup-modal-overlay');
+    if (modal) modal.classList.remove('active');
+  },
+
+  handleStudentSignup(e) {
+    e.preventDefault();
+    const name = document.getElementById('signup-name-input').value.trim();
+    const grade = document.getElementById('signup-grade-select').value;
+    const classNum = document.getElementById('signup-class-select').value;
+    const studentId = document.getElementById('signup-id-input').value.trim();
+
+    if (!name || !studentId) {
+      alert('학생 이름과 학번을 입력하세요.');
+      return;
+    }
+
+    const newStudent = {
+      id: studentId,
+      name: `${name}`,
+      status: 'in-progress',
+      score: 0
+    };
+
+    // Add to demo students list if not present
+    if (!AppState.demoStudents.some(s => s.id === studentId)) {
+      AppState.demoStudents.unshift(newStudent);
+    }
+
+    // Auto login as new student
+    AppState.currentUser = {
+      id: studentId,
+      name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,
+      role: 'student'
+    };
+
+    this.closeSignupModal();
+    this.init();
+
+    alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 수학 탐구실 계정이 생성되어 자동 로그인되었습니다.`);
   },
 
   fillCredentials(id, pw) {
@@ -220,9 +327,12 @@ const App = {
         role: 'teacher'
       };
     } else {
+      const foundStudent = AppState.demoStudents.find(s => s.id === id);
+      const studentName = foundStudent ? foundStudent.name : '신규 학생';
+
       AppState.currentUser = {
         id: id || '20302',
-        name: '김민준 학생 (영서중)',
+        name: `${studentName} 학생 (영서중)`,
         role: 'student'
       };
     }

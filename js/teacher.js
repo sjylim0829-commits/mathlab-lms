@@ -87,7 +87,7 @@ const TeacherModule = {
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;">
         <div class="glass-card hover-lift" style="background: rgba(139, 92, 246, 0.08); border-color: var(--border-violet);">
           <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--violet-bright);">
-            📚 1학년~3학년 1반부터 8반까지 수업 진도 기록부
+            📚 수업 진도 기록부
           </h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; margin-bottom: 1rem;">
             영서중학교 수학 교과 24개 전 학급의 교과서 단원, 페이지 및 과제 현황을 일괄 기록합니다.

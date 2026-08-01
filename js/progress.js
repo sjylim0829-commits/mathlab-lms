@@ -49,7 +49,7 @@ const ProgressModule = {
               <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">1~3학년 (1~8반) 전 학급 수업 진도 기록부</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
               담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 24개 학급 실시간 진도 현황

@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Centralized Cloud DB Auth & Clean Slate
+ * Yeongseo Middle School Math LMS - Centralized Cloud DB Auth & Robust Student Signup
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -25,7 +25,7 @@ const App = {
         AppState.demoStudents = cloudStudents;
       }
     } catch (e) {
-      console.warn('Sync failed', e);
+      console.warn('Cloud sync failed', e);
     }
   },
 
@@ -236,14 +236,14 @@ const App = {
               <div class="form-group">
                 <label class="form-label">학반 선택</label>
                 <select id="signup-class-select" class="input-control">
-                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}" ${c === 3 ? 'selected' : ''}>${c}반</option>`).join('')}
+                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}" ${c === 8 ? 'selected' : ''}>${c}반</option>`).join('')}
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <label class="form-label">학번 (로그인 아이디로 사용)</label>
-              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 20328">
+              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 10830" value="10830">
             </div>
 
             <div class="form-group">
@@ -253,7 +253,7 @@ const App = {
 
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
               <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
-              <button type="submit" class="btn btn-primary">✨ 중앙 데이터베이스 가입 및 바로 로그인</button>
+              <button type="submit" id="signup-submit-btn" class="btn btn-primary">✨ 중앙 데이터베이스 가입 및 바로 로그인</button>
             </div>
           </form>
         </div>
@@ -272,45 +272,78 @@ const App = {
   },
 
   async handleStudentSignup(e) {
-    e.preventDefault();
-    const name = document.getElementById('signup-name-input').value.trim();
-    const grade = document.getElementById('signup-grade-select').value;
-    const classNum = document.getElementById('signup-class-select').value;
-    const studentId = document.getElementById('signup-id-input').value.trim();
-    const password = document.getElementById('signup-pw-input').value.trim();
-
-    if (!name || !studentId || !password) {
-      alert('학생 이름, 학번, 비밀번호를 모두 입력하세요.');
-      return;
+    if (e) e.preventDefault();
+    const submitBtn = document.getElementById('signup-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = '⏳ 가입 처리 중...';
     }
 
-    const newStudent = {
-      id: studentId,
-      name: name,
-      grade: grade,
-      classNum: classNum,
-      password: password,
-      status: 'in-progress',
-      score: 0,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const nameEl = document.getElementById('signup-name-input');
+      const gradeEl = document.getElementById('signup-grade-select');
+      const classNumEl = document.getElementById('signup-class-select');
+      const studentIdEl = document.getElementById('signup-id-input');
+      const passwordEl = document.getElementById('signup-pw-input');
 
-    // Save to Central Shared Cloud Database
-    await CloudDB.registerStudent(newStudent);
+      const name = nameEl ? nameEl.value.trim() : '';
+      const grade = gradeEl ? gradeEl.value : '1';
+      const classNum = classNumEl ? classNumEl.value : '1';
+      const studentId = studentIdEl ? studentIdEl.value.trim() : '';
+      const password = passwordEl ? passwordEl.value.trim() : '';
 
-    // Refresh live student list from Central Cloud Database
-    await this.syncCloudDatabase();
+      if (!name || !studentId || !password) {
+        alert('학생 이름, 학번, 비밀번호를 모두 입력해 주세요.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = '✨ 중앙 데이터베이스 가입 및 바로 로그인';
+        }
+        return;
+      }
 
-    AppState.currentUser = {
-      id: studentId,
-      name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,
-      role: 'student'
-    };
+      const newStudent = {
+        id: studentId,
+        name: name,
+        grade: grade,
+        classNum: classNum,
+        password: password,
+        status: 'in-progress',
+        score: 0,
+        createdAt: new Date().toISOString()
+      };
 
-    this.closeSignupModal();
-    this.renderAppShell();
+      // 1. Save to Central Cloud DB & local storage cache (fail-safe timeout)
+      await CloudDB.registerStudent(newStudent);
 
-    alert(`🎉 [중앙 데이터베이스 회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 중앙 서버 DB에 등록되었습니다.\n이제 스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인할 수 있습니다.`);
+      // 2. Add to live AppState immediately
+      const existingIndex = AppState.demoStudents.findIndex(s => String(s.id) === String(studentId));
+      if (existingIndex >= 0) {
+        AppState.demoStudents[existingIndex] = newStudent;
+      } else {
+        AppState.demoStudents.unshift(newStudent);
+      }
+
+      AppState.currentUser = {
+        id: studentId,
+        name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,
+        role: 'student'
+      };
+
+      this.closeSignupModal();
+      this.renderAppShell();
+
+      setTimeout(() => {
+        alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 데이터베이스에 등록되었습니다.\n스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인하실 수 있습니다.`);
+      }, 100);
+
+    } catch (err) {
+      console.error('Signup handling failed:', err);
+      alert('회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = '✨ 중앙 데이터베이스 가입 및 바로 로그인';
+      }
+    }
   },
 
   fillCredentials(id, pw) {
@@ -321,11 +354,11 @@ const App = {
   },
 
   async handleLogin(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const id = document.getElementById('login-id-input').value.trim();
     const pw = document.getElementById('login-pw-input').value.trim();
 
-    // Always fetch latest data from Central Cloud Database
+    // Fetch latest student list from Central Cloud DB
     await this.syncCloudDatabase();
 
     if (id === 'test' && pw === '11111111') {
@@ -335,7 +368,7 @@ const App = {
         role: 'teacher'
       };
     } else {
-      const foundStudent = AppState.demoStudents.find(s => s.id === id);
+      const foundStudent = AppState.demoStudents.find(s => String(s.id) === String(id));
 
       if (foundStudent) {
         if (foundStudent.password && foundStudent.password !== pw) {
@@ -344,11 +377,11 @@ const App = {
         }
         AppState.currentUser = {
           id: id,
-          name: `${foundStudent.name} 학생 (영서중 ${foundStudent.grade || '2'}학년 ${foundStudent.classNum || '3'}반)`,
+          name: `${foundStudent.name} 학생 (영서중 ${foundStudent.grade || '1'}학년 ${foundStudent.classNum || '1'}반)`,
           role: 'student'
         };
       } else {
-        // Allow dynamic student login with ID if newly registered
+        // Dynamic fallback login for new accounts
         AppState.currentUser = {
           id: id,
           name: `${id} 학생 (영서중)`,

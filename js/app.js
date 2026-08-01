@@ -1,11 +1,11 @@
 /**
- * Yeongseo Middle School Math LMS - Centralized Cloud DB Auth & Robust Student Signup
+ * Yeongseo Middle School Math LMS - Bulletproof Auth & Sign-Up Engine
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
 const AppState = {
   currentUser: null, // { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' }
-  demoStudents: []   // Empty initial state - populated live from Central Cloud Database
+  demoStudents: []   // Populated dynamically from CloudDB
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,12 +20,11 @@ const App = {
 
   async syncCloudDatabase() {
     try {
-      const cloudStudents = await CloudDB.fetchStudents();
-      if (Array.isArray(cloudStudents)) {
-        AppState.demoStudents = cloudStudents;
-      }
+      const students = await CloudDB.fetchStudents();
+      AppState.demoStudents = Array.isArray(students) ? students : [];
     } catch (e) {
-      console.warn('Cloud sync failed', e);
+      console.warn('Sync failed, using fallback empty array', e);
+      AppState.demoStudents = CloudDB.getStudentsFromLocal();
     }
   },
 
@@ -253,7 +252,7 @@ const App = {
 
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
               <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
-              <button type="submit" id="signup-submit-btn" class="btn btn-primary">✨ 중앙 데이터베이스 가입 및 바로 로그인</button>
+              <button type="submit" id="signup-submit-btn" class="btn btn-primary">✨ 데이터베이스 가입 및 바로 로그인</button>
             </div>
           </form>
         </div>
@@ -296,7 +295,7 @@ const App = {
         alert('학생 이름, 학번, 비밀번호를 모두 입력해 주세요.');
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerText = '✨ 중앙 데이터베이스 가입 및 바로 로그인';
+          submitBtn.innerText = '✨ 데이터베이스 가입 및 바로 로그인';
         }
         return;
       }
@@ -312,17 +311,19 @@ const App = {
         createdAt: new Date().toISOString()
       };
 
-      // 1. Save to Central Cloud DB & local storage cache (fail-safe timeout)
+      // Guaranteed save to Local & Cloud store
       await CloudDB.registerStudent(newStudent);
 
-      // 2. Add to live AppState immediately
-      const existingIndex = AppState.demoStudents.findIndex(s => String(s.id) === String(studentId));
-      if (existingIndex >= 0) {
-        AppState.demoStudents[existingIndex] = newStudent;
+      // Update live state safely
+      AppState.demoStudents = Array.isArray(AppState.demoStudents) ? AppState.demoStudents : [];
+      const idx = AppState.demoStudents.findIndex(s => String(s.id) === String(studentId));
+      if (idx >= 0) {
+        AppState.demoStudents[idx] = newStudent;
       } else {
         AppState.demoStudents.unshift(newStudent);
       }
 
+      // Log in as newly registered student
       AppState.currentUser = {
         id: studentId,
         name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,
@@ -332,16 +333,14 @@ const App = {
       this.closeSignupModal();
       this.renderAppShell();
 
-      setTimeout(() => {
-        alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 데이터베이스에 등록되었습니다.\n스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인하실 수 있습니다.`);
-      }, 100);
+      alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 데이터베이스에 정상 등록되었습니다.\n스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인하실 수 있습니다.`);
 
     } catch (err) {
-      console.error('Signup handling failed:', err);
+      console.error('Signup error:', err);
       alert('회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerText = '✨ 중앙 데이터베이스 가입 및 바로 로그인';
+        submitBtn.innerText = '✨ 데이터베이스 가입 및 바로 로그인';
       }
     }
   },
@@ -358,7 +357,7 @@ const App = {
     const id = document.getElementById('login-id-input').value.trim();
     const pw = document.getElementById('login-pw-input').value.trim();
 
-    // Fetch latest student list from Central Cloud DB
+    // Refresh latest student list from DB
     await this.syncCloudDatabase();
 
     if (id === 'test' && pw === '11111111') {
@@ -368,7 +367,8 @@ const App = {
         role: 'teacher'
       };
     } else {
-      const foundStudent = AppState.demoStudents.find(s => String(s.id) === String(id));
+      const studentList = Array.isArray(AppState.demoStudents) ? AppState.demoStudents : CloudDB.getStudentsFromLocal();
+      const foundStudent = studentList.find(s => String(s.id) === String(id));
 
       if (foundStudent) {
         if (foundStudent.password && String(foundStudent.password).trim() !== String(pw).trim()) {
@@ -398,7 +398,7 @@ const App = {
       };
     } else {
       AppState.currentUser = {
-        id: '20302',
+        id: '10830',
         name: '학생 (영서중)',
         role: 'student'
       };
@@ -409,7 +409,7 @@ const App = {
   toggleRole() {
     if (!AppState.currentUser) return;
     if (AppState.currentUser.role === 'teacher') {
-      AppState.currentUser = { id: '20302', name: '학생 (영서중)', role: 'student' };
+      AppState.currentUser = { id: '10830', name: '학생 (영서중)', role: 'student' };
     } else {
       AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
     }

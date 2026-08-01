@@ -371,7 +371,7 @@ const App = {
       const foundStudent = AppState.demoStudents.find(s => String(s.id) === String(id));
 
       if (foundStudent) {
-        if (foundStudent.password && foundStudent.password !== pw) {
+        if (foundStudent.password && String(foundStudent.password).trim() !== String(pw).trim()) {
           alert('⚠️ 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
           return;
         }
@@ -381,12 +381,8 @@ const App = {
           role: 'student'
         };
       } else {
-        // Dynamic fallback login for new accounts
-        AppState.currentUser = {
-          id: id,
-          name: `${id} 학생 (영서중)`,
-          role: 'student'
-        };
+        alert(`⚠️ [로그인 실패]\n\n입력하신 학번(${id})은 데이터베이스에 등록되어 있지 않습니다.\n하단의 [✨ 신규 학생 회원가입] 버튼을 눌러 회원가입을 완료한 후 로그인해 주세요.`);
+        return;
       }
     }
 

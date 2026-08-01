@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Mobile Responsive Sidebar Layout, Auth & Student Sign-Up Module
+ * Yeongseo Middle School Math LMS - Mobile Responsive Sidebar Layout, Auth & Persistent Student Sign-Up
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -7,36 +7,36 @@ const AppState = {
   currentUser: null, // { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' }
 
   demoStudents: [
-    { id: '20301', name: '강도윤', status: 'submitted', score: 95 },
-    { id: '20302', name: '김민준', status: 'submitted', score: 100 },
-    { id: '20303', name: '김서준', status: 'submitted', score: 90 },
-    { id: '20304', name: '김예준', status: 'submitted', score: 85 },
-    { id: '20305', name: '박현우', status: 'submitted', score: 95 },
-    { id: '20306', name: '이도현', status: 'submitted', score: 90 },
-    { id: '20307', name: '이서연', status: 'submitted', score: 100 },
-    { id: '20308', name: '정지후', status: 'submitted', score: 90 },
-    { id: '20309', name: '최지민', status: 'submitted', score: 85 },
-    { id: '20310', name: '한지우', status: 'submitted', score: 95 },
+    { id: '20301', name: '강도윤', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
+    { id: '20302', name: '김민준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 100 },
+    { id: '20303', name: '김서준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
+    { id: '20304', name: '김예준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 85 },
+    { id: '20305', name: '박현우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
+    { id: '20306', name: '이도현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
+    { id: '20307', name: '이서연', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 100 },
+    { id: '20308', name: '정지후', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
+    { id: '20309', name: '최지민', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 85 },
+    { id: '20310', name: '한지우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 95 },
 
-    { id: '20311', name: '권우진', status: 'submitted', score: 90 },
-    { id: '20312', name: '나성민', status: 'submitted', score: 80 },
-    { id: '20313', name: '노유진', status: 'submitted', score: 88 },
-    { id: '20314', name: '문태현', status: 'submitted', score: 92 },
-    { id: '20315', name: '민준영', status: 'submitted', score: 84 },
+    { id: '20311', name: '권우진', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
+    { id: '20312', name: '나성민', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 80 },
+    { id: '20313', name: '노유진', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
+    { id: '20314', name: '문태현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 92 },
+    { id: '20315', name: '민준영', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 84 },
 
-    { id: '20316', name: '박세은', status: 'submitted', score: 92 },
-    { id: '20317', name: '배주원', status: 'submitted', score: 88 },
-    { id: '20318', name: '백하준', status: 'submitted', score: 96 },
-    { id: '20319', name: '송지호', status: 'submitted', score: 90 },
-    { id: '20320', name: '신유나', status: 'submitted', score: 94 },
+    { id: '20316', name: '박세은', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 92 },
+    { id: '20317', name: '배주원', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
+    { id: '20318', name: '백하준', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 96 },
+    { id: '20319', name: '송지호', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 90 },
+    { id: '20320', name: '신유나', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 94 },
 
-    { id: '20321', name: '안재현', status: 'submitted', score: 86 },
-    { id: '20322', name: '양시우', status: 'submitted', score: 88 },
-    { id: '20323', name: '오승민', status: 'in-progress', score: 0 },
-    { id: '20324', name: '유다은', status: 'in-progress', score: 0 },
-    { id: '20325', name: '윤하은', status: 'in-progress', score: 0 },
-    { id: '20326', name: '이준호', status: 'in-progress', score: 0 },
-    { id: '20327', name: '임태양', status: 'not-started', score: 0 }
+    { id: '20321', name: '안재현', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 86 },
+    { id: '20322', name: '양시우', grade: '2', classNum: '3', password: '11', status: 'submitted', score: 88 },
+    { id: '20323', name: '오승민', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
+    { id: '20324', name: '유다은', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
+    { id: '20325', name: '윤하은', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
+    { id: '20326', name: '이준호', grade: '2', classNum: '3', password: '11', status: 'in-progress', score: 0 },
+    { id: '20327', name: '임태양', grade: '2', classNum: '3', password: '11', status: 'not-started', score: 0 }
   ]
 };
 
@@ -46,7 +46,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const App = {
   init() {
+    this.loadStoredStudents();
     this.renderAppShell();
+  },
+
+  loadStoredStudents() {
+    try {
+      const stored = localStorage.getItem('ys_mathlab_registered_students');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(st => {
+            const existingIndex = AppState.demoStudents.findIndex(s => s.id === st.id);
+            if (existingIndex >= 0) {
+              AppState.demoStudents[existingIndex] = st;
+            } else {
+              AppState.demoStudents.unshift(st);
+            }
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to load registered students from localStorage', err);
+    }
+  },
+
+  saveStudentToStorage(student) {
+    try {
+      const stored = localStorage.getItem('ys_mathlab_registered_students');
+      let parsed = stored ? JSON.parse(stored) : [];
+      const existingIndex = parsed.findIndex(s => s.id === student.id);
+      if (existingIndex >= 0) {
+        parsed[existingIndex] = student;
+      } else {
+        parsed.unshift(student);
+      }
+      localStorage.setItem('ys_mathlab_registered_students', JSON.stringify(parsed));
+    } catch (err) {
+      console.warn('Failed to save student to localStorage', err);
+    }
   },
 
   renderAppShell() {
@@ -303,6 +341,7 @@ const App = {
     const grade = document.getElementById('signup-grade-select').value;
     const classNum = document.getElementById('signup-class-select').value;
     const studentId = document.getElementById('signup-id-input').value.trim();
+    const password = document.getElementById('signup-pw-input').value.trim();
 
     if (!name || !studentId) {
       alert('학생 이름과 학번을 입력하세요.');
@@ -311,14 +350,23 @@ const App = {
 
     const newStudent = {
       id: studentId,
-      name: `${name}`,
+      name: name,
+      grade: grade,
+      classNum: classNum,
+      password: password || '11111111',
       status: 'in-progress',
-      score: 0
+      score: 0,
+      createdAt: new Date().toISOString()
     };
 
-    if (!AppState.demoStudents.some(s => s.id === studentId)) {
+    const existingIndex = AppState.demoStudents.findIndex(s => s.id === studentId);
+    if (existingIndex >= 0) {
+      AppState.demoStudents[existingIndex] = newStudent;
+    } else {
       AppState.demoStudents.unshift(newStudent);
     }
+
+    this.saveStudentToStorage(newStudent);
 
     AppState.currentUser = {
       id: studentId,
@@ -329,7 +377,7 @@ const App = {
     this.closeSignupModal();
     this.init();
 
-    alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 수학 탐구실 계정이 생성되어 자동 로그인되었습니다.`);
+    alert(`🎉 [회원가입 완료 및 계정 저장!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 안전하게 브라우저에 저장되었습니다.\n\n다음부터는 입력하신 학번(${studentId})으로 언제든 다시 로그인하실 수 있습니다.`);
   },
 
   fillCredentials(id, pw) {
@@ -344,6 +392,8 @@ const App = {
     const id = document.getElementById('login-id-input').value.trim();
     const pw = document.getElementById('login-pw-input').value.trim();
 
+    this.loadStoredStudents();
+
     if (id === 'test' && pw === '11111111') {
       AppState.currentUser = {
         id: 'test',
@@ -352,11 +402,13 @@ const App = {
       };
     } else {
       const foundStudent = AppState.demoStudents.find(s => s.id === id);
-      const studentName = foundStudent ? foundStudent.name : '신규 학생';
+      const studentName = foundStudent ? foundStudent.name : (id ? `${id}` : '신규 학생');
+      const studentGrade = foundStudent && foundStudent.grade ? foundStudent.grade : '2';
+      const studentClass = foundStudent && foundStudent.classNum ? foundStudent.classNum : '3';
 
       AppState.currentUser = {
         id: id || '20302',
-        name: `${studentName} 학생 (영서중)`,
+        name: `${studentName} 학생 (영서중 ${studentGrade}학년 ${studentClass}반)`,
         role: 'student'
       };
     }

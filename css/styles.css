@@ -1,51 +1,57 @@
-/* Yeongseo Middle School Math LMS - Mobile Responsive & Violet Obsidian Design System */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+/* ==========================================================================
+   Yeongseo Middle School Math LMS - Master Design System
+   Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
+   ========================================================================== */
 
 :root {
-  --bg-dark: #090d16;
-  --bg-sidebar: rgba(13, 18, 30, 0.95);
-  --bg-card: rgba(19, 27, 46, 0.75);
-  --bg-card-hover: rgba(30, 41, 69, 0.85);
+  /* Dark Cosmic Math Theme Palette */
+  --bg-main: #090d16;
+  --bg-card: rgba(18, 24, 38, 0.75);
+  --bg-sidebar: rgba(13, 17, 28, 0.95);
   --border-card: rgba(255, 255, 255, 0.08);
-  --border-violet: rgba(139, 92, 246, 0.35);
+  --border-violet: rgba(139, 92, 246, 0.4);
   
+  /* Primary & Accent Colors */
   --primary-violet: #8b5cf6;
   --violet-bright: #c084fc;
   --violet-dark: #6d28d9;
   --violet-glow: rgba(139, 92, 246, 0.35);
   
   --accent-emerald: #10b981;
-  --accent-gold: #f59e0b;
   --accent-cyan: #06b6d4;
+  --accent-gold: #f59e0b;
   --accent-rose: #f43f5e;
-  
+
+  /* Typography */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  /* Text Colors */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
-  
-  --font-sans: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Fira Code', monospace;
+
+  /* Radii */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-full: 9999px;
 }
 
+/* Reset & Base Setup */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
-  width: 100%;
-  min-height: 100vh;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
+body {
   font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Background Atmosphere */
@@ -103,6 +109,7 @@ html, body {
   display: flex;
   min-height: 100vh;
   position: relative;
+  width: 100%;
 }
 
 /* Desktop Vertical Sidebar Menu */
@@ -277,6 +284,7 @@ html, body {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .glass-card.hover-lift:hover {
@@ -285,11 +293,17 @@ html, body {
   box-shadow: 0 12px 32px -10px rgba(139, 92, 246, 0.2);
 }
 
-/* Main Content Right */
-.main-content-right {
+/* Main Content Area: Fills full width cleanly */
+.main-content {
   flex: 1;
   padding: 2rem 2.5rem;
   width: calc(100% - 270px);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#teacher-main-view {
+  width: 100%;
 }
 
 /* Mobile Header Bar for Small Screens */
@@ -311,23 +325,6 @@ html, body {
   max-width: 480px;
   margin: 2rem auto;
   width: 100%;
-}
-
-.auth-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.auth-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-top: 0.5rem;
-}
-
-.auth-subtitle {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-top: 0.4rem;
 }
 
 .form-group {
@@ -410,42 +407,6 @@ html, body {
   border-color: var(--primary-violet);
 }
 
-.btn-block {
-  width: 100%;
-}
-
-.demo-account-box {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: rgba(139, 92, 246, 0.06);
-  border: 1px dashed var(--border-violet);
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
-}
-
-.demo-credentials {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.credential-chip {
-  background: rgba(9, 13, 22, 0.7);
-  padding: 0.35rem 0.7rem;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--violet-bright);
-  cursor: pointer;
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  transition: background 0.2s;
-}
-
-.credential-chip:hover {
-  background: rgba(139, 92, 246, 0.2);
-}
-
 /* Grade Tab Switcher (Progress Module) */
 .grade-tab-btn {
   padding: 0.6rem 1.2rem;
@@ -476,6 +437,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
+  width: 100%;
 }
 
 .class-title-badge {
@@ -500,64 +462,25 @@ html, body {
   transition: width 0.4s ease;
 }
 
-/* Archive Student Selector List */
-.student-select-btn {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.8rem;
-  color: var(--text-main);
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.student-select-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--border-violet);
-}
-
-.student-select-btn.active {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: var(--primary-violet);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
-}
-
-/* AI Tone Pills */
-.tone-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-card);
-  border-radius: 20px;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tone-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-}
-
-.tone-btn.active {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: var(--violet-bright);
-  color: var(--violet-bright);
-}
-
-/* Teacher Dashboard Grid */
+/* Teacher Dashboard Metrics Grid (Full Widescreen Expansion) */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
   margin-bottom: 2rem;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .metric-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .metric-label {
@@ -596,210 +519,6 @@ html, body {
 .metric-badge.violet {
   background: rgba(139, 92, 246, 0.15);
   color: var(--violet-bright);
-}
-
-/* Activity Items List */
-.activities-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-
-.activity-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-}
-
-.activity-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.status-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.status-indicator.live {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--accent-emerald);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.status-indicator.live .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-emerald);
-  box-shadow: 0 0 8px var(--accent-emerald);
-  animation: pulseDot 1.5s infinite;
-}
-
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.3); }
-}
-
-.pin-code-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid var(--border-violet);
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--violet-bright);
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-/* Live Session Monitor Matrix */
-.monitor-matrix-container {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.5rem;
-}
-
-.students-matrix-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.student-status-chip {
-  background: rgba(9, 13, 22, 0.8);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-md);
-  padding: 0.8rem 0.6rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.student-status-chip:hover {
-  border-color: var(--border-violet);
-  background: rgba(30, 41, 69, 0.9);
-}
-
-.student-status-chip.submitted {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.08);
-}
-
-.student-status-chip.in-progress {
-  border-color: rgba(245, 158, 11, 0.4);
-  background: rgba(245, 158, 11, 0.08);
-}
-
-.student-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.student-progress-text {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
-}
-
-/* Interactive Math Grapher Area */
-.grapher-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.grapher-canvas-card {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #090d16;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-card);
-  overflow: hidden;
-}
-
-.grapher-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.grapher-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.8rem;
-  background: rgba(9, 13, 22, 0.6);
-  padding: 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-card);
-}
-
-.slider-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.slider-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-.slider-input {
-  width: 100%;
-  accent-color: var(--primary-violet);
-  cursor: pointer;
-}
-
-/* Virtual Math Keypad */
-.math-keypad {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.4rem;
-  margin-top: 0.75rem;
-  background: rgba(9, 13, 22, 0.7);
-  padding: 0.6rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-card);
-}
-
-.key-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  padding: 0.5rem 0.2rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  user-select: none;
-}
-
-.key-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: var(--border-violet);
-  color: var(--violet-bright);
-}
-
-.key-btn.action-key {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--accent-emerald);
 }
 
 /* Modal Popup */
@@ -850,16 +569,6 @@ html, body {
   color: #fff;
 }
 
-/* Footer */
-.footer {
-  border-top: 1px solid var(--border-card);
-  padding: 1.25rem 2rem;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  margin-top: 3rem;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -877,19 +586,17 @@ html, body {
 }
 
 /* ==========================================================================
-   MOBILE & TABLET RESPONSIVE MEDIA QUERIES (세로 스마트폰 화면 대폭 개선)
+   MOBILE & TABLET RESPONSIVE MEDIA QUERIES
    ========================================================================== */
 @media (max-width: 880px) {
   .app-container {
     flex-direction: column;
   }
 
-  /* Top Mobile Bar */
   .mobile-header-bar {
     display: flex;
   }
 
-  /* Mobile Slide-down Sidebar */
   .sidebar {
     width: 100%;
     min-width: 100%;
@@ -910,22 +617,16 @@ html, body {
   }
 
   .sidebar-header {
-    display: none; /* Hidden in mobile as mobile-header-bar takes over */
+    display: none;
   }
 
   .mobile-nav-toggle-btn {
     display: inline-flex;
   }
 
-  /* Main Content Area adjustments for mobile */
-  .main-content-right {
+  .main-content {
     width: 100%;
     padding: 1.25rem 1rem;
-  }
-
-  /* Grid layout overrides for mobile */
-  .monitor-matrix-container {
-    grid-template-columns: 1fr;
   }
 
   .metrics-grid {
@@ -933,16 +634,8 @@ html, body {
     gap: 0.8rem;
   }
 
-  .activities-grid {
-    grid-template-columns: 1fr;
-  }
-
   .progress-grid {
     grid-template-columns: 1fr;
-  }
-
-  .grapher-controls {
-    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -951,25 +644,8 @@ html, body {
     grid-template-columns: 1fr;
   }
 
-  .auth-wrapper {
-    margin: 1rem auto;
-    padding: 0 0.5rem;
-  }
-
   .glass-card {
     padding: 1.1rem;
     border-radius: var(--radius-md);
-  }
-
-  .math-keypad {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .grapher-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .student-status-chip {
-    padding: 0.6rem 0.4rem;
   }
 }

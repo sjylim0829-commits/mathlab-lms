@@ -89,9 +89,6 @@ const App = {
                     <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk">
                       📜 학생 기록 및 세특 생성
                     </button>
-                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="live-monitor">
-                      🔴 실시간 수업 모니터링
-                    </button>
                     <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder">
                       📐 탐구 활동
                     </button>

@@ -2,13 +2,14 @@
  * Yeongseo Middle School Math LMS - Google Sheets Database Engine
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  * 
- * Direct Google Sheets Integration for Students & Class Progress:
+ * Direct Google Sheets Integration for Students, Class Progress & Curriculum Master DB:
  * https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec
  */
 
 const GOOGLE_SHEETS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec';
 const LOCAL_STORAGE_KEY_STUDENTS = 'ys_mathlab_google_sheet_students_v1';
 const LOCAL_STORAGE_KEY_PROGRESS = 'ys_mathlab_google_sheet_progress_v1';
+const LOCAL_STORAGE_KEY_CURRICULUM = 'ys_mathlab_google_sheet_curriculum_v1';
 
 const CloudDB = {
   // Load local cache immediately for zero-lag UI
@@ -55,7 +56,28 @@ const CloudDB = {
     }
   },
 
-  // Fetch live student list & progress from Teacher Jongyoon Lim's Google Sheet
+  getCurriculumFromLocal() {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_CURRICULUM);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : null;
+      }
+    } catch (e) {
+      console.warn('[CloudDB] Curriculum local cache read error:', e);
+    }
+    return null;
+  },
+
+  saveCurriculumToLocal(currList) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_CURRICULUM, JSON.stringify(currList));
+    } catch (e) {
+      console.warn('[CloudDB] Curriculum local cache save error:', e);
+    }
+  },
+
+  // Fetch live student list, progress, and curriculum master DB from Teacher Jongyoon Lim's Google Sheet
   async fetchStudents() {
     let localList = this.getStudentsFromLocal();
 
@@ -73,14 +95,20 @@ const CloudDB = {
       if (res && res.ok) {
         const remoteData = await res.json();
         
-        // Handle combined payload (students + progress)
+        // Handle combined payload (students + progress + curriculum)
         let remoteStudents = [];
         if (Array.isArray(remoteData)) {
           remoteStudents = remoteData;
-        } else if (remoteData && Array.isArray(remoteData.students)) {
-          remoteStudents = remoteData.students;
+        } else if (remoteData && typeof remoteData === 'object') {
+          if (Array.isArray(remoteData.students)) remoteStudents = remoteData.students;
           if (Array.isArray(remoteData.progress) && remoteData.progress.length > 0) {
             this.saveProgressToLocal(remoteData.progress);
+          }
+          if (Array.isArray(remoteData.curriculum) && remoteData.curriculum.length > 0) {
+            this.saveCurriculumToLocal(remoteData.curriculum);
+            if (typeof ProgressModule !== 'undefined' && ProgressModule.updateCurriculumFromSheet) {
+              ProgressModule.updateCurriculumFromSheet(remoteData.curriculum);
+            }
           }
         }
 

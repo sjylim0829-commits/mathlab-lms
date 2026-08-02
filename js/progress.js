@@ -8,44 +8,73 @@ const ProgressModule = {
   activeGrade: 2, // Default 2학년
   selectedClassForModal: null,
 
-  // 1~3학년 중등 수학 한 학기 정규 교육과정 단원 DB
+  // 1~3학년 중등 수학 한 학기 정규 교육과정 단원 DB (구글 시트 연동)
   curriculumDB: {
     1: [
-      { id: '1-1', unit: 'Ⅰ. 수와 연산 - 1. 소인수분해 (소수와 합성수, 소인수분해)', defaultPages: 'p.10 ~ p.25' },
-      { id: '1-2', unit: 'Ⅰ. 수와 연산 - 2. 정수와 유리수 (정수와 유리수의 뜻과 사칙연산)', defaultPages: 'p.26 ~ p.48' },
-      { id: '1-3', unit: 'Ⅱ. 변화와 관계 - 1. 문자와 식 (문자의 사용과 식의 값, 일차식)', defaultPages: 'p.50 ~ p.68' },
-      { id: '1-4', unit: 'Ⅱ. 변화와 관계 - 2. 일차방정식 (일차방정식의 풀이와 활용)', defaultPages: 'p.70 ~ p.92' },
-      { id: '1-5', unit: 'Ⅱ. 변화와 관계 - 3. 좌표평면과 그래프 (정비례와 반비례)', defaultPages: 'p.94 ~ p.118' },
-      { id: '1-6', unit: 'Ⅲ. 도형과 측정 - 1. 기본 도형 (점·선·면·각, 위치 관계)', defaultPages: 'p.120 ~ p.142' },
-      { id: '1-7', unit: 'Ⅲ. 도형과 측정 - 2. 평면도형의 성질 (다각형, 원과 부채꼴)', defaultPages: 'p.144 ~ p.168' },
-      { id: '1-8', unit: 'Ⅲ. 도형과 측정 - 3. 입체도형의 성질 (다면체와 회전체, 겉넓이와 부피)', defaultPages: 'p.170 ~ p.196' },
-      { id: '1-9', unit: 'Ⅳ. 통계 - 1. 자료의 정리와 해석 (도수분포표, 히스토그램, 상대도수)', defaultPages: 'p.198 ~ p.220' }
+      { id: '1-1', seq: '1차시', unit: 'Ⅰ. 수와 연산 - 1. 소인수분해 (소수와 합성수, 소인수분해)', defaultPages: 'p.10 ~ p.25' },
+      { id: '1-2', seq: '2차시', unit: 'Ⅰ. 수와 연산 - 2. 정수와 유리수 (정수와 유리수의 뜻과 사칙연산)', defaultPages: 'p.26 ~ p.48' },
+      { id: '1-3', seq: '3차시', unit: 'Ⅱ. 변화와 관계 - 1. 문자와 식 (문자의 사용과 식의 값, 일차식)', defaultPages: 'p.50 ~ p.68' },
+      { id: '1-4', seq: '4차시', unit: 'Ⅱ. 변화와 관계 - 2. 일차방정식 (일차방정식의 풀이와 활용)', defaultPages: 'p.70 ~ p.92' },
+      { id: '1-5', seq: '5차시', unit: 'Ⅱ. 변화와 관계 - 3. 좌표평면과 그래프 (정비례와 반비례)', defaultPages: 'p.94 ~ p.118' },
+      { id: '1-6', seq: '6차시', unit: 'Ⅲ. 도형과 측정 - 1. 기본 도형 (점·선·면·각, 위치 관계)', defaultPages: 'p.120 ~ p.142' },
+      { id: '1-7', seq: '7차시', unit: 'Ⅲ. 도형과 측정 - 2. 평면도형의 성질 (다각형, 원과 부채꼴)', defaultPages: 'p.144 ~ p.168' },
+      { id: '1-8', seq: '8차시', unit: 'Ⅲ. 도형과 측정 - 3. 입체도형의 성질 (다면체와 회전체, 겉넓이와 부피)', defaultPages: 'p.170 ~ p.196' },
+      { id: '1-9', seq: '9차시', unit: 'Ⅳ. 통계 - 1. 자료의 정리와 해석 (도수분포표, 히스토그램, 상대도수)', defaultPages: 'p.198 ~ p.220' }
     ],
 
     2: [
-      { id: '2-1', unit: 'Ⅰ. 수와 식의 계산 - 1. 유리수와 순환소수 (순환소수의 표현과 분수 변환)', defaultPages: 'p.10 ~ p.28' },
-      { id: '2-2', unit: 'Ⅰ. 수와 식의 계산 - 2. 식의 계산 (지수법칙, 단항식과 다항식의 계산)', defaultPages: 'p.30 ~ p.52' },
-      { id: '2-3', unit: 'Ⅱ. 부등식과 방정식 - 1. 일차부등식 (일차부등식의 풀이와 활용)', defaultPages: 'p.54 ~ p.76' },
-      { id: '2-4', unit: 'Ⅱ. 부등식과 방정식 - 2. 연립일차방정식 (연립방정식의 풀이와 활용)', defaultPages: 'p.78 ~ p.104' },
-      { id: '2-5', unit: 'Ⅲ. 일차함수 - 1. 일차함수와 그래프 (기울기와 절편, 평행과 직교)', defaultPages: 'p.106 ~ p.132' },
-      { id: '2-6', unit: 'Ⅲ. 일차함수 - 2. 일차함수와 일차방정식의 관계 (연립방정식과 그래프)', defaultPages: 'p.134 ~ p.150' },
-      { id: '2-7', unit: 'Ⅳ. 도형의 성질 - 1. 삼각형의 성질 (이등변삼각형, 외심과 내심)', defaultPages: 'p.152 ~ p.178' },
-      { id: '2-8', unit: 'Ⅳ. 도형의 성질 - 2. 사각형의 성질 (평행사변형, 여러 가지 사각형)', defaultPages: 'p.180 ~ p.204' },
-      { id: '2-9', unit: 'Ⅴ. 도형의 닮음 - 1. 도형의 닮음과 피타고라스 정리', defaultPages: 'p.206 ~ p.230' },
-      { id: '2-10', unit: 'Ⅵ. 확률 - 1. 경우의 수와 확률 (확률의 뜻과 성질)', defaultPages: 'p.232 ~ p.250' }
+      { id: '2-1', seq: '1차시', unit: 'Ⅰ. 수와 식의 계산 - 1. 유리수와 순환소수 (순환소수의 표현과 분수 변환)', defaultPages: 'p.10 ~ p.28' },
+      { id: '2-2', seq: '2차시', unit: 'Ⅰ. 수와 식의 계산 - 2. 식의 계산 (지수법칙, 단항식과 다항식의 계산)', defaultPages: 'p.30 ~ p.52' },
+      { id: '2-3', seq: '3차시', unit: 'Ⅱ. 부등식과 방정식 - 1. 일차부등식 (일차부등식의 풀이와 활용)', defaultPages: 'p.54 ~ p.76' },
+      { id: '2-4', seq: '4차시', unit: 'Ⅱ. 부등식과 방정식 - 2. 연립일차방정식 (연립방정식의 풀이와 활용)', defaultPages: 'p.78 ~ p.104' },
+      { id: '2-5', seq: '5차시', unit: 'Ⅲ. 일차함수 - 1. 일차함수와 그래프 (기울기와 절편, 평행과 직교)', defaultPages: 'p.106 ~ p.132' },
+      { id: '2-6', seq: '6차시', unit: 'Ⅲ. 일차함수 - 2. 일차함수와 일차방정식의 관계 (연립방정식과 그래프)', defaultPages: 'p.134 ~ p.150' },
+      { id: '2-7', seq: '7차시', unit: 'Ⅳ. 도형의 성질 - 1. 삼각형의 성질 (이등변삼각형, 외심과 내심)', defaultPages: 'p.152 ~ p.178' },
+      { id: '2-8', seq: '8차시', unit: 'Ⅳ. 도형의 성질 - 2. 사각형의 성질 (평행사변형, 여러 가지 사각형)', defaultPages: 'p.180 ~ p.204' },
+      { id: '2-9', seq: '9차시', unit: 'Ⅴ. 도형의 닮음 - 1. 도형의 닮음과 피타고라스 정리', defaultPages: 'p.206 ~ p.230' },
+      { id: '2-10', seq: '10차시', unit: 'Ⅵ. 확률 - 1. 경우의 수와 확률 (확률의 뜻과 성질)', defaultPages: 'p.232 ~ p.250' }
     ],
 
     3: [
-      { id: '3-1', unit: 'Ⅰ. 실수와 그 계산 - 1. 제곱근과 실수 (제곱근의 뜻과 성질, 무리수)', defaultPages: 'p.10 ~ p.32' },
-      { id: '3-2', unit: 'Ⅰ. 실수와 그 계산 - 2. 근호를 포함한 식의 계산 (덧셈·뺄셈·곱셈·나눗셈)', defaultPages: 'p.34 ~ p.54' },
-      { id: '3-3', unit: 'Ⅱ. 다항식의 곱셈과 인수분해 - 1. 인수분해 공식과 활용', defaultPages: 'p.56 ~ p.82' },
-      { id: '3-4', unit: 'Ⅲ. 이차방정식 - 1. 이차방정식의 풀이 (인수분해, 근의 공식과 활용)', defaultPages: 'p.84 ~ p.110' },
-      { id: '3-5', unit: 'Ⅳ. 이차함수 - 1. 이차함수 y = ax² 및 y = a(x-p)² + q 그래프', defaultPages: 'p.112 ~ p.140' },
-      { id: '3-6', unit: 'Ⅳ. 이차함수 - 2. 이차함수 y = ax² + bx + c 일반형 그래프', defaultPages: 'p.142 ~ p.165' },
-      { id: '3-7', unit: 'Ⅴ. 삼각비 - 1. 삼각비의 뜻과 값 (sin, cos, tan 특수각)', defaultPages: 'p.166 ~ p.188' },
-      { id: '3-8', unit: 'Ⅴ. 삼각비 - 2. 삼각비의 활용 (길이와 넓이 구하기)', defaultPages: 'p.190 ~ p.208' },
-      { id: '3-9', unit: 'Ⅵ. 원의 성질 - 1. 원주각의 성질과 원과 비례', defaultPages: 'p.210 ~ p.235' }
+      { id: '3-1', seq: '1차시', unit: 'Ⅰ. 실수와 그 계산 - 1. 제곱근과 실수 (제곱근의 뜻과 성질, 무리수)', defaultPages: 'p.10 ~ p.32' },
+      { id: '3-2', seq: '2차시', unit: 'Ⅰ. 실수와 그 계산 - 2. 근호를 포함한 식의 계산 (덧셈·뺄셈·곱셈·나눗셈)', defaultPages: 'p.34 ~ p.54' },
+      { id: '3-3', seq: '3차시', unit: 'Ⅱ. 다항식의 곱셈과 인수분해 - 1. 인수분해 공식과 활용', defaultPages: 'p.56 ~ p.82' },
+      { id: '3-4', seq: '4차시', unit: 'Ⅲ. 이차방정식 - 1. 이차방정식의 풀이 (인수분해, 근의 공식과 활용)', defaultPages: 'p.84 ~ p.110' },
+      { id: '3-5', seq: '5차시', unit: 'Ⅳ. 이차함수 - 1. 이차함수 y = ax² 및 y = a(x-p)² + q 그래프', defaultPages: 'p.112 ~ p.140' },
+      { id: '3-6', seq: '6차시', unit: 'Ⅳ. 이차함수 - 2. 이차함수 y = ax² + bx + c 일반형 그래프', defaultPages: 'p.142 ~ p.165' },
+      { id: '3-7', seq: '7차시', unit: 'Ⅴ. 삼각비 - 1. 삼각비의 뜻과 값 (sin, cos, tan 특수각)', defaultPages: 'p.166 ~ p.188' },
+      { id: '3-8', seq: '8차시', unit: 'Ⅴ. 삼각비 - 2. 삼각비의 활용 (길이와 넓이 구하기)', defaultPages: 'p.190 ~ p.208' },
+      { id: '3-9', seq: '9차시', unit: 'Ⅵ. 원의 성질 - 1. 원주각의 성질과 원과 비례', defaultPages: 'p.210 ~ p.235' }
     ]
+  },
+
+  // Update curriculumDB dynamically when loaded from Google Sheet '교육과정DB' tab
+  updateCurriculumFromSheet(sheetItems) {
+    if (!Array.isArray(sheetItems) || sheetItems.length === 0) return;
+
+    const grouped = { 1: [], 2: [], 3: [] };
+    sheetItems.forEach((item, idx) => {
+      const grade = Number(item.grade) || 1;
+      if (grouped[grade]) {
+        grouped[grade].push({
+          id: `${grade}-${idx+1}`,
+          seq: item.seq || `${idx+1}차시`,
+          unit: item.unit || `단원 #${idx+1}`,
+          defaultPages: item.defaultPages || 'p.10 ~ p.30'
+        });
+      }
+    });
+
+    [1, 2, 3].forEach(g => {
+      if (grouped[g].length > 0) {
+        this.curriculumDB[g] = grouped[g];
+      }
+    });
+
+    const mainView = document.getElementById('teacher-main-view');
+    if (mainView && document.querySelector('.grade-tab-btn')) {
+      mainView.innerHTML = this.renderView();
+    }
   },
 
   // 24 Classes initial progress data
@@ -102,7 +131,7 @@ const ProgressModule = {
               <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부 (구글 시트 실시간 연동)</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부 (구글 시트 교육과정DB 연동)</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
               담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 24개 학급 실시간 진도 구글 시트 저장
@@ -180,11 +209,11 @@ const ProgressModule = {
               <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); display: flex; align-items: center; gap: 0.5rem;">
                 <span>📖 영서중학교 ${this.activeGrade}학년 수학 한 학기 정규 교육과정 단원 DB</span>
                 <span style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.15); color: var(--violet-bright); padding: 2px 8px; border-radius: 12px;">
-                  총 ${currentGradeUnits.length}개 정규 단원
+                  총 ${currentGradeUnits.length}개 차시별 계획 단원
                 </span>
               </h3>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
-                구글 시트와 실시간 연동되어 선생님께서 직접 작성 및 수정이 가능한 교육과정 단원 DB입니다.
+                선생님의 구글 시트 <code>교육과정DB</code> 탭과 실시간 연동되어 선생님이 차시별로 직접 작성한 계획이 바로 표시되는 마스터 DB입니다.
               </p>
             </div>
           </div>
@@ -193,10 +222,11 @@ const ProgressModule = {
             ${currentGradeUnits.map((u, idx) => `
               <div style="background: rgba(9, 13, 22, 0.7); border: 1px solid var(--border-card); padding: 0.8rem 1rem; border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                  <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-main);">${u.unit}</div>
+                  <div style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">${u.seq || (idx+1)+'차시'}</div>
+                  <div style="font-weight: 700; font-size: 0.85rem; color: var(--text-main); margin-top: 0.1rem;">${u.unit}</div>
                   <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">권장 범위: ${u.defaultPages}</div>
                 </div>
-                <span style="font-size: 0.75rem; background: rgba(16,185,129,0.12); color: var(--accent-emerald); padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                <span style="font-size: 0.75rem; background: rgba(139,92,246,0.15); color: var(--violet-bright); padding: 2px 6px; border-radius: 6px; font-weight: 700;">
                   단원 DB #${idx + 1}
                 </span>
               </div>
@@ -229,13 +259,13 @@ const ProgressModule = {
                 </div>
               </div>
 
-              <!-- Unit DB Picker Dropdown -->
+              <!-- Unit DB Picker Dropdown linked to Teacher's Google Sheet Syllabus Master DB -->
               <div class="form-group">
                 <label class="form-label" style="color: var(--violet-bright); font-weight: 700;">
-                  📚 한 학기 정규 교육과정 단원 선택 (DB 연동)
+                  📚 구글 시트 차시별 교육과정 단원 DB에서 선택
                 </label>
                 <select id="modal-unit-select" class="input-control" onchange="ProgressModule.handleUnitSelectChange(this)" style="font-weight: 600; border-color: var(--border-violet);">
-                  ${currentGradeUnits.map(u => `<option value="${u.unit}" data-pages="${u.defaultPages}">${u.unit}</option>`).join('')}
+                  ${currentGradeUnits.map(u => `<option value="${u.unit}" data-pages="${u.defaultPages}">${u.seq ? '['+u.seq+'] ' : ''}${u.unit}</option>`).join('')}
                 </select>
               </div>
 

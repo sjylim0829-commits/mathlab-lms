@@ -1,47 +1,47 @@
 /**
- * Yeongseo Middle School Math LMS - Fail-Safe Database Engine
+ * Yeongseo Middle School Math LMS - Google Sheets Database Engine
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  * 
- * Guarantees zero-error student registration & authentication across all devices.
+ * Direct Google Sheets Integration:
+ * https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec
  */
 
-const STORAGE_KEY = 'ys_mathlab_students_db_v4';
-const CLOUD_SYNC_URL = 'https://crudcrud.com/api/2c42a4dbb59b4f1da1e1ac7d701c7248/students';
+const GOOGLE_SHEETS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec';
+const LOCAL_STORAGE_KEY = 'ys_mathlab_google_sheet_students_v1';
 
 const CloudDB = {
-  // Load students from LocalStorage (Primary reliable store)
+  // Load local cache immediately for zero-lag UI
   getStudentsFromLocal() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : [];
       }
     } catch (e) {
-      console.warn('[CloudDB] LocalStorage parse error:', e);
+      console.warn('[CloudDB] Local cache read error:', e);
     }
     return [];
   },
 
-  // Save students to LocalStorage
   saveStudentsToLocal(students) {
     try {
-      const cleanList = Array.isArray(students) ? students : [];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanList));
+      const list = Array.isArray(students) ? students : [];
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
     } catch (e) {
-      console.warn('[CloudDB] LocalStorage save error:', e);
+      console.warn('[CloudDB] Local cache save error:', e);
     }
   },
 
-  // Synchronize with Cloud Database safely (Never throws)
+  // Fetch live student list from Teacher Jongyoon Lim's Google Sheet
   async fetchStudents() {
     let localList = this.getStudentsFromLocal();
 
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 1800);
+      const timer = setTimeout(() => controller.abort(), 3500);
 
-      const res = await fetch(CLOUD_SYNC_URL, {
+      const res = await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
         signal: controller.signal
@@ -50,54 +50,46 @@ const CloudDB = {
 
       if (res && res.ok) {
         const remoteData = await res.json();
-        if (Array.isArray(remoteData) && remoteData.length > 0) {
-          // Merge remote data with local list without duplicates
-          remoteData.forEach(remoteStudent => {
-            if (remoteStudent && remoteStudent.id) {
-              const cleanStudent = {
-                id: String(remoteStudent.id).trim(),
-                name: String(remoteStudent.name || '').trim(),
-                grade: String(remoteStudent.grade || '1').trim(),
-                classNum: String(remoteStudent.classNum || '1').trim(),
-                password: String(remoteStudent.password || '').trim(),
-                status: remoteStudent.status || 'in-progress',
-                score: remoteStudent.score || 0
-              };
-              const idx = localList.findIndex(s => String(s.id) === cleanStudent.id);
-              if (idx >= 0) {
-                localList[idx] = cleanStudent;
-              } else {
-                localList.unshift(cleanStudent);
-              }
-            }
-          });
-          this.saveStudentsToLocal(localList);
+        if (Array.isArray(remoteData)) {
+          const cleaned = remoteData.map(s => ({
+            id: String(s.id || '').trim(),
+            name: String(s.name || '').trim(),
+            grade: String(s.grade || '1').trim(),
+            classNum: String(s.classNum || '1').trim(),
+            password: String(s.password || '').trim(),
+            status: 'in-progress',
+            score: 0,
+            createdAt: s.createdAt || ''
+          })).filter(s => s.id && s.name);
+
+          this.saveStudentsToLocal(cleaned);
+          return cleaned;
         }
       }
     } catch (err) {
-      console.warn('[CloudDB] Cloud fetch skipped, using local store:', err);
+      console.warn('[CloudDB] Google Sheets fetch fallback to local cache:', err);
     }
 
     return localList;
   },
 
-  // Register student safely (Never throws)
+  // Post new student registration to Teacher Jongyoon Lim's Google Sheet
   async registerStudent(newStudent) {
     if (!newStudent || !newStudent.id) return;
 
-    // 1. Immediately save to Local Storage
-    const localList = this.getStudentsFromLocal();
     const cleanStudent = {
       id: String(newStudent.id).trim(),
       name: String(newStudent.name).trim(),
       grade: String(newStudent.grade || '1').trim(),
       classNum: String(newStudent.classNum || '1').trim(),
       password: String(newStudent.password).trim(),
-      status: newStudent.status || 'in-progress',
-      score: newStudent.score || 0,
-      createdAt: newStudent.createdAt || new Date().toISOString()
+      status: 'in-progress',
+      score: 0,
+      createdAt: new Date().toLocaleString('ko-KR')
     };
 
+    // 1. Immediately update Local Storage cache for zero UI lag
+    const localList = this.getStudentsFromLocal();
     const idx = localList.findIndex(s => String(s.id) === cleanStudent.id);
     if (idx >= 0) {
       localList[idx] = cleanStudent;
@@ -106,21 +98,16 @@ const CloudDB = {
     }
     this.saveStudentsToLocal(localList);
 
-    // 2. Background Cloud Sync (Silent fail-safe)
+    // 2. Post to Google Sheet Web App (using text/plain to prevent CORS preflight issues)
     try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 2000);
-
-      await fetch(CLOUD_SYNC_URL, {
+      await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cleanStudent),
-        signal: controller.signal
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(cleanStudent)
       });
-      clearTimeout(timer);
-      console.log('[CloudDB] Cloud registration synced successfully!');
+      console.log('[CloudDB] Student registered in Google Sheet!');
     } catch (err) {
-      console.warn('[CloudDB] Cloud sync postponed, saved locally:', err);
+      console.warn('[CloudDB] Google Sheet background sync error:', err);
     }
   }
 };

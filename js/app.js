@@ -34,7 +34,7 @@ const App = {
 
     if (!AppState.currentUser) {
       rootEl.innerHTML = `
-        <div style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem;">
           ${this.renderLandingLogin()}
         </div>
       `;
@@ -156,7 +156,7 @@ const App = {
 
   renderLandingLogin() {
     return `
-      <div class="login-card glass-card fade-in">
+      <div class="login-card glass-card fade-in" style="max-width: 440px; width: 100%; margin: 0 auto; padding: 2.25rem 2rem;">
         <div style="text-align: center; margin-bottom: 2rem;">
           <div style="display: inline-flex; padding: 12px; background: rgba(139, 92, 246, 0.15); border-radius: 16px; margin-bottom: 1rem;">
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none">

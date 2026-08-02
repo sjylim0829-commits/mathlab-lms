@@ -231,30 +231,6 @@ body {
   gap: 0.75rem;
 }
 
-.user-profile-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-card);
-  padding: 0.5rem 0.8rem;
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
-}
-
-.user-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-violet), var(--accent-emerald));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #fff;
-  font-size: 0.8rem;
-}
-
 .role-pill {
   font-size: 0.7rem;
   font-weight: 700;
@@ -293,6 +269,15 @@ body {
   box-shadow: 0 12px 32px -10px rgba(139, 92, 246, 0.2);
 }
 
+/* Compact Centered Landing Login Card */
+.login-card {
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.25rem 2rem;
+  box-sizing: border-box;
+}
+
 /* Main Content Area: Fills full width cleanly */
 .main-content {
   flex: 1;
@@ -318,13 +303,6 @@ body {
   top: 0;
   z-index: 60;
   backdrop-filter: blur(16px);
-}
-
-/* Auth Screens */
-.auth-wrapper {
-  max-width: 480px;
-  margin: 2rem auto;
-  width: 100%;
 }
 
 .form-group {
@@ -432,6 +410,56 @@ body {
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
 }
 
+/* Archive Student Selector List Buttons (Dark Cosmic Theme Styled) */
+.student-select-btn {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+  color: var(--text-main);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.student-select-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-violet);
+  transform: translateX(2px);
+}
+
+.student-select-btn.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--primary-violet);
+  color: var(--violet-bright);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+/* AI Tone Pills in Seteuk Generator */
+.tone-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-card);
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tone-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.tone-btn.active {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: var(--violet-bright);
+  color: var(--violet-bright);
+}
+
 /* Progress Grid Matrix (1~8 Classes) */
 .progress-grid {
   display: grid;
@@ -462,7 +490,7 @@ body {
   transition: width 0.4s ease;
 }
 
-/* Teacher Dashboard Metrics Grid (Full Widescreen Expansion) */
+/* Teacher Dashboard Metrics Grid */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -102,10 +102,10 @@ const ProgressModule = {
               <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부 (한 학기 단원 DB 연동)</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부 (구글 시트 실시간 연동)</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 24개 학급 실시간 진도 현황
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 24개 학급 실시간 진도 구글 시트 저장
             </p>
           </div>
 
@@ -184,7 +184,7 @@ const ProgressModule = {
                 </span>
               </h3>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
-                선생님께서 미리 구축해두신 중학교 수학과 표준 단원 목차입니다. 진도 입력 시 드롭다운으로 바로 선택할 수 있습니다.
+                구글 시트와 실시간 연동되어 선생님께서 직접 작성 및 수정이 가능한 교육과정 단원 DB입니다.
               </p>
             </div>
           </div>
@@ -209,7 +209,7 @@ const ProgressModule = {
           <div class="glass-card modal-content" style="max-width: 540px;">
             <div class="modal-header">
               <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--violet-bright);" id="progress-modal-title">
-                ✏️ 진도 선택 입력 및 기록
+                ✏️ 진도 선택 입력 및 구글 시트 저장
               </h3>
               <button class="close-btn" onclick="ProgressModule.closeUpdateModal()">×</button>
             </div>
@@ -325,12 +325,24 @@ const ProgressModule = {
       targetClass.teacherNote = teacherNote;
     }
 
+    if (typeof CloudDB !== 'undefined' && CloudDB.saveClassProgress) {
+      CloudDB.saveClassProgress({
+        grade: this.activeGrade,
+        classNum: classNum,
+        unit: unit,
+        pages: pages,
+        progressPct: progressPct,
+        homework: homework,
+        teacherNote: teacherNote
+      });
+    }
+
     this.closeUpdateModal();
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
       mainView.innerHTML = this.renderView();
     }
 
-    alert(`🎉 [수업 진도 저장 완료!]\n\n영서중학교 ${this.activeGrade}학년 ${classNum}반의 진도가 업데이트되었습니다.\n단원: ${unit}\n범위: ${pages} (${progressPct}% 완료)`);
+    alert(`🎉 [구글 시트 진도 저장 완료!]\n\n영서중학교 ${this.activeGrade}학년 ${classNum}반의 진도가 구글 시트에 업데이트되었습니다.\n단원: ${unit}\n범위: ${pages} (${progressPct}% 완료)`);
   }
 };

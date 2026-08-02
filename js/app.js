@@ -93,48 +93,50 @@ const App = {
                       🔴 실시간 수업 모니터링
                     </button>
                     <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder">
-                      ✨ 탐구 활동 생성기
+                      📐 탐구 활동
                     </button>
                     <button class="sidebar-nav-item teacher-tab-btn" data-tab="analytics">
                       📑 학업 이해도 분석
                     </button>
                   ` : `
-                    <button class="sidebar-nav-item active">
-                      🎒 대화형 수학 탐구실
+                    <button class="sidebar-nav-item student-tab-btn active" data-tab="lab">
+                      📐 나의 수학 탐구실
+                    </button>
+                    <button class="sidebar-nav-item student-tab-btn" data-tab="history">
+                      📜 제출 이력 및 세특 기록
                     </button>
                   `}
                 </nav>
               </div>
 
-              <!-- Sidebar Footer -->
+              <!-- Sidebar Footer User Profile -->
               <div class="sidebar-footer">
-                <button class="btn btn-outline-violet" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.toggleRole()">
-                  🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 화면으로 전환'}
+                <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem;" onclick="App.toggleUserRole()">
+                  🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 대시보드로 전환'}
                 </button>
 
-                <div class="user-profile-badge">
-                  <div class="user-avatar">${AppState.currentUser.name[0]}</div>
-                  <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                    <div style="font-weight: 600; font-size: 0.85rem;">${AppState.currentUser.name}</div>
-                    <span class="role-pill ${AppState.currentUser.role}">${isTeacher ? '교사' : '학생'}</span>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-violet); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
+                      ${AppState.currentUser.name ? AppState.currentUser.name[0] : '임'}
+                    </div>
+                    <div>
+                      <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">${AppState.currentUser.name}</div>
+                      <div style="font-size: 0.7rem; color: var(--text-muted);">${isTeacher ? '교사' : '학생'}</div>
+                    </div>
                   </div>
+                  <button onclick="App.logout()" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 4px;" title="로그아웃">
+                    🚪 로그아웃
+                  </button>
                 </div>
-
-                <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; width: 100%;" onclick="App.logout()">
-                  🚪 로그아웃
-                </button>
               </div>
             </aside>
 
-            <!-- Right Content View Area -->
-            <main id="main-container" class="main-content-right">
-              ${isTeacher ? `
-                <div id="teacher-main-view">
-                  ${TeacherModule.renderDashboard()}
-                </div>
-              ` : `
-                <div id="student-main-view"></div>
-              `}
+            <!-- Main Content Area -->
+            <main class="main-content">
+              <div id="teacher-main-view">
+                ${isTeacher ? TeacherModule.renderDashboard() : StudentModule.renderLabView()}
+              </div>
             </main>
           </div>
         </div>
@@ -157,107 +159,131 @@ const App = {
 
   renderLandingLogin() {
     return `
-      <div class="auth-wrapper">
-        <div class="glass-card">
-          <div class="auth-header">
-            <svg width="60" height="60" viewBox="0 0 48 48" fill="none" style="filter: drop-shadow(0 0 16px var(--violet-glow));">
-              <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2.5"/>
+      <div class="login-card glass-card fade-in">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <div style="display: inline-flex; padding: 12px; background: rgba(139, 92, 246, 0.15); border-radius: 16px; margin-bottom: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+              <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
               <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="24" cy="23" r="3" fill="#10b981"/>
             </svg>
-            <h1 class="auth-title">영서중학교 수학 LMS</h1>
-            <p class="auth-subtitle">임종윤 교사의 1~3학년(1~8반) 수업 진도 기록 및 AI 세특 자동 생성 시스템</p>
+          </div>
+          <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">영서중학교 수학 LMS</h1>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.4rem;">
+            담당 교사: <strong style="color: var(--violet-bright);">임종윤 교사</strong> | 대화형 수학 탐구실
+          </p>
+        </div>
+
+        <!-- Role Toggle Tabs -->
+        <div style="display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+          <button id="role-btn-student" class="btn active" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="App.switchLoginRole('student')">
+            🎒 학생 로그인 / 회원가입
+          </button>
+          <button id="role-btn-teacher" class="btn" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="App.switchLoginRole('teacher')">
+            👨‍🏫 교사 전용 로그인
+          </button>
+        </div>
+
+        <form id="login-form" onsubmit="App.handleLogin(event)">
+          <div class="form-group" id="group-id">
+            <label class="form-label" id="label-id">학번 (로그인 아이디)</label>
+            <input type="text" id="login-id" class="input-control" required placeholder="예: 20328 (2학년 3반 28번)">
           </div>
 
-          <form onsubmit="App.handleLogin(event)">
-            <div class="form-group">
-              <label class="form-label">아이디 또는 학번</label>
-              <input type="text" id="login-id-input" class="input-control" placeholder="교사는 test, 학생은 회원가입 학번" value="test" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">비밀번호 (Password)</label>
-              <input type="password" id="login-pw-input" class="input-control" placeholder="비밀번호 입력 (교사: 11111111)" value="11111111" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">
-              🔓 로그인하기
-            </button>
-          </form>
-
-          <!-- Student Registration Prompt -->
-          <div style="margin-top: 1.25rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-card); padding-top: 1rem;">
-            <span>처음 방문하셨나요?</span>
-            <button type="button" class="btn btn-outline-violet" style="padding: 0.35rem 0.9rem; font-size: 0.8rem; margin-left: 0.5rem;" onclick="App.openSignupModal()">
-              ✨ 신규 학생 회원가입
-            </button>
+          <div class="form-group" id="group-pw">
+            <label class="form-label">비밀번호</label>
+            <input type="password" id="login-pw" class="input-control" required placeholder="비밀번호 입력">
           </div>
 
-          <div class="demo-account-box">
-            <div style="font-weight: 700; color: var(--violet-bright); margin-bottom: 0.3rem;">
-              💡 테스트 교사 계정 빠른 접속
-            </div>
-            <div class="demo-credentials">
-              <div class="credential-chip" onclick="App.fillCredentials('test', '11111111')">
-                👤 교사 로그인: test / 11111111 (임종윤 교사)
-              </div>
-            </div>
-          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 0.5rem; font-size: 1rem;">
+            🚀 영서중 수학 LMS 접속하기
+          </button>
+        </form>
+
+        <div id="signup-section" style="margin-top: 1.25rem; border-top: 1px solid var(--border-card); padding-top: 1rem; text-align: center;">
+          <button type="button" class="btn btn-outline-violet" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" onclick="App.openSignupModal()">
+            ✨ 신규 학생 회원가입 하기
+          </button>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-dim);">
+          🔑 테스트 교사 계정: 아이디 <code>test</code> / 비밀번호 <code>11111111</code>
         </div>
       </div>
 
       <!-- Student Sign-Up Modal -->
       <div id="signup-modal-overlay" class="modal-overlay">
-        <div class="glass-card modal-content" style="max-width: 480px;">
+        <div class="glass-card modal-content" style="max-width: 450px;">
           <div class="modal-header">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--violet-bright);">
-              🎒 영서중학교 신규 학생 회원가입
-            </h3>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--violet-bright);">✨ 영서중 수학 LMS 신규 회원가입</h3>
             <button class="close-btn" onclick="App.closeSignupModal()">×</button>
           </div>
 
           <form onsubmit="App.handleStudentSignup(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">학생 성명 (이름)</label>
-              <input type="text" id="signup-name-input" class="input-control" required placeholder="예: 홍길동">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
               <div class="form-group">
-                <label class="form-label">학년 선택</label>
-                <select id="signup-grade-select" class="input-control">
+                <label class="form-label">학년</label>
+                <select id="signup-grade" class="input-control" required>
                   <option value="1">1학년</option>
                   <option value="2" selected>2학년</option>
                   <option value="3">3학년</option>
                 </select>
               </div>
-
               <div class="form-group">
-                <label class="form-label">학반 선택</label>
-                <select id="signup-class-select" class="input-control">
-                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}" ${c === 8 ? 'selected' : ''}>${c}반</option>`).join('')}
+                <label class="form-label">학반 (1~8반)</label>
+                <select id="signup-class" class="input-control" required>
+                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}">${c}반</option>`).join('')}
                 </select>
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">학번 (로그인 아이디로 사용)</label>
-              <input type="text" id="signup-id-input" class="input-control" required placeholder="예: 10830" value="10830">
+              <label class="form-label">학생 성명</label>
+              <input type="text" id="signup-name" class="input-control" required placeholder="예: 홍길동">
             </div>
 
             <div class="form-group">
-              <label class="form-label">비밀번호 설정</label>
-              <input type="password" id="signup-pw-input" class="input-control" required placeholder="비밀번호 (4자리 이상)">
+              <label class="form-label">학번 (로그인 아이디로 사용)</label>
+              <input type="text" id="signup-id" class="input-control" required placeholder="예: 20328 (5자리 숫자로 권장)">
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+            <div class="form-group">
+              <label class="form-label">비밀번호</label>
+              <input type="password" id="signup-pw" class="input-control" required placeholder="사용할 비밀번호 입력">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.5rem;">
               <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
-              <button type="submit" id="signup-submit-btn" class="btn btn-primary">✨ 데이터베이스 가입 및 바로 로그인</button>
+              <button type="submit" id="signup-submit-btn" class="btn btn-primary">💾 가입 신청 및 데이터베이스 동기화</button>
             </div>
           </form>
         </div>
       </div>
     `;
+  },
+
+  currentLoginRole: 'student',
+
+  switchLoginRole(role) {
+    this.currentLoginRole = role;
+    const btnStudent = document.getElementById('role-btn-student');
+    const btnTeacher = document.getElementById('role-btn-teacher');
+    const labelId = document.getElementById('label-id');
+    const loginId = document.getElementById('login-id');
+    const signupSec = document.getElementById('signup-section');
+
+    if (role === 'student') {
+      if (btnStudent) btnStudent.classList.add('active');
+      if (btnTeacher) btnTeacher.classList.remove('active');
+      if (labelId) labelId.innerText = '학번 (로그인 아이디)';
+      if (loginId) loginId.placeholder = '예: 20328 (2학년 3반 28번)';
+      if (signupSec) signupSec.style.display = 'block';
+    } else {
+      if (btnTeacher) btnTeacher.classList.add('active');
+      if (btnStudent) btnStudent.classList.remove('active');
+      if (labelId) labelId.innerText = '교사 아이디';
+      if (loginId) loginId.placeholder = '교사 아이디 입력 (예: test)';
+      if (signupSec) signupSec.style.display = 'none';
+    }
   },
 
   openSignupModal() {
@@ -271,145 +297,81 @@ const App = {
   },
 
   async handleStudentSignup(e) {
-    if (e) e.preventDefault();
-    const submitBtn = document.getElementById('signup-submit-btn');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerText = '⏳ 가입 처리 중...';
+    e.preventDefault();
+    const btn = document.getElementById('signup-submit-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ 구글 시트 저장 중...';
     }
 
     try {
-      const nameEl = document.getElementById('signup-name-input');
-      const gradeEl = document.getElementById('signup-grade-select');
-      const classNumEl = document.getElementById('signup-class-select');
-      const studentIdEl = document.getElementById('signup-id-input');
-      const passwordEl = document.getElementById('signup-pw-input');
+      const grade = document.getElementById('signup-grade').value;
+      const classNum = document.getElementById('signup-class').value;
+      const name = document.getElementById('signup-name').value.trim();
+      const id = document.getElementById('signup-id').value.trim();
+      const password = document.getElementById('signup-pw').value.trim();
 
-      const name = nameEl ? nameEl.value.trim() : '';
-      const grade = gradeEl ? gradeEl.value : '1';
-      const classNum = classNumEl ? classNumEl.value : '1';
-      const studentId = studentIdEl ? studentIdEl.value.trim() : '';
-      const password = passwordEl ? passwordEl.value.trim() : '';
-
-      if (!name || !studentId || !password) {
-        alert('학생 이름, 학번, 비밀번호를 모두 입력해 주세요.');
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerText = '✨ 데이터베이스 가입 및 바로 로그인';
-        }
-        return;
-      }
-
-      const newStudent = {
-        id: studentId,
-        name: name,
-        grade: grade,
-        classNum: classNum,
-        password: password,
-        status: 'in-progress',
-        score: 0,
-        createdAt: new Date().toISOString()
-      };
-
-      // Guaranteed save to Local & Cloud store
+      const newStudent = { id, name, grade, classNum, password, status: 'in-progress', score: 0 };
       await CloudDB.registerStudent(newStudent);
 
-      // Update live state safely
-      AppState.demoStudents = Array.isArray(AppState.demoStudents) ? AppState.demoStudents : [];
-      const idx = AppState.demoStudents.findIndex(s => String(s.id) === String(studentId));
-      if (idx >= 0) {
-        AppState.demoStudents[idx] = newStudent;
-      } else {
-        AppState.demoStudents.unshift(newStudent);
-      }
-
-      // Log in as newly registered student
-      AppState.currentUser = {
-        id: studentId,
-        name: `${name} 학생 (영서중 ${grade}학년 ${classNum}반)`,
-        role: 'student'
-      };
-
       this.closeSignupModal();
-      this.renderAppShell();
+      alert(`🎉 [회원가입 완료!]\n\n영서중학교 ${grade}학년 ${classNum}반 ${name} 학생 계정이 구글 시트에 성공적으로 저장되었습니다.\n학번(${id})으로 로그인해 주세요!`);
 
-      alert(`🎉 [회원가입 완료!]\n\n환영합니다, ${name} 학생!\n영서중학교 ${grade}학년 ${classNum}반 계정(학번: ${studentId})이 데이터베이스에 정상 등록되었습니다.\n스마트폰, PC 등 어느 기기에서든 동일한 학번과 비밀번호로 로그인하실 수 있습니다.`);
-
+      const loginIdEl = document.getElementById('login-id');
+      if (loginIdEl) loginIdEl.value = id;
+      await this.syncCloudDatabase();
     } catch (err) {
-      console.error('Signup error:', err);
       alert('회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerText = '✨ 데이터베이스 가입 및 바로 로그인';
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '💾 가입 신청 및 데이터베이스 동기화';
       }
     }
-  },
-
-  fillCredentials(id, pw) {
-    const idInput = document.getElementById('login-id-input');
-    const pwInput = document.getElementById('login-pw-input');
-    if (idInput) idInput.value = id;
-    if (pwInput) pwInput.value = pw;
   },
 
   async handleLogin(e) {
-    if (e) e.preventDefault();
-    const id = document.getElementById('login-id-input').value.trim();
-    const pw = document.getElementById('login-pw-input').value.trim();
+    e.preventDefault();
+    const id = document.getElementById('login-id').value.trim();
+    const pw = document.getElementById('login-pw').value.trim();
 
-    // Refresh latest student list from DB
-    await this.syncCloudDatabase();
-
-    if (id === 'test' && pw === '11111111') {
-      AppState.currentUser = {
-        id: 'test',
-        name: '임종윤 교사 (영서중학교)',
-        role: 'teacher'
-      };
-    } else {
-      const studentList = Array.isArray(AppState.demoStudents) ? AppState.demoStudents : CloudDB.getStudentsFromLocal();
-      const foundStudent = studentList.find(s => String(s.id) === String(id));
-
-      if (foundStudent) {
-        if (foundStudent.password && String(foundStudent.password).trim() !== String(pw).trim()) {
-          alert('⚠️ 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
-          return;
-        }
-        AppState.currentUser = {
-          id: id,
-          name: `${foundStudent.name} 학생 (영서중 ${foundStudent.grade || '1'}학년 ${foundStudent.classNum || '1'}반)`,
-          role: 'student'
-        };
+    // 1. Teacher Authentication
+    if (this.currentLoginRole === 'teacher') {
+      if (id === 'test' && pw === '11111111') {
+        AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
+        this.renderAppShell();
+        return;
       } else {
-        alert(`⚠️ [로그인 실패]\n\n입력하신 학번(${id})은 데이터베이스에 등록되어 있지 않습니다.\n하단의 [✨ 신규 학생 회원가입] 버튼을 눌러 회원가입을 완료한 후 로그인해 주세요.`);
+        alert('⚠️ [교사 로그인 실패] 아이디 또는 비밀번호가 올바르지 않습니다.');
         return;
       }
     }
 
-    this.renderAppShell();
-  },
+    // 2. Student Authentication against CloudDB
+    await this.syncCloudDatabase();
+    const student = AppState.demoStudents.find(s => String(s.id).trim() === id);
 
-  loginAsDemo(role) {
-    if (role === 'teacher') {
-      AppState.currentUser = {
-        id: 'test',
-        name: '임종윤 교사 (영서중학교)',
-        role: 'teacher'
-      };
+    if (student) {
+      if (String(student.password).trim() === pw) {
+        AppState.currentUser = {
+          id: student.id,
+          name: student.name,
+          grade: student.grade || '1',
+          classNum: student.classNum || '1',
+          role: 'student'
+        };
+        this.renderAppShell();
+      } else {
+        alert('⚠️ [로그인 실패] 비밀번호가 일치하지 않습니다.');
+      }
     } else {
-      AppState.currentUser = {
-        id: '10830',
-        name: '학생 (영서중)',
-        role: 'student'
-      };
+        alert(`⚠️ [로그인 실패] 학번 '${id}'(으)로 등록된 회원가입 학생 계정이 없습니다.\n먼저 [신규 학생 회원가입]을 진행해 주세요!`);
     }
-    this.renderAppShell();
   },
 
-  toggleRole() {
-    if (!AppState.currentUser) return;
+  toggleUserRole() {
     if (AppState.currentUser.role === 'teacher') {
-      AppState.currentUser = { id: '10830', name: '학생 (영서중)', role: 'student' };
+      AppState.currentUser = { id: '20328', name: '홍길동', grade: '2', classNum: '3', role: 'student' };
     } else {
       AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
     }

@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Teacher Management Module
+ * Yeongseo Middle School Teacher Management Module & Inquiry Activities Hub
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -9,6 +9,9 @@ const TeacherModule = {
 
   init() {
     this.bindTabEvents();
+    if (this.activeTab === 'builder') {
+      setTimeout(() => this.initInteractiveGrapher(), 50);
+    }
   },
 
   bindTabEvents() {
@@ -45,6 +48,7 @@ const TeacherModule = {
       this.initLiveMonitorCanvas();
     } else if (tabName === 'builder') {
       contentArea.innerHTML = this.renderActivityBuilder();
+      setTimeout(() => this.initInteractiveGrapher(), 50);
     } else if (tabName === 'analytics') {
       contentArea.innerHTML = this.renderAnalytics();
     }
@@ -183,7 +187,7 @@ const TeacherModule = {
           <p style="font-size: 0.85rem; color: var(--text-muted);">임종윤 교사가 생성한 중학교 대화형 수학 실습 카드입니다.</p>
         </div>
         <button class="btn btn-outline-violet teacher-tab-btn" data-tab="builder">
-          ✨ 새 탐구 문제 제작
+          📐 탐구 활동 바로가기
         </button>
       </div>
 
@@ -399,56 +403,257 @@ const TeacherModule = {
     alert(`[영서중 학생 정보 및 답안]\n학생명: ${student.name}\n학번: ${student.id}\n소속: 영서중학교 ${student.grade || '1'}학년 ${student.classNum || '1'}반\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
   },
 
+  // 3. Inquiry Activities View & Embed Hub (📐 탐구 활동)
   renderActivityBuilder() {
     return `
-      <div style="max-width: 800px; margin: 0 auto;">
-        <div style="margin-bottom: 1.5rem;">
-          <h2 style="font-size: 1.6rem; font-weight: 800;">✨ 영서중 수학 탐구 활동 등록</h2>
-          <p style="font-size: 0.9rem; color: var(--text-muted);">임종윤 교사가 중학교 수학 교육과정에 맞춘 탐구 문제를 구성합니다.</p>
+      <div>
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
+                🏫 영서중학교 수학과
+              </span>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동 (구글 앱스 스크립트 기반 웹 앱 & 시각화 임베딩)</h2>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 대화형 앱스 스크립트 웹 앱 임베딩 & 실습 결과 구글 시트 저장
+            </p>
+          </div>
+
+          <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()">
+            ➕ 새 탐구 활동 등록 / 구글 웹앱 임베딩
+          </button>
         </div>
 
-        <form onsubmit="TeacherModule.handleSaveActivity(event)" class="glass-card" style="display: flex; flex-direction: column; gap: 1.25rem;">
-          <div class="form-group">
-            <label class="form-label">탐구 활동 제목</label>
-            <input type="text" class="input-control" required placeholder="예: [2학년] 일차함수의 그래프와 기울기의 성질" value="[2학년] 일차부등식과 그 해를 수직선 위에 나타내기">
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label class="form-label">학년 선택</label>
-              <select class="input-control">
-                <option>1학년</option>
-                <option selected>2학년</option>
-                <option>3학년</option>
-              </select>
+        <!-- Custom Google Apps Script / Web App URL Registration Form -->
+        <div id="activity-embed-form-container" class="glass-card" style="margin-bottom: 2rem; display: none;">
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 1rem;">
+            🔗 구글 앱스 스크립트 웹 앱 및 탐구 도구 임베딩 등록
+          </h3>
+          <form onsubmit="TeacherModule.handleRegisterEmbeddedActivity(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">탐구 활동 제목</label>
+                <input type="text" id="embed-title-input" class="input-control" required placeholder="예: [2학년] 일차함수의 그래프와 기울기의 성질 탐구" value="[2학년] 일차함수 y = ax + b 그래프와 기울기의 성질">
+              </div>
+              <div class="form-group">
+                <label class="form-label">대상 학년 및 학반</label>
+                <select id="embed-grade-select" class="input-control">
+                  <option value="1학년 1~8반">1학년 전체 (1~8반)</option>
+                  <option value="2학년 1~8반" selected>2학년 전체 (1~8반)</option>
+                  <option value="3학년 1~8반">3학년 전체 (1~8반)</option>
+                </select>
+              </div>
             </div>
+
             <div class="form-group">
-              <label class="form-label">대상 학반</label>
-              <select class="input-control">
-                <option selected>2학년 3반</option>
-                <option>1~3학년 (1~8반)전체 학급</option>
-              </select>
+              <label class="form-label" style="color: var(--violet-bright); font-weight: 700;">
+                🌐 구글 앱스 스크립트 웹 앱 URL 또는 외부 탐구 도구 링크 (iframe 임베딩)
+              </label>
+              <input type="url" id="embed-url-input" class="input-control" placeholder="https://script.google.com/macros/s/.../exec 또는 GeoGebra/Desmos URL" value="https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec">
+              <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">
+                선생님께서 구글 앱스 스크립트로 만드신 HTML 웹 앱 URL을 입력하면 사이트에 100% 창으로 내장(임베딩)됩니다.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">탐구 문제 설명 및 실습 안내</label>
+              <textarea id="embed-desc-input" class="input-control" rows="2">계수 a와 b를 동적으로 조작하여 직선의 기울기와 y절편의 위치 관계를 관찰하고 제출하세요.</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+              <button type="button" class="btn btn-secondary" onclick="TeacherModule.toggleEmbedForm()">취소</button>
+              <button type="submit" class="btn btn-primary">🚀 탐구 활동 등록 및 임베딩 적용</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Embedded Activity Interactive Workspace Hub -->
+        <div class="glass-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+            <div>
+              <span class="status-indicator live"><span class="dot"></span> Live Interactive App</span>
+              <h3 style="font-size: 1.3rem; font-weight: 700; margin-top: 0.3rem;" id="active-activity-title">
+                [2학년] 일차함수 $y = ax + b$ 그래프 기울기와 절편 탐구
+              </h3>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem;">
+              <button class="btn btn-secondary" onclick="TeacherModule.reloadInteractiveApp()">
+                🔄 탐구 앱 새로고침
+              </button>
+              <button class="btn btn-outline-violet" onclick="TeacherModule.toggleFullscreenEmbed()">
+                ⛶ 전체 화면 열기
+              </button>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">문제 설명 및 탐구 요령</label>
-            <textarea class="input-control" rows="3">부등식 2x - 4 > 0 의 해를 구하고, 수직선 위에서 해의 범위를 동적으로 조작하여 시각화하세요.</textarea>
+          <!-- Interactive Embedded Canvas Workspace -->
+          <div id="embed-app-container" style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 380px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="grapher-canvas-card" style="height: 300px; margin-bottom: 1rem;">
+              <canvas id="builder-interactive-grapher" class="grapher-canvas"></canvas>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: var(--radius-sm);">
+              <div>
+                <label style="font-size: 0.8rem; color: var(--violet-bright); font-weight: 700;">기울기 $a$ 조작 (-5.0 ~ 5.0)</label>
+                <input type="range" min="-5" max="5" step="0.5" value="1" class="slider-input" oninput="TeacherModule.updateInteractiveGraph(this.value, null)">
+              </div>
+              <div>
+                <label style="font-size: 0.8rem; color: var(--accent-emerald); font-weight: 700;">y절편 $b$ 조작 (-5.0 ~ 5.0)</label>
+                <input type="range" min="-5" max="5" step="0.5" value="-2" class="slider-input" oninput="TeacherModule.updateInteractiveGraph(null, this.value)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Exploration Submission Test Form (Google Sheets Result Sync) -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
+              📝 탐구 활동 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장 테스트
+            </h3>
+            <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
+              자동 구글 시트 동기화
+            </span>
           </div>
 
-          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
-            <button type="button" class="btn btn-secondary teacher-tab-btn" data-tab="dashboard">취소</button>
-            <button type="submit" class="btn btn-primary">🚀 탐구 문제 등록 및 PIN 발급</button>
-          </div>
-        </form>
+          <form onsubmit="TeacherModule.handleSubmitActivityResult(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;">
+              <div class="form-group">
+                <label class="form-label">학번</label>
+                <input type="text" id="act-student-id" class="input-control" value="20328" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">학생 성명</label>
+                <input type="text" id="act-student-name" class="input-control" value="홍길동" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">소속 학급</label>
+                <input type="text" id="act-student-class" class="input-control" value="2학년 3반" readonly style="background: rgba(255,255,255,0.05);">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">탐구 결과 및 작성 수식 메모</label>
+              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="탐구 활동을 수행한 후 발견한 원리 및 수식을 입력하세요.">기울기 a가 양수일 때는 우상향하고, y절편 b가 -2일 때는 (0, -2)를 지나므로 직선의 방정식은 y = x - 2 입니다.</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" id="act-submit-btn" class="btn btn-primary" style="padding: 0.7rem 1.25rem;">
+                🚀 탐구 결과 제출 및 구글 시트 (탐구활동결과 탭) 저장
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     `;
   },
 
-  handleSaveActivity(e) {
+  toggleEmbedForm() {
+    const container = document.getElementById('activity-embed-form-container');
+    if (container) {
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+  },
+
+  handleRegisterEmbeddedActivity(e) {
     e.preventDefault();
-    alert('새 수업 활동이 성공적으로 등록되었습니다!\n영서중 수업 PIN: YS-8821');
-    this.switchTab('dashboard');
+    const title = document.getElementById('embed-title-input').value.trim();
+    const url = document.getElementById('embed-url-input').value.trim();
+
+    const titleEl = document.getElementById('active-activity-title');
+    if (titleEl) titleEl.innerText = title;
+
+    if (url && url.startsWith('http')) {
+      const appContainer = document.getElementById('embed-app-container');
+      if (appContainer) {
+        appContainer.innerHTML = `
+          <iframe src="${url}" style="width: 100%; height: 450px; border: none; border-radius: var(--radius-sm);" title="${title}"></iframe>
+        `;
+      }
+    }
+
+    this.toggleEmbedForm();
+    alert(`🎉 [탐구 활동 웹 앱 임베딩 등록 완료!]\n\n제목: ${title}\nURL: ${url}\n\n사이트에 구글 웹 앱 창이 성공적으로 내장되었습니다.`);
+  },
+
+  reloadInteractiveApp() {
+    const mainView = document.getElementById('teacher-main-view');
+    if (mainView) {
+      mainView.innerHTML = this.renderActivityBuilder();
+      setTimeout(() => this.initInteractiveGrapher(), 50);
+    }
+  },
+
+  toggleFullscreenEmbed() {
+    const appContainer = document.getElementById('embed-app-container');
+    if (appContainer) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        appContainer.requestFullscreen().catch(err => {
+          alert('전체 화면 모드를 지원하지 않는 브라우저입니다.');
+        });
+      }
+    }
+  },
+
+  initInteractiveGrapher() {
+    const canvas = document.getElementById('builder-interactive-grapher');
+    if (canvas) {
+      this.builderGrapher = new MathGrapher(canvas, {
+        funcType: 'quadratic',
+        a: 1.0,
+        b: 0,
+        c: -2.0,
+        x0: 1.0
+      });
+    }
+  },
+
+  updateInteractiveGraph(a, c) {
+    if (this.builderGrapher) {
+      if (a !== null) this.builderGrapher.config.a = parseFloat(a);
+      if (c !== null) this.builderGrapher.config.c = parseFloat(c);
+      this.builderGrapher.draw();
+    }
+  },
+
+  async handleSubmitActivityResult(e) {
+    e.preventDefault();
+    const btn = document.getElementById('act-submit-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ 구글 시트 (탐구활동결과 탭) 저장 중...';
+    }
+
+    try {
+      const studentId = document.getElementById('act-student-id').value.trim();
+      const studentName = document.getElementById('act-student-name').value.trim();
+      const activityTitle = document.getElementById('active-activity-title').innerText.trim();
+      const answerText = document.getElementById('act-answer-text').value.trim();
+
+      await CloudDB.saveActivityResult({
+        studentId: studentId,
+        studentName: studentName,
+        grade: '2',
+        classNum: '3',
+        activityTitle: activityTitle,
+        answerText: answerText,
+        score: 95
+      });
+
+      alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n선생님 구글 시트의 [탐구활동결과] 탭에 성공적으로 기록되었습니다.`);
+    } catch (err) {
+      alert('탐구 활동 결과 제출 중 오류가 발생했습니다.');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 탐구 결과 제출 및 구글 시트 (탐구활동결과 탭) 저장';
+      }
+    }
   },
 
   renderAnalytics() {

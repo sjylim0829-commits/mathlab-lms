@@ -2,7 +2,7 @@
  * Yeongseo Middle School Math LMS - Google Sheets Database Engine
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  * 
- * Direct Google Sheets Integration for Students, Class Progress & Curriculum Master DB:
+ * Direct Google Sheets Integration for Students, Class Progress, Curriculum Master DB & Activity Results:
  * https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec
  */
 
@@ -196,6 +196,34 @@ const CloudDB = {
       console.log('[CloudDB] Class progress saved to Google Sheet!');
     } catch (err) {
       console.warn('[CloudDB] Class progress Google Sheet save error:', err);
+    }
+  },
+
+  // Post student activity exploration result to Teacher Jongyoon Lim's Google Sheet
+  async saveActivityResult(activityResultData) {
+    if (!activityResultData) return;
+
+    const payload = {
+      type: 'activity_result',
+      studentId: activityResultData.studentId || '',
+      studentName: activityResultData.studentName || '',
+      grade: activityResultData.grade || '1',
+      classNum: activityResultData.classNum || '1',
+      activityTitle: activityResultData.activityTitle || '',
+      answerText: activityResultData.answerText || '',
+      score: activityResultData.score || 100,
+      submittedAt: new Date().toLocaleString('ko-KR')
+    };
+
+    try {
+      await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      console.log('[CloudDB] Activity result saved to Google Sheet tab 탐구활동결과!');
+    } catch (err) {
+      console.warn('[CloudDB] Activity result Google Sheet save error:', err);
     }
   }
 };

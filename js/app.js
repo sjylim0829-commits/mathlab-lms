@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Bulletproof Auth & Sign-Up Engine
+ * Yeongseo Middle School Math LMS - Unified Smart Auth & Sign-Up Engine
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -173,23 +173,13 @@ const App = {
           </p>
         </div>
 
-        <!-- Role Toggle Tabs -->
-        <div style="display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
-          <button id="role-btn-student" class="btn active" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="App.switchLoginRole('student')">
-            🎒 학생 로그인 / 회원가입
-          </button>
-          <button id="role-btn-teacher" class="btn" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;" onclick="App.switchLoginRole('teacher')">
-            👨‍🏫 교사 전용 로그인
-          </button>
-        </div>
-
         <form id="login-form" onsubmit="App.handleLogin(event)">
-          <div class="form-group" id="group-id">
-            <label class="form-label" id="label-id">학번 (로그인 아이디)</label>
-            <input type="text" id="login-id" class="input-control" required placeholder="예: 20328 (2학년 3반 28번)">
+          <div class="form-group">
+            <label class="form-label">아이디 / 학번</label>
+            <input type="text" id="login-id" class="input-control" required placeholder="아이디 또는 학번 입력 (예: test 또는 20328)">
           </div>
 
-          <div class="form-group" id="group-pw">
+          <div class="form-group">
             <label class="form-label">비밀번호</label>
             <input type="password" id="login-pw" class="input-control" required placeholder="비밀번호 입력">
           </div>
@@ -261,31 +251,6 @@ const App = {
     `;
   },
 
-  currentLoginRole: 'student',
-
-  switchLoginRole(role) {
-    this.currentLoginRole = role;
-    const btnStudent = document.getElementById('role-btn-student');
-    const btnTeacher = document.getElementById('role-btn-teacher');
-    const labelId = document.getElementById('label-id');
-    const loginId = document.getElementById('login-id');
-    const signupSec = document.getElementById('signup-section');
-
-    if (role === 'student') {
-      if (btnStudent) btnStudent.classList.add('active');
-      if (btnTeacher) btnTeacher.classList.remove('active');
-      if (labelId) labelId.innerText = '학번 (로그인 아이디)';
-      if (loginId) loginId.placeholder = '예: 20328 (2학년 3반 28번)';
-      if (signupSec) signupSec.style.display = 'block';
-    } else {
-      if (btnTeacher) btnTeacher.classList.add('active');
-      if (btnStudent) btnStudent.classList.remove('active');
-      if (labelId) labelId.innerText = '교사 아이디';
-      if (loginId) loginId.placeholder = '교사 아이디 입력 (예: test)';
-      if (signupSec) signupSec.style.display = 'none';
-    }
-  },
-
   openSignupModal() {
     const modal = document.getElementById('signup-modal-overlay');
     if (modal) modal.classList.add('active');
@@ -335,19 +300,14 @@ const App = {
     const id = document.getElementById('login-id').value.trim();
     const pw = document.getElementById('login-pw').value.trim();
 
-    // 1. Teacher Authentication
-    if (this.currentLoginRole === 'teacher') {
-      if (id === 'test' && pw === '11111111') {
-        AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
-        this.renderAppShell();
-        return;
-      } else {
-        alert('⚠️ [교사 로그인 실패] 아이디 또는 비밀번호가 올바르지 않습니다.');
-        return;
-      }
+    // 1. Smart Unified Teacher Authentication
+    if ((id === 'test' || id === 'teacher' || id === '임종윤') && pw === '11111111') {
+      AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
+      this.renderAppShell();
+      return;
     }
 
-    // 2. Student Authentication against CloudDB
+    // 2. Smart Student Authentication against CloudDB (Google Sheet)
     await this.syncCloudDatabase();
     const student = AppState.demoStudents.find(s => String(s.id).trim() === id);
 
@@ -365,7 +325,7 @@ const App = {
         alert('⚠️ [로그인 실패] 비밀번호가 일치하지 않습니다.');
       }
     } else {
-        alert(`⚠️ [로그인 실패] 학번 '${id}'(으)로 등록된 회원가입 학생 계정이 없습니다.\n먼저 [신규 학생 회원가입]을 진행해 주세요!`);
+      alert(`⚠️ [로그인 실패] 아이디/학번 '${id}'(으)로 등록된 계정이 없습니다.\n\n- 교사 로그인: 아이디 test / 비밀번호 11111111\n- 학생 로그인: 신규 학생은 아래 [신규 학생 회원가입 하기]를 먼저 진행해 주세요.`);
     }
   },
 

@@ -3,9 +3,67 @@
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
+const LOCAL_STORAGE_KEY_ACTIVITIES = 'mathlab_registered_activities';
+
 const TeacherModule = {
   activeTab: 'dashboard',
   triangleExplorer: null,
+  activeActivityId: 'act-1',
+
+  getActivities() {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_ACTIVITIES);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
+
+    // Default pre-loaded activities catalog
+    const defaultList = [
+      {
+        id: 'act-1',
+        title: '[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구',
+        grade: '2학년 전체 (1~8반)',
+        url: '', // Interactive Canvas solid drag overlay
+        desc: '두 직각삼각형을 마우스/손가락으로 통째로 드래그하여 포개어 보며 RHA 및 RHS 합동 조건의 성질을 직관적으로 탐구합니다.',
+        type: 'canvas'
+      },
+      {
+        id: 'act-2',
+        title: '[2학년] 일차함수 y=ax+b 기울기와 y절편 실시간 탐구',
+        grade: '2학년 전체 (1~8반)',
+        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
+        desc: '기울기 a의 양수/음수 변화 및 y절편 b에 따른 그래프의 평행이동과 사분면 지나감을 탐구합니다.',
+        type: 'gas'
+      },
+      {
+        id: 'act-3',
+        title: '[1학년] n각형의 내각의 합 및 외각의 성질 실습',
+        grade: '1학년 전체 (1~8반)',
+        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
+        desc: '삼각형 분할을 이용한 n각형 내각의 합 [180° × (n-2)] 수식을 구하고 외각의 합 360° 성질을 확인합니다.',
+        type: 'gas'
+      },
+      {
+        id: 'act-4',
+        title: '[3학년] 이차함수 y=a(x-p)²+q 포물선 모양 탐구',
+        grade: '3학년 전체 (1~8반)',
+        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
+        desc: '꼭짓점 (p, q)의 위치 변화 및 폭 a에 따른 포물선 대칭축과 최댓값/최솟값 변화를 분석합니다.',
+        type: 'gas'
+      }
+    ];
+
+    this.saveActivities(defaultList);
+    return defaultList;
+  },
+
+  saveActivities(list) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_ACTIVITIES, JSON.stringify(list));
+    } catch(e) {}
+  },
 
   init() {
     this.bindTabEvents();
@@ -30,7 +88,6 @@ const TeacherModule = {
       btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
 
-    // Close mobile menu if open
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) sidebar.classList.remove('mobile-open');
 
@@ -94,164 +151,61 @@ const TeacherModule = {
 
         <!-- Quick Action Cards Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; width: 100%;">
-          <div class="glass-card hover-lift" style="background: rgba(139, 92, 246, 0.08); border-color: var(--border-violet); display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="glass-card hover-lift" style="background: rgba(99, 102, 241, 0.05); border-color: var(--border-violet); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
               <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--violet-bright);">
                 📚 수업 진도 기록부
               </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; margin-bottom: 1.25rem;">
-                영서중학교 수학 교과 24개 전 학급의 교과서 단원, 페이지 및 과제 현황을 일괄 기록하고 구글 시트와 연동합니다.
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
+                영서중학교 1~3학년 1~8반 학반별 진도 단원, 진도율(%), 수업 과제 및 교사 메모를 기록하고 구글 시트 <code>수업진도</code> 탭과 실시간 동기화합니다.
               </p>
             </div>
-            <button class="btn btn-primary teacher-tab-btn" data-tab="progress-tracker" style="width: 100%;">
-              🏫 수업 진도 기록부 바로가기 →
-            </button>
-          </div>
-
-          <div class="glass-card hover-lift" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-emerald);">
-                📜 학생 기록 아카이브 & AI 세특 생성
-              </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; margin-bottom: 1.25rem;">
-                학생들의 수학 탐구 실습 이력을 바탕으로 생활기록부 세부능력 및 특기사항을 맞춤 작성합니다.
-              </p>
-            </div>
-            <button class="btn btn-outline-violet teacher-tab-btn" data-tab="archive-seteuk" style="width: 100%;">
-              ✨ AI 세특 생성기 바로가기 →
-            </button>
-          </div>
-
-          <div class="glass-card hover-lift" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);">
-                📐 대화형 수학 탐구 활동
-              </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; margin-bottom: 1.25rem;">
-                직각삼각형의 RHA & RHS 합동 조건 탐구 실습 도구를 사용하고, 학생 탐구 결과를 구글 시트로 수집합니다.
-              </p>
-            </div>
-            <button class="btn btn-secondary teacher-tab-btn" data-tab="builder" style="width: 100%;">
-              📐 탐구 활동 바로가기 →
-            </button>
-          </div>
-        </div>
-
-        <!-- Registered Student Accounts Roster Section -->
-        <div class="glass-card" style="margin-bottom: 2rem; width: 100%;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
-            <div>
-              <h3 style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-                <span>🎒 회원가입 학생 명부 및 계정 관리</span>
-                <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); padding: 2px 8px; border-radius: 12px; font-weight: 700;">
-                  총 ${totalStudents}명 가입됨
-                </span>
-              </h3>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
-                학생들이 로그인 화면에서 선택하여 가입한 학년 및 학반 정보가 실시간 반영됩니다.
-              </p>
-            </div>
-            <button class="btn btn-secondary teacher-tab-btn" data-tab="analytics" style="font-size: 0.8rem;">
-              📋 전체 명부 상세보기
-            </button>
-          </div>
-
-          <div style="max-height: 260px; overflow-y: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
-              <thead>
-                <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
-                  <th style="padding: 0.6rem;">학번 (아이디)</th>
-                  <th style="padding: 0.6rem;">학생 성명</th>
-                  <th style="padding: 0.6rem;">소속 학급</th>
-                  <th style="padding: 0.6rem;">계정 상태</th>
-                  <th style="padding: 0.6rem; text-align: right;">학습 이력</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${totalStudents === 0 ? `
-                  <tr>
-                    <td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
-                      등록된 신규 회원가입 학생이 없습니다.
-                    </td>
-                  </tr>
-                ` : AppState.demoStudents.slice(0, 10).map(st => `
-                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
-                    <td style="padding: 0.6rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
-                    <td style="padding: 0.6rem; font-weight: 700;">${st.name}</td>
-                    <td style="padding: 0.6rem; color: var(--text-main); font-weight: 600;">
-                      영서중 ${st.grade || '1'}학년 ${st.classNum || '1'}반
-                    </td>
-                    <td style="padding: 0.6rem;">
-                      <span style="font-size: 0.75rem; background: rgba(16,185,129,0.12); color: var(--accent-emerald); padding: 2px 7px; border-radius: 10px;">
-                        ● 정상 가입됨
-                      </span>
-                    </td>
-                    <td style="padding: 0.6rem; text-align: right;">
-                      <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${st.id}')">
-                        📄 답안 확인
-                      </button>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-          <div>
-            <h2 style="font-size: 1.4rem; font-weight: 700;">수업 탐구 활동 및 대화형 수학 실습</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">임종윤 교사가 생성한 중학교 대화형 수학 실습 카드입니다.</p>
-          </div>
-          <button class="btn btn-outline-violet teacher-tab-btn" data-tab="builder">
-            📐 탐구 활동 바로가기
-          </button>
-        </div>
-
-        <div class="activities-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; width: 100%;">
-          <!-- Activity Card 1 -->
-          <div class="glass-card hover-lift">
-            <div class="activity-card-header">
+            <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <span class="status-indicator live">
-                  <span class="dot"></span> 실시간 탐구 진행 가능
-                </span>
-                <h3 class="activity-title" style="margin-top: 0.5rem;">[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 탐구</h3>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">마스터 DB</span>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">교육과정 48개 단원</div>
               </div>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-              삼각형 통째 드래그 기능을 통해 두 직각삼각형을 직접 겹쳐보며 RHA 및 RHS 합동 증명
-            </p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.8rem;">
-              <div>
-                <span style="font-size: 0.75rem; color: var(--text-dim);">참여 코드</span>
-                <div class="pin-code-badge">🔑 YS-2041</div>
-              </div>
-              <button class="btn btn-outline-violet teacher-tab-btn" data-tab="builder">
-                📊 탐구 활동 시작
+              <button class="btn btn-primary teacher-tab-btn" data-tab="progress-tracker">
+                ▶️ 진도 입력하기
               </button>
             </div>
           </div>
 
-          <!-- Activity Card 2 -->
-          <div class="glass-card hover-lift">
-            <div class="activity-card-header">
-              <div>
-                <span class="status-indicator" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">
-                  ⏳ 정규 교육과정
-                </span>
-                <h3 class="activity-title" style="margin-top: 0.5rem;">[2학년] 이등변삼각형의 성질 및 두 밑각의 크기 증명</h3>
-              </div>
+          <div class="glass-card hover-lift" style="background: rgba(5, 150, 105, 0.05); border-color: rgba(5, 150, 105, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-emerald);">
+                📜 학생 기록 및 세특 생성
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
+                수업 참여도, 질문 수준, 탐구 과제 제출 이력을 통합 아카이빙하고 AI 기반으로 세부능력 및 특기사항(세특)을 자동 작성합니다.
+              </p>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-              꼭짓각의 이등분선에 의해 나누어진 두 직각삼각형의 SAS 및 RHA 합동 관계 유도
-            </p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.8rem;">
+            <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--text-dim);">자동 생성</span>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">나이스 서식 호환</div>
+              </div>
+              <button class="btn btn-primary teacher-tab-btn" data-tab="archive-seteuk" style="background: linear-gradient(135deg, var(--accent-emerald), #047857);">
+                ▶️ 세특 생성하기
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card hover-lift" style="background: rgba(2, 132, 199, 0.05); border-color: rgba(2, 132, 199, 0.3); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);">
+                📐 탐구 활동 센터
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
+                선생님이 제작하신 GAS 웹앱 URL을 등록하고, 직각삼각형 겹치기 등 교과서 연계 수학 탐구 실습을 사이트에 즉시 내장 실행합니다.
+              </p>
+            </div>
+            <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">참여 코드</span>
-                <div class="pin-code-badge">🔑 YS-2088</div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">🔑 YS-2088</div>
               </div>
-              <button class="btn btn-secondary teacher-tab-btn" data-tab="builder">
+              <button class="btn btn-primary teacher-tab-btn" data-tab="builder">
                 ▶️ 탐구 활동 시작
               </button>
             </div>
@@ -268,121 +222,170 @@ const TeacherModule = {
     alert(`[영서중 학생 정보 및 답안]\n학생명: ${student.name}\n학번: ${student.id}\n소속: 영서중학교 ${student.grade || '1'}학년 ${student.classNum || '1'}반\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
   },
 
-  // 2. Inquiry Activities View & Embed Hub (📐 탐구 활동)
+  // 2. Inquiry Activities View & Embed Catalog Hub (📐 탐구 활동)
   renderActivityBuilder() {
+    const activities = this.getActivities();
+    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0];
+
+    const catalogCardsHtml = activities.map(act => {
+      const isSelected = act.id === activeAct.id;
+      return `
+        <div class="glass-card hover-lift" style="padding: 1.1rem; border-color: ${isSelected ? 'var(--violet-bright)' : 'var(--border-card)'}; background: ${isSelected ? 'rgba(99, 102, 241, 0.06)' : '#ffffff'}; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-violet); background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 10px;">
+                ${act.grade}
+              </span>
+              ${isSelected ? '<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald); background: rgba(5, 150, 105, 0.12); padding: 2px 8px; border-radius: 10px;">▶️ 현재 실행 중</span>' : ''}
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+              ${act.title}
+            </h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.8rem;">
+              ${act.desc}
+            </p>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.6rem; margin-top: 0.4rem;">
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              ${act.url ? '🌐 구글 앱스 스크립트 웹앱' : '📐 대화형 캔버스 실습'}
+            </span>
+            <button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline-violet'}" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;" onclick="TeacherModule.selectActivity('${act.id}')">
+              ${isSelected ? '실행 중' : '▶️ 이 탐구활동 선택하기'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
     return `
       <div>
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
+              <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.12); color: var(--violet-bright);">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 직각삼각형의 합동 조건 (RHA & RHS)</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 등록 목록 & 실행 센터</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 삼각형 전체 드래그 겹치기 실습 및 구글 시트 저장
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 등록된 구글 앱스 스크립트 웹앱 주소 목록 선택 및 실시간 실습
             </p>
           </div>
 
           <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()">
-            ➕ 새 탐구 활동 등록 / 구글 웹앱 임베딩
+            ➕ 신규 GAS 탐구활동 주소 등록
           </button>
         </div>
 
-        <!-- Custom Google Apps Script / Web App URL Registration Form -->
+        <!-- Custom Google Apps Script Web App URL Registration Form -->
         <div id="activity-embed-form-container" class="glass-card" style="margin-bottom: 2rem; display: none;">
           <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 1rem;">
-            🔗 구글 앱스 스크립트 웹 앱 및 탐구 도구 임베딩 등록
+            🔗 신규 구글 앱스 스크립트(GAS) 탐구활동 주소 등록하기
           </h3>
           <form onsubmit="TeacherModule.handleRegisterEmbeddedActivity(event)" style="display: flex; flex-direction: column; gap: 1rem;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">탐구 활동 제목</label>
-                <input type="text" id="embed-title-input" class="input-control" required value="[2학년] 직각삼각형의 합동 조건 탐구 (RHA & RHS 합동 실습)">
+                <input type="text" id="embed-title-input" class="input-control" required placeholder="예: [2학년] 피타고라스 정리 가상 실습">
               </div>
               <div class="form-group">
                 <label class="form-label">대상 학년 및 학반</label>
                 <select id="embed-grade-select" class="input-control">
-                  <option value="1학년 1~8반">1학년 전체 (1~8반)</option>
-                  <option value="2학년 1~8반" selected>2학년 전체 (1~8반)</option>
-                  <option value="3학년 1~8반">3학년 전체 (1~8반)</option>
+                  <option value="1학년 전체 (1~8반)">1학년 전체 (1~8반)</option>
+                  <option value="2학년 전체 (1~8반)" selected>2학년 전체 (1~8반)</option>
+                  <option value="3학년 전체 (1~8반)">3학년 전체 (1~8반)</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <label class="form-label" style="color: var(--violet-bright); font-weight: 700;">
-                🌐 구글 앱스 스크립트 웹 앱 URL 또는 외부 탐구 도구 링크 (iframe 임베딩)
+                🌐 선생님의 구글 앱스 스크립트 웹 앱 URL 주소
               </label>
-              <input type="url" id="embed-url-input" class="input-control" placeholder="https://script.google.com/macros/s/.../exec 또는 GeoGebra/Desmos URL" value="https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec">
+              <input type="url" id="embed-url-input" class="input-control" required placeholder="https://script.google.com/macros/s/.../exec 주소를 입력하세요">
             </div>
 
             <div class="form-group">
-              <label class="form-label">탐구 문제 설명 및 실습 안내</label>
-              <textarea id="embed-desc-input" class="input-control" rows="2">삼각형을 통째로 마우스/손가락으로 드래그하여 두 직각삼각형을 완전 겹쳐보세요.</textarea>
+              <label class="form-label">탐구 활동 설명 및 실습 안내</label>
+              <textarea id="embed-desc-input" class="input-control" rows="2" placeholder="학생들이 실습 시 참고할 문제 설명 및 수식 안내를 입력하세요."></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
               <button type="button" class="btn btn-secondary" onclick="TeacherModule.toggleEmbedForm()">취소</button>
-              <button type="submit" class="btn btn-primary">🚀 탐구 활동 등록 및 임베딩 적용</button>
+              <button type="submit" class="btn btn-primary">🚀 목록에 탐구 활동 추가 등록하기</button>
             </div>
           </form>
+        </div>
+
+        <!-- Catalog List Grid Section -->
+        <div style="margin-bottom: 2rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
+            📚 등록된 탐구 활동 목록 (선택 시 아래 캔버스/웹앱 실행)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
+            ${catalogCardsHtml}
+          </div>
         </div>
 
         <!-- Embedded Activity Interactive Workspace Hub -->
         <div class="glass-card" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
             <div>
-              <span class="status-indicator live"><span class="dot"></span> 🖱️ 삼각형 통째로 드래그하여 겹치기 실습</span>
-              <h3 style="font-size: 1.3rem; font-weight: 700; margin-top: 0.3rem;" id="active-activity-title">
-                [2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구
+              <span class="status-indicator live"><span class="dot"></span> 🖱️ 선택된 탐구 활동 실시간 실행 공간</span>
+              <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;" id="active-activity-title">
+                ${activeAct.title}
               </h3>
             </div>
 
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-              <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHA')">
-                📐 RHA 합동 (빗변+한예각)
-              </button>
-              <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHS')">
-                📐 RHS 합동 (빗변+한변)
-              </button>
-              <button class="btn btn-secondary" onclick="TeacherModule.resetTrianglePos()">
-                ⏪ 위치 리셋
-              </button>
-              <button class="btn btn-primary" onclick="TeacherModule.autoAnimateTriangleOverlay()">
-                ✨ 자동으로 겹쳐보기
-              </button>
-            </div>
+            ${activeAct.type === 'canvas' ? `
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHA')">
+                  📐 RHA 합동 (빗변+한예각)
+                </button>
+                <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHS')">
+                  📐 RHS 합동 (빗변+한변)
+                </button>
+                <button class="btn btn-secondary" onclick="TeacherModule.resetTrianglePos()">
+                  ⏪ 위치 리셋
+                </button>
+                <button class="btn btn-primary" onclick="TeacherModule.autoAnimateTriangleOverlay()">
+                  ✨ 자동으로 겹쳐보기
+                </button>
+              </div>
+            ` : ''}
           </div>
 
-          <!-- Interactive Embedded Canvas Workspace for Whole Triangle Dragging -->
-          <div id="embed-app-container" style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 420px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="grapher-canvas-card" style="height: 380px; margin-bottom: 1rem;">
-              <canvas id="builder-interactive-grapher" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
-            </div>
+          <!-- Embedded Workspace (Iframe or Canvas) -->
+          <div id="embed-app-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 440px; display: flex; flex-direction: column; justify-content: center;">
+            ${activeAct.type === 'canvas' ? `
+              <div class="grapher-canvas-card" style="height: 380px; margin-bottom: 1rem;">
+                <canvas id="builder-interactive-grapher" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
+              </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); flex-wrap: wrap; gap: 1rem;">
-              <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
-                <label style="font-size: 0.85rem; color: var(--violet-bright); font-weight: 700; whitespace: nowrap;">🔄 이동 삼각형 회전 (0°~360°)</label>
-                <input type="range" min="0" max="360" step="5" value="0" class="slider-input" oninput="TeacherModule.rotateTriangle(this.value)" style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 0.8rem 1.2rem; border: 1px solid var(--border-card); border-radius: var(--radius-sm); flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
+                  <label style="font-size: 0.85rem; color: var(--violet-bright); font-weight: 700; white-space: nowrap;">🔄 이동 삼각형 회전 (0°~360°)</label>
+                  <input type="range" min="0" max="360" step="5" value="0" class="slider-input" oninput="TeacherModule.rotateTriangle(this.value)" style="flex: 1;">
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                  💡 <strong>안내:</strong> 점을 하나씩 옮기지 않고 <strong>삼각형 통째로 마우스/손가락으로 드래그</strong>하여 포갭니다.
+                </div>
               </div>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">
-                💡 <strong>안내:</strong> 점을 하나씩 옮기지 않고 <strong>삼각형 통째로 마우스/손가락으로 드래그</strong>하여 끌어다 겹칩니다.
-              </div>
-            </div>
+            ` : `
+              <iframe src="${activeAct.url || 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec'}" style="width: 100%; height: 500px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}"></iframe>
+            `}
           </div>
         </div>
 
-        <!-- Student Exploration Submission Test Form (Google Sheets Result Sync) -->
+        <!-- Student Exploration Submission Form (Google Sheets & Drive Sync) -->
         <div class="glass-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
-              📝 직각삼각형 합동 실습 결과 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장
+              📝 탐구 실습 결과 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장
             </h3>
-            <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
-              자동 구글 시트 동기화
+            <span style="font-size: 0.75rem; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
+              구글 시트 & 드라이브 자동 연동
             </span>
           </div>
 
@@ -390,21 +393,21 @@ const TeacherModule = {
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;">
               <div class="form-group">
                 <label class="form-label">학번</label>
-                <input type="text" id="act-student-id" class="input-control" value="20328" required>
+                <input type="text" id="act-student-id" class="input-control" value="${AppState.currentUser && AppState.currentUser.id !== 'test' ? AppState.currentUser.id : '20328'}" required>
               </div>
               <div class="form-group">
                 <label class="form-label">학생 성명</label>
-                <input type="text" id="act-student-name" class="input-control" value="홍길동" required>
+                <input type="text" id="act-student-name" class="input-control" value="${AppState.currentUser && AppState.currentUser.id !== 'test' ? AppState.currentUser.name : '홍길동'}" required>
               </div>
               <div class="form-group">
                 <label class="form-label">소속 학급</label>
-                <input type="text" id="act-student-class" class="input-control" value="2학년 3반" readonly style="background: rgba(255,255,255,0.05);">
+                <input type="text" id="act-student-class" class="input-control" value="2학년 3반" readonly style="background: #f1f5f9;">
               </div>
             </div>
 
             <div class="form-group">
               <label class="form-label">탐구 결과 및 작성 수식 메모</label>
-              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="직각삼각형을 통째로 겹쳐본 후 발견한 RHA 또는 RHS 합동 조건을 설명하세요.">두 직각삼각형에서 직각(R)과 빗변의 길이(H=10cm)가 같고, 한 예각의 크기(A=37°)가 서로 같으므로 두 직각삼각형을 통째로 끌어다 포개었을 때 완전히 일치합니다. 따라서 RHA 합동(△ABC ≡ △DEF)이 성립합니다.</textarea>
+              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="탐구 실습 후 발견한 수학적 개념 및 작성한 수식을 정리해 보세요.">두 직각삼각형에서 직각(R)과 빗변의 길이(H=10cm)가 같고, 한 예각의 크기(A=37°)가 서로 같으므로 두 직각삼각형을 통째로 끌어다 포개었을 때 완전히 일치합니다. 따라서 RHA 합동(△ABC ≡ △DEF)이 성립합니다.</textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
@@ -418,6 +421,17 @@ const TeacherModule = {
     `;
   },
 
+  selectActivity(actId) {
+    this.activeActivityId = actId;
+    const mainView = document.getElementById('teacher-main-view');
+    if (mainView) {
+      mainView.innerHTML = this.renderActivityBuilder();
+      if (actId === 'act-1') {
+        setTimeout(() => this.initTriangleExplorer(), 50);
+      }
+    }
+  },
+
   toggleEmbedForm() {
     const container = document.getElementById('activity-embed-form-container');
     if (container) {
@@ -428,29 +442,46 @@ const TeacherModule = {
   handleRegisterEmbeddedActivity(e) {
     e.preventDefault();
     const title = document.getElementById('embed-title-input').value.trim();
+    const grade = document.getElementById('embed-grade-select').value;
     const url = document.getElementById('embed-url-input').value.trim();
+    const desc = document.getElementById('embed-desc-input').value.trim() || '선생님이 신규 등록한 구글 앱스 스크립트 기반 수학 탐구 활동입니다.';
 
-    const titleEl = document.getElementById('active-activity-title');
-    if (titleEl) titleEl.innerText = title;
-
-    if (url && url.startsWith('http')) {
-      const appContainer = document.getElementById('embed-app-container');
-      if (appContainer) {
-        appContainer.innerHTML = `
-          <iframe src="${url}" style="width: 100%; height: 450px; border: none; border-radius: var(--radius-sm);" title="${title}"></iframe>
-        `;
-      }
+    if (!title || !url) {
+      alert('활동 제목과 구글 앱스 스크립트 URL을 입력해 주세요.');
+      return;
     }
 
+    const activities = this.getActivities();
+    const newId = 'act-' + (activities.length + 1);
+    const newAct = {
+      id: newId,
+      title: title,
+      grade: grade,
+      url: url,
+      desc: desc,
+      type: 'gas'
+    };
+
+    activities.unshift(newAct);
+    this.saveActivities(activities);
+    this.activeActivityId = newId;
+
     this.toggleEmbedForm();
-    alert(`🎉 [탐구 활동 웹 앱 임베딩 등록 완료!]\n\n제목: ${title}\nURL: ${url}\n\n사이트에 구글 웹 앱 창이 성공적으로 내장되었습니다.`);
+    const mainView = document.getElementById('teacher-main-view');
+    if (mainView) {
+      mainView.innerHTML = this.renderActivityBuilder();
+    }
+
+    alert(`🎉 [신규 탐구 활동 등록 완료!]\n\n제목: ${title}\nURL: ${url}\n\n등록된 탐구 활동 목록 카드에 추가되었으며 자동으로 선택되어 실행되었습니다.`);
   },
 
   reloadInteractiveApp() {
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
       mainView.innerHTML = this.renderActivityBuilder();
-      setTimeout(() => this.initTriangleExplorer(), 50);
+      if (this.activeActivityId === 'act-1') {
+        setTimeout(() => this.initTriangleExplorer(), 50);
+      }
     }
   },
 
@@ -524,7 +555,7 @@ const TeacherModule = {
       const activityTitle = document.getElementById('active-activity-title').innerText.trim();
       const answerText = document.getElementById('act-answer-text').value.trim();
 
-      await CloudDB.saveActivityResult({
+      const result = await CloudDB.saveActivityResult({
         studentId: studentId,
         studentName: studentName,
         grade: '2',
@@ -534,7 +565,11 @@ const TeacherModule = {
         score: 100
       });
 
-      alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n선생님 구글 시트의 [탐구활동결과] 탭에 성공적으로 기록되었습니다.`);
+      if (result && result.driveFileUrl) {
+        alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n1. 구글 시트 [탐구활동결과] 탭에 성공적으로 기록되었습니다.\n2. 구글 드라이브 [탐구보고서] 폴더에 탐구보고서 파일이 생성되었습니다.`);
+      } else {
+        alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n선생님 구글 시트의 [탐구활동결과] 탭에 성공적으로 기록되었습니다.`);
+      }
     } catch (err) {
       alert('탐구 활동 결과 제출 중 오류가 발생했습니다.');
     } finally {
@@ -551,55 +586,46 @@ const TeacherModule = {
 
     return `
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h2 style="font-size: 1.5rem; font-weight: 800;">영서중학교 회원가입 학생 학업 성취도 & 전체 가입 명부</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">담당 교사: 임종윤 교사 | 1~3학년(1~8반) 회원가입 학생 명부 및 형성평가 결과 리포트</p>
-          </div>
-          <button class="btn btn-outline-violet" onclick="alert('영서중 회원가입 학생 명부 및 Excel 성적표가 다운로드되었습니다.');">
-            📥 Excel 명부 내보내기
-          </button>
+        <div style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.6rem; font-weight: 800;">📑 학업 이해도 분석 & 학생 명부</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+            영서중학교 수학 교과 전체 학생 학업 성취도 및 단원별 이해도 실시간 동기화
+          </p>
         </div>
 
-        <div class="glass-card">
+        <div class="glass-card" style="width: 100%; overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
             <thead>
               <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
-                <th style="padding: 0.8rem;">학번 / 아이디</th>
-                <th style="padding: 0.8rem;">학생 성명</th>
-                <th style="padding: 0.8rem;">소속 학급</th>
-                <th style="padding: 0.8rem;">최근 수행 과제</th>
-                <th style="padding: 0.8rem;">형성평가 점수</th>
-                <th style="padding: 0.8rem;">이해도 판별</th>
-                <th style="padding: 0.8rem; text-align: right;">상세 보기</th>
+                <th style="padding: 0.8rem 1rem;">학번</th>
+                <th style="padding: 0.8rem 1rem;">성명</th>
+                <th style="padding: 0.8rem 1rem;">소속 학급</th>
+                <th style="padding: 0.8rem 1rem;">가입 일시</th>
+                <th style="padding: 0.8rem 1rem;">상태</th>
+                <th style="padding: 0.8rem 1rem;">관리</th>
               </tr>
             </thead>
             <tbody>
               ${students.length === 0 ? `
                 <tr>
-                  <td colspan="7" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                    등록된 신규 회원가입 학생이 없습니다.
+                  <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    등록된 학생 데이터가 없습니다. 학생들이 가입하면 실시간으로 구글 시트와 연동됩니다.
                   </td>
                 </tr>
-              ` : students.map(st => `
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                  <td style="padding: 0.8rem; font-family: var(--font-mono); color: var(--violet-bright);">${st.id}</td>
-                  <td style="padding: 0.8rem; font-weight: 600;">${st.name}</td>
-                  <td style="padding: 0.8rem; font-weight: 600; color: var(--text-main);">
-                    영서중 ${st.grade || '1'}학년 ${st.classNum || '1'}반
-                  </td>
-                  <td style="padding: 0.8rem;">직각삼각형 RHA/RHS 합동</td>
-                  <td style="padding: 0.8rem;">
-                    <span style="font-weight: 700; color: ${st.score >= 90 ? 'var(--accent-emerald)' : 'var(--violet-bright)'};">
-                      ${st.score || 100}점
+              ` : students.map(s => `
+                <tr style="border-bottom: 1px solid var(--border-card);">
+                  <td style="padding: 0.8rem 1rem; font-family: var(--font-mono); font-weight: 700;">${s.id}</td>
+                  <td style="padding: 0.8rem 1rem; font-weight: 700; color: var(--text-main);">${s.name}</td>
+                  <td style="padding: 0.8rem 1rem;">영서중 ${s.grade || '1'}학년 ${s.classNum || '1'}반</td>
+                  <td style="padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--text-muted);">${s.createdAt || '2026. 8. 6.'}</td>
+                  <td style="padding: 0.8rem 1rem;">
+                    <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); font-weight: 700;">
+                      등록 완료
                     </span>
                   </td>
-                  <td style="padding: 0.8rem;">
-                    ${st.score >= 80 ? '✅ 우수 (개념 습득 완료)' : '⚠️ 보충 지도 필요'}
-                  </td>
-                  <td style="padding: 0.8rem; text-align: right;">
-                    <button class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${st.id}')">
-                      📄 답안 확인
+                  <td style="padding: 0.8rem 1rem;">
+                    <button class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${s.id}')">
+                      상세 보기
                     </button>
                   </td>
                 </tr>

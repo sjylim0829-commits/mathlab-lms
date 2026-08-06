@@ -5,11 +5,12 @@
 
 const TeacherModule = {
   activeTab: 'dashboard',
+  triangleExplorer: null,
 
   init() {
     this.bindTabEvents();
     if (this.activeTab === 'builder') {
-      setTimeout(() => this.initInteractiveGrapher(), 50);
+      setTimeout(() => this.initTriangleExplorer(), 50);
     }
   },
 
@@ -44,19 +45,19 @@ const TeacherModule = {
       contentArea.innerHTML = ArchiveModule.renderView();
     } else if (tabName === 'builder') {
       contentArea.innerHTML = this.renderActivityBuilder();
-      setTimeout(() => this.initInteractiveGrapher(), 50);
+      setTimeout(() => this.initTriangleExplorer(), 50);
     } else if (tabName === 'analytics') {
       contentArea.innerHTML = this.renderAnalytics();
     }
   },
 
-  // 1. Dashboard View HTML (Balanced Widescreen Expansion)
+  // 1. Dashboard View HTML
   renderDashboard() {
     const totalStudents = AppState.demoStudents.length;
 
     return `
       <div style="width: 100%;">
-        <!-- Metrics Grid (4 Column Full Widescreen Expansion) -->
+        <!-- Metrics Grid -->
         <div class="metrics-grid">
           <div class="glass-card metric-card hover-lift">
             <span class="metric-label">담당 수업 학급</span>
@@ -91,7 +92,7 @@ const TeacherModule = {
           </div>
         </div>
 
-        <!-- Quick Action Cards Grid (3 Column Balanced Layout) -->
+        <!-- Quick Action Cards Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; width: 100%;">
           <div class="glass-card hover-lift" style="background: rgba(139, 92, 246, 0.08); border-color: var(--border-violet); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
@@ -127,7 +128,7 @@ const TeacherModule = {
                 📐 대화형 수학 탐구 활동
               </h3>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; margin-bottom: 1.25rem;">
-                구글 앱스 스크립트 기반 웹 앱을 임베딩하고, 학생들의 대화형 탐구 실습 결과를 구글 시트로 수집합니다.
+                직각삼각형의 RHA & RHS 합동 조건 탐구 실습 도구를 사용하고, 학생 탐구 결과를 구글 시트로 수집합니다.
               </p>
             </div>
             <button class="btn btn-secondary teacher-tab-btn" data-tab="builder" style="width: 100%;">
@@ -136,7 +137,7 @@ const TeacherModule = {
           </div>
         </div>
 
-        <!-- Registered Student Accounts Roster Section (회원가입 학생 명부) -->
+        <!-- Registered Student Accounts Roster Section -->
         <div class="glass-card" style="margin-bottom: 2rem; width: 100%;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
             <div>
@@ -215,11 +216,11 @@ const TeacherModule = {
                 <span class="status-indicator live">
                   <span class="dot"></span> 실시간 탐구 진행 가능
                 </span>
-                <h3 class="activity-title" style="margin-top: 0.5rem;">[2학년] 일차함수 $y = ax + b$ 기울기와 절편 탐구</h3>
+                <h3 class="activity-title" style="margin-top: 0.5rem;">[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 탐구</h3>
               </div>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-              기울기 $a$와 y절편 $b$를 변경하여 평행, 직교 및 직선의 방정식 관계 관찰
+              삼각형 통째 드래그 기능을 통해 두 직각삼각형을 직접 겹쳐보며 RHA 및 RHS 합동 증명
             </p>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.8rem;">
               <div>
@@ -239,16 +240,16 @@ const TeacherModule = {
                 <span class="status-indicator" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">
                   ⏳ 정규 교육과정
                 </span>
-                <h3 class="activity-title" style="margin-top: 0.5rem;">[3학년] 이차함수 $y = a(x-p)^2 + q$ 꼭짓점 이동</h3>
+                <h3 class="activity-title" style="margin-top: 0.5rem;">[2학년] 이등변삼각형의 성질 및 두 밑각의 크기 증명</h3>
               </div>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-              표준형 이차함수의 평행이동과 대칭축의 방정식 시각화 퀴즈
+              꼭짓각의 이등분선에 의해 나누어진 두 직각삼각형의 SAS 및 RHA 합동 관계 유도
             </p>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.8rem;">
               <div>
                 <span style="font-size: 0.75rem; color: var(--text-dim);">참여 코드</span>
-                <div class="pin-code-badge">🔑 YS-3088</div>
+                <div class="pin-code-badge">🔑 YS-2088</div>
               </div>
               <button class="btn btn-secondary teacher-tab-btn" data-tab="builder">
                 ▶️ 탐구 활동 시작
@@ -278,10 +279,10 @@ const TeacherModule = {
               <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동 (구글 앱스 스크립트 기반 웹 앱 & 시각화 임베딩)</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 직각삼각형의 합동 조건 (RHA & RHS)</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 대화형 앱스 스크립트 웹 앱 임베딩 & 실습 결과 구글 시트 저장
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 삼각형 전체 드래그 겹치기 실습 및 구글 시트 저장
             </p>
           </div>
 
@@ -299,7 +300,7 @@ const TeacherModule = {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">탐구 활동 제목</label>
-                <input type="text" id="embed-title-input" class="input-control" required placeholder="예: [2학년] 일차함수의 그래프와 기울기의 성질 탐구" value="[2학년] 일차함수 y = ax + b 그래프와 기울기의 성질">
+                <input type="text" id="embed-title-input" class="input-control" required value="[2학년] 직각삼각형의 합동 조건 탐구 (RHA & RHS 합동 실습)">
               </div>
               <div class="form-group">
                 <label class="form-label">대상 학년 및 학반</label>
@@ -316,14 +317,11 @@ const TeacherModule = {
                 🌐 구글 앱스 스크립트 웹 앱 URL 또는 외부 탐구 도구 링크 (iframe 임베딩)
               </label>
               <input type="url" id="embed-url-input" class="input-control" placeholder="https://script.google.com/macros/s/.../exec 또는 GeoGebra/Desmos URL" value="https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec">
-              <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">
-                선생님께서 구글 앱스 스크립트로 만드신 HTML 웹 앱 URL을 입력하면 사이트에 100% 창으로 내장(임베딩)됩니다.
-              </p>
             </div>
 
             <div class="form-group">
               <label class="form-label">탐구 문제 설명 및 실습 안내</label>
-              <textarea id="embed-desc-input" class="input-control" rows="2">계수 a와 b를 동적으로 조작하여 직선의 기울기와 y절편의 위치 관계를 관찰하고 제출하세요.</textarea>
+              <textarea id="embed-desc-input" class="input-control" rows="2">삼각형을 통째로 마우스/손가락으로 드래그하여 두 직각삼각형을 완전 겹쳐보세요.</textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
@@ -337,36 +335,41 @@ const TeacherModule = {
         <div class="glass-card" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
             <div>
-              <span class="status-indicator live"><span class="dot"></span> Live Interactive App</span>
+              <span class="status-indicator live"><span class="dot"></span> 🖱️ 삼각형 통째로 드래그하여 겹치기 실습</span>
               <h3 style="font-size: 1.3rem; font-weight: 700; margin-top: 0.3rem;" id="active-activity-title">
-                [2학년] 일차함수 $y = ax + b$ 그래프 기울기와 절편 탐구
+                [2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구
               </h3>
             </div>
 
-            <div style="display: flex; gap: 0.6rem;">
-              <button class="btn btn-secondary" onclick="TeacherModule.reloadInteractiveApp()">
-                🔄 탐구 앱 새로고침
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+              <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHA')">
+                📐 RHA 합동 (빗변+한예각)
               </button>
-              <button class="btn btn-outline-violet" onclick="TeacherModule.toggleFullscreenEmbed()">
-                ⛶ 전체 화면 열기
+              <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHS')">
+                📐 RHS 합동 (빗변+한변)
+              </button>
+              <button class="btn btn-secondary" onclick="TeacherModule.resetTrianglePos()">
+                ⏪ 위치 리셋
+              </button>
+              <button class="btn btn-primary" onclick="TeacherModule.autoAnimateTriangleOverlay()">
+                ✨ 자동으로 겹쳐보기
               </button>
             </div>
           </div>
 
-          <!-- Interactive Embedded Canvas Workspace -->
-          <div id="embed-app-container" style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 380px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="grapher-canvas-card" style="height: 300px; margin-bottom: 1rem;">
-              <canvas id="builder-interactive-grapher" class="grapher-canvas"></canvas>
+          <!-- Interactive Embedded Canvas Workspace for Whole Triangle Dragging -->
+          <div id="embed-app-container" style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 420px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="grapher-canvas-card" style="height: 380px; margin-bottom: 1rem;">
+              <canvas id="builder-interactive-grapher" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; background: rgba(255,255,255,0.03); padding: 1rem; border-radius: var(--radius-sm);">
-              <div>
-                <label style="font-size: 0.8rem; color: var(--violet-bright); font-weight: 700;">기울기 $a$ 조작 (-5.0 ~ 5.0)</label>
-                <input type="range" min="-5" max="5" step="0.5" value="1" class="slider-input" oninput="TeacherModule.updateInteractiveGraph(this.value, null)">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); flex-wrap: wrap; gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
+                <label style="font-size: 0.85rem; color: var(--violet-bright); font-weight: 700; whitespace: nowrap;">🔄 이동 삼각형 회전 (0°~360°)</label>
+                <input type="range" min="0" max="360" step="5" value="0" class="slider-input" oninput="TeacherModule.rotateTriangle(this.value)" style="flex: 1;">
               </div>
-              <div>
-                <label style="font-size: 0.8rem; color: var(--accent-emerald); font-weight: 700;">y절편 $b$ 조작 (-5.0 ~ 5.0)</label>
-                <input type="range" min="-5" max="5" step="0.5" value="-2" class="slider-input" oninput="TeacherModule.updateInteractiveGraph(null, this.value)">
+              <div style="font-size: 0.8rem; color: var(--text-muted);">
+                💡 <strong>안내:</strong> 점을 하나씩 옮기지 않고 <strong>삼각형 통째로 마우스/손가락으로 드래그</strong>하여 끌어다 겹칩니다.
               </div>
             </div>
           </div>
@@ -376,7 +379,7 @@ const TeacherModule = {
         <div class="glass-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
-              📝 탐구 활동 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장 테스트
+              📝 직각삼각형 합동 실습 결과 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장
             </h3>
             <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
               자동 구글 시트 동기화
@@ -401,7 +404,7 @@ const TeacherModule = {
 
             <div class="form-group">
               <label class="form-label">탐구 결과 및 작성 수식 메모</label>
-              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="탐구 활동을 수행한 후 발견한 원리 및 수식을 입력하세요.">기울기 a가 양수일 때는 우상향하고, y절편 b가 -2일 때는 (0, -2)를 지나므로 직선의 방정식은 y = x - 2 입니다.</textarea>
+              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="직각삼각형을 통째로 겹쳐본 후 발견한 RHA 또는 RHS 합동 조건을 설명하세요.">두 직각삼각형에서 직각(R)과 빗변의 길이(H=10cm)가 같고, 한 예각의 크기(A=37°)가 서로 같으므로 두 직각삼각형을 통째로 끌어다 포개었을 때 완전히 일치합니다. 따라서 RHA 합동(△ABC ≡ △DEF)이 성립합니다.</textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
@@ -447,7 +450,7 @@ const TeacherModule = {
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
       mainView.innerHTML = this.renderActivityBuilder();
-      setTimeout(() => this.initInteractiveGrapher(), 50);
+      setTimeout(() => this.initTriangleExplorer(), 50);
     }
   },
 
@@ -464,24 +467,46 @@ const TeacherModule = {
     }
   },
 
-  initInteractiveGrapher() {
+  initTriangleExplorer() {
     const canvas = document.getElementById('builder-interactive-grapher');
     if (canvas) {
-      this.builderGrapher = new MathGrapher(canvas, {
-        funcType: 'quadratic',
-        a: 1.0,
-        b: 0,
-        c: -2.0,
-        x0: 1.0
+      this.triangleExplorer = new RightTriangleCongruenceExplorer(canvas, {
+        mode: 'RHA',
+        onSnap: (mode) => {
+          const area = document.getElementById('act-answer-text');
+          if (area) {
+            if (mode === 'RHA') {
+              area.value = `[RHA 합동 검증] 빗변의 길이(H=10cm)와 한 예각의 크기(A=37°)가 일치하여 두 직각삼각형을 통째로 포개었을 때 완전히 겹쳐집니다. (△ABC ≡ △DEF)`;
+            } else {
+              area.value = `[RHS 합동 검증] 빗변의 길이(H=10cm)와 다른 한 변의 길이(S=6cm)가 일치하여 두 직각삼각형을 통째로 포개었을 때 완전히 겹쳐집니다. (△ABC ≡ △DEF)`;
+            }
+          }
+        }
       });
     }
   },
 
-  updateInteractiveGraph(a, c) {
-    if (this.builderGrapher) {
-      if (a !== null) this.builderGrapher.config.a = parseFloat(a);
-      if (c !== null) this.builderGrapher.config.c = parseFloat(c);
-      this.builderGrapher.draw();
+  setTriangleMode(mode) {
+    if (this.triangleExplorer) {
+      this.triangleExplorer.setMode(mode);
+    }
+  },
+
+  rotateTriangle(angle) {
+    if (this.triangleExplorer) {
+      this.triangleExplorer.setRotation(angle);
+    }
+  },
+
+  resetTrianglePos() {
+    if (this.triangleExplorer) {
+      this.triangleExplorer.resetPosition();
+    }
+  },
+
+  autoAnimateTriangleOverlay() {
+    if (this.triangleExplorer) {
+      this.triangleExplorer.animateOverlay();
     }
   },
 
@@ -506,7 +531,7 @@ const TeacherModule = {
         classNum: '3',
         activityTitle: activityTitle,
         answerText: answerText,
-        score: 95
+        score: 100
       });
 
       alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n선생님 구글 시트의 [탐구활동결과] 탭에 성공적으로 기록되었습니다.`);
@@ -563,10 +588,10 @@ const TeacherModule = {
                   <td style="padding: 0.8rem; font-weight: 600; color: var(--text-main);">
                     영서중 ${st.grade || '1'}학년 ${st.classNum || '1'}반
                   </td>
-                  <td style="padding: 0.8rem;">일차함수 그래프</td>
+                  <td style="padding: 0.8rem;">직각삼각형 RHA/RHS 합동</td>
                   <td style="padding: 0.8rem;">
                     <span style="font-weight: 700; color: ${st.score >= 90 ? 'var(--accent-emerald)' : 'var(--violet-bright)'};">
-                      ${st.score}점
+                      ${st.score || 100}점
                     </span>
                   </td>
                   <td style="padding: 0.8rem;">

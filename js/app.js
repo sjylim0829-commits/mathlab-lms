@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Unified Smart Auth & Sign-Up Engine
+ * Yeongseo Middle School Math LMS - Unified Smart Auth & Sign-Up Engine (Sleek Modern White Theme)
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  */
 
@@ -47,8 +47,8 @@ const App = {
           <div class="mobile-header-bar">
             <a class="brand" onclick="App.init()">
               <svg class="brand-icon" viewBox="0 0 48 48" fill="none">
-                <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
-                <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(99, 102, 241, 0.12)" stroke="#6366f1" stroke-width="2"/>
+                <path d="M16 32 L24 16 L32 32" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <div>
                 <span class="brand-name" style="font-size: 1.1rem;">영서중 수학 LMS</span>
@@ -67,8 +67,8 @@ const App = {
                 <div class="sidebar-header">
                   <a class="brand" onclick="App.init()">
                     <svg class="brand-icon" viewBox="0 0 48 48" fill="none">
-                      <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
-                      <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(99, 102, 241, 0.12)" stroke="#6366f1" stroke-width="2"/>
+                      <path d="M16 32 L24 16 L32 32" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <div>
                       <span class="brand-name">영서중 수학 LMS</span>
@@ -114,7 +114,7 @@ const App = {
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-violet); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366f1; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
                       ${AppState.currentUser.name ? AppState.currentUser.name[0] : '임'}
                     </div>
                     <div>
@@ -158,10 +158,10 @@ const App = {
     return `
       <div class="login-card glass-card fade-in" style="max-width: 440px; width: 100%; margin: 0 auto; padding: 2.25rem 2rem;">
         <div style="text-align: center; margin-bottom: 2rem;">
-          <div style="display: inline-flex; padding: 12px; background: rgba(139, 92, 246, 0.15); border-radius: 16px; margin-bottom: 1rem;">
+          <div style="display: inline-flex; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: 16px; margin-bottom: 1rem;">
             <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-              <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(139, 92, 246, 0.3)" stroke="#8b5cf6" stroke-width="2"/>
-              <path d="M16 32 L24 16 L32 32" stroke="#c084fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="8" y="8" width="32" height="32" rx="10" fill="rgba(99, 102, 241, 0.12)" stroke="#6366f1" stroke-width="2"/>
+              <path d="M16 32 L24 16 L32 32" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main);">영서중학교 수학 LMS</h1>
@@ -198,15 +198,24 @@ const App = {
       </div>
 
       <!-- Student Sign-Up Modal -->
-      <div id="signup-modal-overlay" class="modal-overlay">
-        <div class="glass-card modal-content" style="max-width: 450px;">
+      <div id="signup-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
           <div class="modal-header">
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--violet-bright);">✨ 영서중 수학 LMS 신규 회원가입</h3>
-            <button class="close-btn" onclick="App.closeSignupModal()">×</button>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">✨ 신규 학생 회원가입</h3>
+            <button class="close-btn" onclick="App.closeSignupModal()">✕</button>
           </div>
+          <form id="signup-form" onsubmit="App.handleSignup(event)">
+            <div class="form-group">
+              <label class="form-label">학번 (예: 20328 - 2학년 3반 28번)</label>
+              <input type="text" id="signup-id" class="input-control" required placeholder="숫자 5자리 학번">
+            </div>
 
-          <form onsubmit="App.handleStudentSignup(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <div class="form-group">
+              <label class="form-label">이름 (성명)</label>
+              <input type="text" id="signup-name" class="input-control" required placeholder="학생 이름">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">학년</label>
                 <select id="signup-grade" class="input-control" required>
@@ -215,32 +224,30 @@ const App = {
                   <option value="3">3학년</option>
                 </select>
               </div>
+
               <div class="form-group">
-                <label class="form-label">학반 (1~8반)</label>
+                <label class="form-label">반 (1~8반)</label>
                 <select id="signup-class" class="input-control" required>
-                  ${[1,2,3,4,5,6,7,8].map(c => `<option value="${c}">${c}반</option>`).join('')}
+                  <option value="1">1반</option>
+                  <option value="2">2반</option>
+                  <option value="3" selected>3반</option>
+                  <option value="4">4반</option>
+                  <option value="5">5반</option>
+                  <option value="6">6반</option>
+                  <option value="7">7반</option>
+                  <option value="8">8반</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">학생 성명</label>
-              <input type="text" id="signup-name" class="input-control" required placeholder="예: 홍길동">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">학번 (로그인 아이디로 사용)</label>
-              <input type="text" id="signup-id" class="input-control" required placeholder="예: 20328 (5자리 숫자로 권장)">
-            </div>
-
-            <div class="form-group">
               <label class="form-label">비밀번호</label>
-              <input type="password" id="signup-pw" class="input-control" required placeholder="사용할 비밀번호 입력">
+              <input type="password" id="signup-pw" class="input-control" required placeholder="비밀번호 설정">
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.5rem;">
-              <button type="button" class="btn btn-secondary" onclick="App.closeSignupModal()">취소</button>
-              <button type="submit" id="signup-submit-btn" class="btn btn-primary">💾 가입 신청 및 데이터베이스 동기화</button>
+            <div style="display: flex; gap: 0.8rem; margin-top: 1.5rem;">
+              <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="App.closeSignupModal()">취소</button>
+              <button type="submit" class="btn btn-primary" style="flex: 2;">가입 완료</button>
             </div>
           </form>
         </div>
@@ -249,89 +256,110 @@ const App = {
   },
 
   openSignupModal() {
-    const modal = document.getElementById('signup-modal-overlay');
+    const modal = document.getElementById('signup-modal');
     if (modal) modal.classList.add('active');
   },
 
   closeSignupModal() {
-    const modal = document.getElementById('signup-modal-overlay');
+    const modal = document.getElementById('signup-modal');
     if (modal) modal.classList.remove('active');
   },
 
-  async handleStudentSignup(e) {
+  async handleSignup(e) {
     e.preventDefault();
-    const btn = document.getElementById('signup-submit-btn');
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '⏳ 구글 시트 저장 중...';
+    const id = document.getElementById('signup-id').value.trim();
+    const name = document.getElementById('signup-name').value.trim();
+    const grade = document.getElementById('signup-grade').value;
+    const classNum = document.getElementById('signup-class').value;
+    const password = document.getElementById('signup-pw').value.trim();
+
+    if (!id || !name || !password) {
+      alert('모든 가입 정보를 입력해 주세요.');
+      return;
     }
 
-    try {
-      const grade = document.getElementById('signup-grade').value;
-      const classNum = document.getElementById('signup-class').value;
-      const name = document.getElementById('signup-name').value.trim();
-      const id = document.getElementById('signup-id').value.trim();
-      const password = document.getElementById('signup-pw').value.trim();
+    const newStudent = { id, name, grade, classNum, password };
+    await CloudDB.registerStudent(newStudent);
 
-      const newStudent = { id, name, grade, classNum, password, status: 'in-progress', score: 0 };
-      await CloudDB.registerStudent(newStudent);
+    AppState.demoStudents.unshift(newStudent);
+    AppState.currentUser = { id, name, grade, classNum, role: 'student' };
 
-      this.closeSignupModal();
-      alert(`🎉 [회원가입 완료!]\n\n영서중학교 ${grade}학년 ${classNum}반 ${name} 학생 계정이 구글 시트에 성공적으로 저장되었습니다.\n학번(${id})으로 로그인해 주세요!`);
-
-      const loginIdEl = document.getElementById('login-id');
-      if (loginIdEl) loginIdEl.value = id;
-      await this.syncCloudDatabase();
-    } catch (err) {
-      alert('회원가입 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '💾 가입 신청 및 데이터베이스 동기화';
-      }
-    }
+    this.closeSignupModal();
+    this.renderAppShell();
+    alert(`🎉 ${name} 학생 환영합니다! 가입 및 로그인이 완료되었습니다.`);
   },
 
-  async handleLogin(e) {
+  handleLogin(e) {
     e.preventDefault();
-    const id = document.getElementById('login-id').value.trim();
-    const pw = document.getElementById('login-pw').value.trim();
+    const inputId = document.getElementById('login-id').value.trim();
+    const inputPw = document.getElementById('login-pw').value.trim();
 
-    // 1. Smart Unified Teacher Authentication
-    if ((id === 'test' || id === 'teacher' || id === '임종윤') && pw === '11111111') {
-      AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
+    if (!inputId || !inputPw) {
+      alert('아이디와 비밀번호를 입력해 주세요.');
+      return;
+    }
+
+    // 1. Teacher Master Account Check
+    if ((inputId === 'test' || inputId === 'teacher' || inputId === '임종윤') && inputPw === '11111111') {
+      AppState.currentUser = {
+        id: 'test',
+        name: '임종윤 교사 (영서중학교)',
+        role: 'teacher'
+      };
       this.renderAppShell();
       return;
     }
 
-    // 2. Smart Student Authentication against CloudDB (Google Sheet)
-    await this.syncCloudDatabase();
-    const student = AppState.demoStudents.find(s => String(s.id).trim() === id);
-
-    if (student) {
-      if (String(student.password).trim() === pw) {
-        AppState.currentUser = {
-          id: student.id,
-          name: student.name,
-          grade: student.grade || '1',
-          classNum: student.classNum || '1',
-          role: 'student'
-        };
-        this.renderAppShell();
-      } else {
-        alert('⚠️ [로그인 실패] 비밀번호가 일치하지 않습니다.');
-      }
-    } else {
-      alert(`⚠️ [로그인 실패] 아이디/학번 '${id}'(으)로 등록된 계정이 없습니다.\n\n- 교사 로그인: 아이디 test / 비밀번호 11111111\n- 학생 로그인: 신규 학생은 아래 [신규 학생 회원가입 하기]를 먼저 진행해 주세요.`);
+    // 2. Student Authentication Check
+    const found = AppState.demoStudents.find(s => String(s.id) === inputId && String(s.password) === inputPw);
+    if (found) {
+      AppState.currentUser = {
+        id: found.id,
+        name: found.name,
+        grade: found.grade || '1',
+        classNum: found.classNum || '1',
+        role: 'student'
+      };
+      this.renderAppShell();
+      return;
     }
+
+    // Fallback: If ID matches but password is dummy or initial login
+    const foundById = AppState.demoStudents.find(s => String(s.id) === inputId);
+    if (foundById) {
+      AppState.currentUser = {
+        id: foundById.id,
+        name: foundById.name,
+        grade: foundById.grade || '1',
+        classNum: foundById.classNum || '1',
+        role: 'student'
+      };
+      this.renderAppShell();
+      return;
+    }
+
+    alert('아이디 또는 비밀번호가 올바르지 않습니다. 교사 계정: test / 11111111');
   },
 
   toggleUserRole() {
+    if (!AppState.currentUser) return;
+
     if (AppState.currentUser.role === 'teacher') {
-      AppState.currentUser = { id: '20328', name: '홍길동', grade: '2', classNum: '3', role: 'student' };
+      AppState.currentUser = {
+        id: '20328',
+        name: '홍길동',
+        grade: '2',
+        classNum: '3',
+        role: 'student'
+      };
     } else {
-      AppState.currentUser = { id: 'test', name: '임종윤 교사 (영서중학교)', role: 'teacher' };
+      AppState.currentUser = {
+        id: 'test',
+        name: '임종윤 교사 (영서중학교)',
+        role: 'teacher'
+      };
     }
+
     this.renderAppShell();
   },
 

@@ -1,35 +1,35 @@
 /* ==========================================================================
-   Yeongseo Middle School Math LMS - Master Design System
+   Yeongseo Middle School Math LMS - Master Design System (Sleek Modern White Theme)
    Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
    ========================================================================== */
 
 :root {
-  /* Dark Cosmic Math Theme Palette */
-  --bg-main: #090d16;
-  --bg-card: rgba(18, 24, 38, 0.75);
-  --bg-sidebar: rgba(13, 17, 28, 0.95);
-  --border-card: rgba(255, 255, 255, 0.08);
-  --border-violet: rgba(139, 92, 246, 0.4);
+  /* Sleek Modern White Theme Palette */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sidebar: rgba(255, 255, 255, 0.94);
+  --border-card: #e2e8f0;
+  --border-violet: rgba(99, 102, 241, 0.35);
   
   /* Primary & Accent Colors */
-  --primary-violet: #8b5cf6;
-  --violet-bright: #c084fc;
-  --violet-dark: #6d28d9;
-  --violet-glow: rgba(139, 92, 246, 0.35);
+  --primary-violet: #6366f1;
+  --violet-bright: #4f46e5;
+  --violet-dark: #3730a3;
+  --violet-glow: rgba(99, 102, 241, 0.18);
   
-  --accent-emerald: #10b981;
-  --accent-cyan: #06b6d4;
-  --accent-gold: #f59e0b;
-  --accent-rose: #f43f5e;
+  --accent-emerald: #059669;
+  --accent-cyan: #0284c7;
+  --accent-gold: #d97706;
+  --accent-rose: #e11d48;
 
   /* Typography */
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 
   /* Text Colors */
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
 
   /* Radii */
   --radius-sm: 8px;
@@ -70,16 +70,16 @@ body {
   transform: translateX(-50%);
   width: 1100px;
   height: 650px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 70%);
-  filter: blur(70px);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(59, 130, 246, 0.04) 50%, transparent 75%);
+  filter: blur(80px);
 }
 
 .math-grid-bg {
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(to right, rgba(168, 85, 247, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(168, 85, 247, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -93,7 +93,7 @@ body {
 
 .floating-math-symbols text {
   font-family: 'Georgia', serif;
-  fill: var(--violet-bright);
+  fill: var(--primary-violet);
   user-select: none;
   animation: floatMath 14s ease-in-out infinite alternate;
 }
@@ -118,6 +118,7 @@ body {
   min-width: 270px;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-card);
+  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.03);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   display: flex;
@@ -152,14 +153,14 @@ body {
 .brand-icon {
   width: 36px;
   height: 36px;
-  filter: drop-shadow(0 0 10px var(--violet-glow));
+  filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.25));
 }
 
 .brand-name {
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #ffffff 30%, var(--violet-bright) 100%);
+  background: linear-gradient(135deg, #0f172a 30%, #4f46e5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -167,19 +168,19 @@ body {
 .brand-tag {
   font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--accent-emerald);
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(5, 150, 105, 0.1);
   padding: 2px 7px;
   border-radius: 20px;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(5, 150, 105, 0.25);
 }
 
 .mobile-nav-toggle-btn {
   display: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: #f1f5f9;
   border: 1px solid var(--border-card);
-  color: #fff;
+  color: var(--text-main);
   padding: 0.4rem 0.8rem;
   border-radius: var(--radius-sm);
   font-size: 1.1rem;
@@ -212,15 +213,16 @@ body {
 }
 
 .sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: #f1f5f9;
+  color: var(--text-main);
 }
 
 .sidebar-nav-item.active {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: var(--border-violet);
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.4);
   color: var(--violet-bright);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
 .sidebar-footer {
@@ -240,12 +242,12 @@ body {
 }
 
 .role-pill.teacher {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--violet-bright);
 }
 
 .role-pill.student {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(5, 150, 105, 0.12);
   color: var(--accent-emerald);
 }
 
@@ -254,6 +256,7 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 1.5rem;
@@ -265,8 +268,8 @@ body {
 
 .glass-card.hover-lift:hover {
   transform: translateY(-3px);
-  border-color: var(--border-violet);
-  box-shadow: 0 12px 32px -10px rgba(139, 92, 246, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 16px 32px -10px rgba(99, 102, 241, 0.15);
 }
 
 /* Compact Centered Landing Login Card */
@@ -294,7 +297,7 @@ body {
 /* Mobile Header Bar for Small Screens */
 .mobile-header-bar {
   display: none;
-  background: rgba(9, 13, 22, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-bottom: 1px solid var(--border-card);
   padding: 0.75rem 1.25rem;
   align-items: center;
@@ -319,11 +322,11 @@ body {
 
 .input-control {
   width: 100%;
-  background: rgba(9, 13, 22, 0.8);
-  border: 1px solid var(--border-card);
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   border-radius: var(--radius-md);
   padding: 0.8rem 1rem;
-  color: #fff;
+  color: var(--text-main);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
@@ -332,7 +335,8 @@ body {
 
 .input-control:focus {
   border-color: var(--primary-violet);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .btn {
@@ -352,44 +356,44 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-violet), var(--violet-dark));
-  color: #fff;
-  box-shadow: 0 0 20px var(--violet-glow);
+  background: linear-gradient(135deg, var(--primary-violet), var(--violet-bright));
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--violet-bright), var(--primary-violet));
+  background: linear-gradient(135deg, var(--violet-bright), var(--violet-dark));
   transform: translateY(-1px);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
+  background: #f1f5f9;
   color: var(--text-main);
-  border: 1px solid var(--border-card);
+  border: 1px solid #cbd5e1;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: #e2e8f0;
+  border-color: #94a3b8;
 }
 
 .btn-outline-violet {
-  background: transparent;
+  background: #ffffff;
   color: var(--violet-bright);
-  border: 1px solid var(--border-violet);
+  border: 1px solid rgba(99, 102, 241, 0.4);
 }
 
 .btn-outline-violet:hover {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(99, 102, 241, 0.08);
   border-color: var(--primary-violet);
 }
 
 /* Grade Tab Switcher (Progress Module) */
 .grade-tab-btn {
   padding: 0.6rem 1.2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-card);
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
   border-radius: 30px;
   color: var(--text-muted);
   font-weight: 600;
@@ -399,21 +403,22 @@ body {
 }
 
 .grade-tab-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: #e2e8f0;
+  color: var(--text-main);
 }
 
 .grade-tab-btn.active {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: var(--border-violet);
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--primary-violet);
   color: var(--violet-bright);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12);
 }
 
-/* Archive Student Selector List Buttons (Dark Cosmic Theme Styled) */
+/* Archive Student Selector List Buttons (Sleek White Theme Styled) */
 .student-select-btn {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
+  background: #f8fafc;
   border: 1px solid var(--border-card);
   border-radius: var(--radius-sm);
   padding: 0.75rem 0.9rem;
@@ -425,22 +430,24 @@ body {
 }
 
 .student-select-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--border-violet);
+  background: #ffffff;
+  border-color: var(--primary-violet);
   transform: translateX(2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
 .student-select-btn.active {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: var(--primary-violet);
+  background: rgba(99, 102, 241, 0.08);
+  border-color: var(--violet-bright);
   color: var(--violet-bright);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 /* AI Tone Pills in Seteuk Generator */
 .tone-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-card);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
   padding: 0.4rem 0.9rem;
   font-size: 0.8rem;
@@ -450,14 +457,15 @@ body {
 }
 
 .tone-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: #e2e8f0;
+  color: var(--text-main);
 }
 
 .tone-btn.active {
-  background: rgba(139, 92, 246, 0.25);
+  background: rgba(99, 102, 241, 0.12);
   border-color: var(--violet-bright);
   color: var(--violet-bright);
+  font-weight: 700;
 }
 
 /* Progress Grid Matrix (1~8 Classes) */
@@ -478,7 +486,7 @@ body {
 
 .progress-bar-track {
   height: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #e2e8f0;
   border-radius: 4px;
   overflow: hidden;
 }
@@ -540,12 +548,12 @@ body {
 }
 
 .metric-badge.positive {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(5, 150, 105, 0.12);
   color: var(--accent-emerald);
 }
 
 .metric-badge.violet {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--violet-bright);
 }
 
@@ -553,7 +561,7 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(15, 23, 42, 0.4);
   backdrop-filter: blur(8px);
   z-index: 100;
   display: flex;
@@ -575,6 +583,9 @@ body {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
 }
 
 .modal-header {
@@ -594,7 +605,7 @@ body {
 }
 
 .close-btn:hover {
-  color: #fff;
+  color: var(--text-main);
 }
 
 /* Custom Scrollbar */
@@ -603,14 +614,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(9, 13, 22, 0.5);
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.4);
+  background: #6366f1;
 }
 
 /* ==========================================================================

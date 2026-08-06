@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Master Google Apps Script Backend (v2.0 Drive & Self-Verification Enabled)
+ * Yeongseo Middle School Math LMS - Master Google Apps Script Backend
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  * Script ID: 17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT
  */
@@ -67,7 +67,7 @@ function doGet(e) {
     students: students,
     progress: progress,
     curriculum: curriculum,
-    apiVersion: "v2.0_drive_enabled"
+    apiVersion: "v2.0_spreadsheet_ok"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -111,44 +111,16 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_drive_enabled",
+      apiVersion: "v2.0_spreadsheet_ok",
       action: "progress_saved"
     })).setMimeType(ContentService.MimeType.JSON);
 
   } else if (data.type === "activity_result") {
-    // 2. 탐구활동결과 시트 기록 및 구글 드라이브 탐구보고서 파일 자동 생성
+    // 2. 탐구활동결과 시트 기록
     var actSheet = ss.getSheetByName("탐구활동결과");
     if (!actSheet) {
       actSheet = ss.insertSheet("탐구활동결과");
-      actSheet.appendRow(["학번", "학생성명", "학년", "학반", "탐구활동제목", "학생제출답안", "이해도점수", "제출일시", "드라이브파일URL"]);
-    }
-
-    // 📁 구글 드라이브 전용 폴더 및 탐구보고서 파일 생성
-    var driveFileUrl = "";
-    try {
-      var folderName = "영서중학교 수학 LMS 탐구보고서";
-      var folders = DriveApp.getFoldersByName(folderName);
-      var targetFolder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
-
-      var docTitle = "[탐구보고서] " + data.studentId + "_" + data.studentName + "_" + data.activityTitle;
-      var docContent = "==================================================\n" +
-                       "🏫 영서중학교 수학 LMS - 학생 탐구활동 보고서\n" +
-                       "==================================================\n" +
-                       "■ 학번: " + data.studentId + "\n" +
-                       "■ 성명: " + data.studentName + "\n" +
-                       "■ 소속: 영서중학교 " + data.grade + "학년 " + data.classNum + "반\n" +
-                       "■ 탐구 주제: " + data.activityTitle + "\n" +
-                       "■ 제출 일시: " + (data.submittedAt || new Date().toLocaleString('ko-KR')) + "\n" +
-                       "■ 이해도 점수: " + (data.score || 100) + "점\n" +
-                       "--------------------------------------------------\n" +
-                       "■ 학생 작성 수식 및 탐구 소감:\n" +
-                       data.answerText + "\n" +
-                       "==================================================\n";
-
-      var driveFile = targetFolder.createFile(docTitle + ".txt", docContent);
-      driveFileUrl = driveFile.getUrl();
-    } catch(err) {
-      driveFileUrl = "드라이브 생성 권한 대기 중: " + err.toString();
+      actSheet.appendRow(["학번", "학생성명", "학년", "학반", "탐구활동제목", "학생제출답안", "이해도점수", "제출일시", "비고"]);
     }
 
     actSheet.appendRow([
@@ -160,14 +132,13 @@ function doPost(e) {
       data.answerText,
       data.score || 100,
       data.submittedAt || new Date().toLocaleString('ko-KR'),
-      driveFileUrl
+      "LMS 제출 완료"
     ]);
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_drive_enabled",
-      tabCreated: true,
-      driveFileUrl: driveFileUrl
+      apiVersion: "v2.0_spreadsheet_ok",
+      tabCreated: true
     })).setMimeType(ContentService.MimeType.JSON);
 
   } else {
@@ -184,7 +155,7 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_drive_enabled",
+      apiVersion: "v2.0_spreadsheet_ok",
       action: "student_registered"
     })).setMimeType(ContentService.MimeType.JSON);
   }

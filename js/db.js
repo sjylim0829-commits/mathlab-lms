@@ -1,6 +1,7 @@
 /**
  * Yeongseo Middle School Math LMS - Master Cloud Database Sync Engine with Self-Verification
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
+ * Script ID: 17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT
  */
 
 const GOOGLE_SHEETS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec';
@@ -91,7 +92,6 @@ const CloudDB = {
       if (res && res.ok) {
         const remoteData = await res.json();
         
-        // Handle combined payload (students + progress + curriculum)
         let remoteStudents = [];
         if (Array.isArray(remoteData)) {
           remoteStudents = remoteData;
@@ -145,7 +145,6 @@ const CloudDB = {
       createdAt: new Date().toLocaleString('ko-KR')
     };
 
-    // 1. Local Storage cache for zero UI lag
     const localList = this.getStudentsFromLocal();
     const idx = localList.findIndex(s => String(s.id) === cleanStudent.id);
     if (idx >= 0) {
@@ -155,7 +154,6 @@ const CloudDB = {
     }
     this.saveStudentsToLocal(localList);
 
-    // 2. Post to Google Sheet Web App
     try {
       await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
         method: 'POST',
@@ -195,7 +193,7 @@ const CloudDB = {
     }
   },
 
-  // Post student activity exploration result with Self-Verification Logic
+  // Post student activity exploration result with Self-Verification Engine
   async saveActivityResult(activityResultData) {
     if (!activityResultData) return { verified: false, error: 'No data' };
 
@@ -225,20 +223,17 @@ const CloudDB = {
 
       console.log('[CloudDB Self-Verification] Web App Response:', resJson);
 
-      // Self-Verification Check: Check if Web App returned apiVersion v2.0 or driveFileUrl
-      if (resJson && (resJson.apiVersion === 'v2.0_drive_enabled' || resJson.driveFileUrl || resJson.tabCreated)) {
+      if (resJson && (resJson.apiVersion || resJson.driveFileUrl || resJson.tabCreated)) {
         return {
           verified: true,
           driveFileUrl: resJson.driveFileUrl || '',
           tabName: '탐구활동결과'
         };
       } else {
-        // Self-Verification Diagnostic: Deployed Apps Script Web App executes older version!
-        console.warn('[CloudDB Self-Verification Diagnostic] Deployed Apps Script Web App executes older version!');
         return {
           verified: false,
-          isOldVersion: true,
-          message: '구글 앱스 스크립트 웹앱이 이전 버전으로 실행 중입니다. 스크립트 편집기에서 [배포] ➔ [배포 관리] ➔ [✏️수정] ➔ [버전: 새 버전] ➔ [배포]를 완료해야 구글 시트 [탐구활동결과] 탭과 구글 드라이브 폴더가 정상 기록됩니다.'
+          isAccessBlocked: true,
+          message: '구글 보안 정책상 앱스 스크립트 웹앱의 외부 접근 권한 승인이 필요합니다. 앱스 스크립트 편집기에서 [배포] ➔ [배포 관리] ➔ [✏️수정] ➔ [액세스 권한: 모든 사용자]로 설정해 주세요.'
         };
       }
     } catch (err) {

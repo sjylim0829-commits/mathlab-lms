@@ -1,5 +1,5 @@
 /**
- * Yeongseo Middle School Math LMS - Master Google Apps Script Backend
+ * Yeongseo Middle School Math LMS - Master Google Apps Script Backend (v3.1 Safe Editor Test & Drive Enabled)
  * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
  * Script ID: 17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT
  */
@@ -67,12 +67,27 @@ function doGet(e) {
     students: students,
     progress: progress,
     curriculum: curriculum,
-    apiVersion: "v2.0_spreadsheet_ok"
+    apiVersion: "v3.1_safe_editor_test"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 🛡️ 에디터에서 [실행] 버튼을 직접 눌렀을 때 안전 처리 (postData가 없는 예외 방지 및 권한 승인 지원)
+  if (!e || !e.postData) {
+    try {
+      var folderName = "영서중학교 수학 LMS 탐구보고서";
+      var folders = DriveApp.getFoldersByName(folderName);
+      if (!folders.hasNext()) {
+        DriveApp.createFolder(folderName);
+      }
+    } catch(err) {
+      Logger.log("Drive Permission Check: " + err.toString());
+    }
+    return ContentService.createTextOutput("에디터 권한 테스트 실행 성공").setMimeType(ContentService.MimeType.TEXT);
+  }
+
   var data = JSON.parse(e.postData.contents);
 
   if (data.type === "progress") {
@@ -111,16 +126,44 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_spreadsheet_ok",
+      apiVersion: "v3.1_safe_editor_test",
       action: "progress_saved"
     })).setMimeType(ContentService.MimeType.JSON);
 
   } else if (data.type === "activity_result") {
-    // 2. 탐구활동결과 시트 기록
+    // 2. 탐구활동결과 시트 기록 및 구글 드라이브 파일 자동 생성
     var actSheet = ss.getSheetByName("탐구활동결과");
     if (!actSheet) {
       actSheet = ss.insertSheet("탐구활동결과");
-      actSheet.appendRow(["학번", "학생성명", "학년", "학반", "탐구활동제목", "학생제출답안", "이해도점수", "제출일시", "비고"]);
+      actSheet.appendRow(["학번", "학생성명", "학년", "학반", "탐구활동제목", "학생제출답안", "이해도점수", "제출일시", "드라이브파일URL"]);
+    }
+
+    // 📁 구글 드라이브 전용 폴더 및 탐구보고서 파일 자동 생성
+    var driveFileUrl = "";
+    try {
+      var folderName = "영서중학교 수학 LMS 탐구보고서";
+      var folders = DriveApp.getFoldersByName(folderName);
+      var targetFolder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+
+      var docTitle = "[탐구보고서] " + data.studentId + "_" + data.studentName + "_" + data.activityTitle;
+      var docContent = "==================================================\n" +
+                       "🏫 영서중학교 수학 LMS - 학생 탐구활동 보고서\n" +
+                       "==================================================\n" +
+                       "■ 학번: " + data.studentId + "\n" +
+                       "■ 성명: " + data.studentName + "\n" +
+                       "■ 소속: 영서중학교 " + data.grade + "학년 " + data.classNum + "반\n" +
+                       "■ 탐구 주제: " + data.activityTitle + "\n" +
+                       "■ 제출 일시: " + (data.submittedAt || new Date().toLocaleString('ko-KR')) + "\n" +
+                       "■ 이해도 점수: " + (data.score || 100) + "점\n" +
+                       "--------------------------------------------------\n" +
+                       "■ 학생 작성 수식 및 탐구 소감:\n" +
+                       data.answerText + "\n" +
+                       "==================================================\n";
+
+      var driveFile = targetFolder.createFile(docTitle + ".txt", docContent);
+      driveFileUrl = driveFile.getUrl();
+    } catch(err) {
+      driveFileUrl = "드라이브 생성 오류: " + err.toString();
     }
 
     actSheet.appendRow([
@@ -132,13 +175,14 @@ function doPost(e) {
       data.answerText,
       data.score || 100,
       data.submittedAt || new Date().toLocaleString('ko-KR'),
-      "LMS 제출 완료"
+      driveFileUrl
     ]);
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_spreadsheet_ok",
-      tabCreated: true
+      apiVersion: "v3.1_safe_editor_test",
+      tabCreated: true,
+      driveFileUrl: driveFileUrl
     })).setMimeType(ContentService.MimeType.JSON);
 
   } else {
@@ -155,7 +199,7 @@ function doPost(e) {
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      apiVersion: "v2.0_spreadsheet_ok",
+      apiVersion: "v3.1_safe_editor_test",
       action: "student_registered"
     })).setMimeType(ContentService.MimeType.JSON);
   }

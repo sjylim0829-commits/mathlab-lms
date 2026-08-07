@@ -11,15 +11,6 @@ const TeacherModule = {
   activeActivityId: 'MATH-2026-GEO-02',
 
   getActivities() {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_ACTIVITIES);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch(e) {}
-
-    // Default pre-loaded activities catalog
     const defaultList = [
       {
         id: 'MATH-2026-GEO-02',
@@ -62,6 +53,27 @@ const TeacherModule = {
         type: 'gas'
       }
     ];
+
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_ACTIVITIES);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge default items into parsed if missing
+          defaultList.forEach(defItem => {
+            const idx = parsed.findIndex(p => p.id === defItem.id || (defItem.url && p.url === defItem.url));
+            if (idx >= 0) {
+              // Update metadata
+              parsed[idx] = Object.assign({}, parsed[idx], defItem);
+            } else {
+              parsed.unshift(defItem);
+            }
+          });
+          this.saveActivities(parsed);
+          return parsed;
+        }
+      }
+    } catch(e) {}
 
     this.saveActivities(defaultList);
     return defaultList;

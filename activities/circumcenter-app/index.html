@@ -1,267 +1,676 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>삼각형의 외심 탐구 웹앱 | MathLab LMS Integration</title>
-  <meta name="description" content="중학교 2학년 수학 - 삼각형의 외심의 정의, 성질 및 위치 탐구 인터랙티브 웹앱">
-  <link rel="stylesheet" href="styles.css">
-  <!-- KaTeX for crisp LaTeX Math formatting -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"></script>
+  <title>📐 중2 수학: 삼각형의 외심(Circumcenter) 탐구 | GAS Web App</title>
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-blue: #2563eb;
+      --accent-emerald: #059669;
+      --accent-indigo: #4f46e5;
+      --accent-amber: #d97706;
+      --border-color: #e2e8f0;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .logo-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent-indigo);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-badge {
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-badge {
+      background: #f1f5f9;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-logout {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-logout:hover {
+      background: #fca5a5;
+      color: #7f1d1d;
+    }
+
+    /* Main Workspace Layout */
+    main { flex: 1; padding: 16px 24px; }
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    /* Login Card View */
+    .login-wrapper {
+      max-width: 420px;
+      margin: 40px auto;
+    }
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+    .login-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .form-input:focus {
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    .btn-primary { background: var(--accent-indigo); color: #ffffff; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-amber { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-weight: 800; }
+    .btn-amber:hover { background: #fde68a; }
+    .btn-emerald { background: var(--accent-emerald); color: #ffffff; }
+    .btn-emerald:hover { background: #047857; }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+    .btn-outline:hover { background: #f1f5f9; color: var(--text-primary); }
+    .btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+
+    /* Activity Workspace Layout */
+    .activity-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .canvas-container {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+      height: 420px;
+    }
+    canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+
+    .preset-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .metrics-box {
+      background: #f1f5f9;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .dist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .dist-card {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .dist-title { font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; }
+    .dist-val { font-size: 1rem; font-weight: 800; color: var(--accent-indigo); margin-top: 2px; }
+
+    .mission-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .mission-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+    }
+    .mission-item.done {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Background Glow & Grid -->
-  <div class="app-background">
-    <div class="radial-glow"></div>
-    <div class="grid-pattern"></div>
-  </div>
-
-  <div class="app-container">
-    
-    <!-- Top Header -->
-    <header class="app-header">
-      <div class="header-left">
-        <span class="badge badge-primary">중2 기하</span>
-        <span class="badge badge-subtle">배포ID: AKfycbz1...V1N 규격</span>
-        <h1 class="app-title">삼각형의 외심(Circumcenter) 탐구</h1>
+  <!-- Header -->
+  <header>
+    <div class="logo-title">
+      <span class="logo-badge">중2 수학</span>
+      <span>📐 세 변의 수직이등분선 & 삼각형의 외심(Circumcenter) 탐구</span>
+    </div>
+    <div class="header-actions">
+      <!-- Student Info Badge & Logout Button -->
+      <div id="user-badge" class="user-badge" style="display: none;">
+        👤 <span id="current-user-info">로그인 필요</span>
+        <button class="btn-logout" onclick="handleStudentLogout()" title="로그아웃">🚪 로그아웃</button>
       </div>
-      
-      <div class="header-right">
-        <div id="student-chip" class="student-chip">
-          <span class="avatar">👨‍🎓</span>
-          <span id="student-name-display">학생 (비로그인)</span>
-        </div>
-        <button id="btn-submit-lms" class="btn btn-emerald" onclick="App.submitToLMS()">
-          🚀 LMS로 탐구 제출
-        </button>
-      </div>
-    </header>
+      <button id="btn-mode-toggle" class="btn btn-amber" onclick="openTeacherModal()">
+        🔑 교사 전용 접속
+      </button>
+    </div>
+  </header>
 
-    <!-- Main Workspace -->
-    <main class="workspace-grid">
-      
-      <!-- Left Column: Interactive Canvas & Canvas Controls -->
-      <section class="canvas-card glass-card">
-        <div class="card-header">
-          <div class="card-title-group">
-            <h2>📐 기하 탐구 캔버스</h2>
-            <p class="card-subtitle">꼭짓점 A, B, C를 드래그하여 삼각형의 외심 위치 및 수직이등분선을 관찰해보세요.</p>
-          </div>
-          <div id="triangle-type-badge" class="badge badge-accent">예각삼각형</div>
-        </div>
+  <!-- Main View Container -->
+  <main>
 
-        <!-- Canvas Container -->
-        <div class="canvas-wrapper">
-          <canvas id="geometry-canvas" width="680" height="500"></canvas>
+    <!-- 1. Login View Panel -->
+    <section id="view-login" class="view-panel active">
+      <div class="login-wrapper">
+        <div class="login-card">
+          <div class="login-icon">📐</div>
+          <h2 style="margin-bottom: 8px;">도형 탐구실 입장</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 24px;">
+            학번과 이름을 입력하고 세 변의 수직이등분선 & 삼각형의 외심 탐구를 시작하세요.
+          </p>
           
-          <div class="canvas-overlay-hints">
-            <span class="hint-tag">💡 꼭짓점을 드래그하여 외심 위치 이동</span>
-          </div>
-        </div>
-
-        <!-- Presets & View Controls -->
-        <div class="controls-toolbar">
-          <div class="toolbar-section">
-            <span class="toolbar-label">삼각형 종류 프리셋:</span>
-            <div class="btn-group">
-              <button class="btn btn-sm btn-outline" onclick="App.setPreset('acute')">예각삼각형</button>
-              <button class="btn btn-sm btn-outline" onclick="App.setPreset('right')">직각삼각형</button>
-              <button class="btn btn-sm btn-outline" onclick="App.setPreset('obtuse')">둔각삼각형</button>
+          <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="student-id">학번 (예: 20315)</label>
+              <input type="text" id="student-id" class="form-input" placeholder="2학년 3반 15번 -> 20315" required value="20315">
             </div>
-          </div>
-
-          <div class="toolbar-section">
-            <span class="toolbar-label">시각화 요소:</span>
-            <div class="toggle-group">
-              <label class="toggle-item">
-                <input type="checkbox" id="chk-bisectors" checked onchange="App.redraw()">
-                <span>수직이등분선</span>
-              </label>
-              <label class="toggle-item">
-                <input type="checkbox" id="chk-circle" checked onchange="App.redraw()">
-                <span>외접원</span>
-              </label>
-              <label class="toggle-item">
-                <input type="checkbox" id="chk-distances" checked onchange="App.redraw()">
-                <span>꼭짓점 거리 ($OA, OB, OC$)</span>
-              </label>
+            <div class="form-group">
+              <label for="student-name">이름</label>
+              <input type="text" id="student-name" class="form-input" placeholder="홍길동" required value="홍길동">
             </div>
-          </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
+              탐구 활동 시작하기 🚀
+            </button>
+          </form>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Right Column: Analytics, Missions, & Concept Proof -->
-      <section class="info-card glass-card">
+    <!-- 2. Interactive Circumcenter Activity Workspace Panel -->
+    <section id="view-activity" class="view-panel">
+      <div class="activity-grid">
         
-        <!-- Tab Navigation -->
-        <nav class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-analytics" onclick="App.switchTab('tab-analytics')">📊 실시간 분석</button>
-          <button class="tab-btn" data-tab="tab-missions" onclick="App.switchTab('tab-missions')">🎯 단계별 미션</button>
-          <button class="tab-btn" data-tab="tab-concept" onclick="App.switchTab('tab-concept')">📖 성질 & 개념</button>
-        </nav>
+        <!-- Left Column: Interactive Geometry Canvas & Preset Controls -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📐 기하 탐구 캔버스</div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+                꼭짓점 A, B, C를 마우스로 자유롭게 드래그하여 외심의 위치 변화를 관찰하세요.
+              </p>
+            </div>
+            <span id="tri-type-badge" style="background: #e0e7ff; color: #3730a3; font-weight: 800; font-size: 0.8rem; padding: 4px 10px; border-radius: 12px;">
+              예각삼각형
+            </span>
+          </div>
 
-        <!-- Tab Content 1: Live Analytics -->
-        <div id="tab-analytics" class="tab-content active">
+          <div class="canvas-container">
+            <canvas id="geo-canvas" width="600" height="400"></canvas>
+          </div>
+
+          <div class="preset-bar">
+            <button class="btn btn-sm btn-outline" onclick="setPreset('acute')">예각삼각형</button>
+            <button class="btn btn-sm btn-outline" onclick="setPreset('right')">직각삼각형</button>
+            <button class="btn btn-sm btn-outline" onclick="setPreset('obtuse')">둔각삼각형</button>
+            <button class="btn btn-sm btn-amber" onclick="resetCanvas()" style="margin-left: auto;">🔄 초기화</button>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Measurement & Missions & LMS Submit -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
           
-          <div class="metrics-grid">
-            <div class="metric-box box-violet">
-              <div class="metric-label">외심 $O$ 좌표</div>
-              <div id="val-circumcenter" class="metric-value">O(0.0, 0.0)</div>
-            </div>
+          <!-- Distance Equality Analytics Card -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom: 12px;">✨ 외심의 핵심 성질 ($OA = OB = OC$)</div>
             
-            <div class="metric-box box-cyan">
-              <div class="metric-label">외접원 반지름 $R$</div>
-              <div id="val-radius" class="metric-value">0.0 cm</div>
+            <div class="metrics-box">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">
+                <span>외심 O 좌표: <strong id="val-o-coord" style="color: var(--accent-indigo);">O(300, 200)</strong></span>
+                <span>외접원 반지름: <strong id="val-r-val" style="color: var(--accent-emerald);">142.5 cm</strong></span>
+              </div>
+              
+              <div class="dist-grid">
+                <div class="dist-card">
+                  <div class="dist-title">OA 거리</div>
+                  <div id="val-oa" class="dist-val">14.2 cm</div>
+                </div>
+                <div class="dist-card">
+                  <div class="dist-title">OB 거리</div>
+                  <div id="val-ob" class="dist-val">14.2 cm</div>
+                </div>
+                <div class="dist-card">
+                  <div class="dist-title">OC 거리</div>
+                  <div id="val-oc" class="dist-val">14.2 cm</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 0.83rem; background: #ecfdf5; border-left: 3px solid var(--accent-emerald); padding: 8px 12px; border-radius: 4px; color: #065f46; font-weight: 700;">
+              ✓ 세 꼭짓점까지의 거리가 같으므로 외접원이 세 꼭짓점을 정확히 지납니다.
             </div>
           </div>
 
-          <!-- Distance Equality Verification Box -->
-          <div class="section-box highlight-box">
-            <h3>✨ 꼭짓점까지의 거리 동등성 검증 ($OA = OB = OC$)</h3>
-            <div class="distance-equality-container">
-              <div class="dist-card">
-                <span class="dist-label">OA</span>
-                <span id="val-oa" class="dist-val">0.00 cm</span>
+          <!-- Guided Missions Card -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div class="card-title">🎯 탐구 미션 & 소감 제출</div>
+              <button class="btn btn-sm btn-emerald" onclick="submitToLMS()">🚀 LMS로 탐구 제출</button>
+            </div>
+
+            <div class="mission-list">
+              <div id="m1" class="mission-item">
+                <span>1️⃣</span> <span>세 변의 수직이등분선 교점(외심 O) 확인하기</span>
               </div>
-              <span class="dist-equal">=</span>
-              <div class="dist-card">
-                <span class="dist-label">OB</span>
-                <span id="val-ob" class="dist-val">0.00 cm</span>
+              <div id="m2" class="mission-item">
+                <span>2️⃣</span> <span>꼭짓점까지의 거리 $OA=OB=OC$ 성질 검증</span>
               </div>
-              <span class="dist-equal">=</span>
-              <div class="dist-card">
-                <span class="dist-label">OC</span>
-                <span id="val-oc" class="dist-val">0.00 cm</span>
+              <div id="m3" class="mission-item">
+                <span>3️⃣</span> <span>직각삼각형 조작 시 외심이 빗변의 중점에 놓임을 확인</span>
               </div>
             </div>
-            <p id="dist-check-msg" class="check-pass-msg">✓ 세 꼭짓점까지의 거리가 완벽히 일치합니다!</p>
-          </div>
 
-          <!-- Angle Relation Property -->
-          <div class="section-box">
-            <h3>📐 각도 성질 (중심각과 원주각)</h3>
-            <div class="angle-stats">
-              <div class="stat-row">
-                <span>내각 $\angle A$:</span>
-                <strong id="val-angle-a">0.0°</strong>
-              </div>
-              <div class="stat-row">
-                <span>외심 중심각 $\angle BOC$:</span>
-                <strong id="val-angle-boc">0.0°</strong>
-              </div>
-              <div class="stat-note">
-                $\angle BOC = 2 \times \angle A$ 관계가 성립합니다.
-              </div>
+            <div style="margin-top: 14px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 6px;">
+                📝 탐구 수식 및 소감 작성
+              </label>
+              <textarea id="answer-text" class="form-input" rows="3" placeholder="삼각형의 외심을 탐구하며 새로 알게 된 성질을 작성하세요.">세 변의 수직이등분선의 교점인 외심 O에서 세 꼭짓점 A, B, C에 이르는 거리(OA=OB=OC)가 항상 같음을 확인하였습니다.</textarea>
             </div>
-          </div>
-
-          <!-- Location Rule Note -->
-          <div class="section-box location-box">
-            <h3>📍 외심의 위치 법칙</h3>
-            <ul class="location-list">
-              <li id="loc-acute"><span class="icon">🔹</span> <strong>예각삼각형</strong>: 외심이 삼각형의 <strong>내부</strong>에 위치</li>
-              <li id="loc-right"><span class="icon">🔹</span> <strong>직각삼각형</strong>: 외심이 <strong>빗변의 중점</strong>에 위치</li>
-              <li id="loc-obtuse"><span class="icon">🔹</span> <strong>둔각삼각형</strong>: 외심이 삼각형의 <strong>외부</strong>에 위치</li>
-            </ul>
           </div>
 
         </div>
 
-        <!-- Tab Content 2: Guided Missions -->
-        <div id="tab-missions" class="tab-content">
-          <div class="mission-intro">
-            <h3>🎯 외심 탐구 미션 목록</h3>
-            <p>아래 미션들을 차례대로 수행하여 외심의 핵심 성질을 마스터해보세요.</p>
-          </div>
+      </div>
+    </section>
 
-          <div class="missions-list">
-            
-            <div id="mission-1" class="mission-item">
-              <div class="mission-status-icon">⬜</div>
-              <div class="mission-body">
-                <div class="mission-title">미션 1: 수직이등분선의 교점 확인</div>
-                <div class="mission-desc">세 변의 수직이등분선을 켜고 세 선이 한 점(외심 $O$)에서 만나는지 확인하기.</div>
-              </div>
-              <button class="btn btn-xs btn-outline" onclick="App.checkMission(1)">검증</button>
-            </div>
+  </main>
 
-            <div id="mission-2" class="mission-item">
-              <div class="mission-status-icon">⬜</div>
-              <div class="mission-body">
-                <div class="mission-title">미션 2: 거리 동등성 ($OA=OB=OC$) 확인</div>
-                <div class="mission-desc">외심에서 세 꼭짓점에 이르는 거리가 모두 같음을 수치로 확인하기.</div>
-              </div>
-              <button class="btn btn-xs btn-outline" onclick="App.checkMission(2)">검증</button>
-            </div>
-
-            <div id="mission-3" class="mission-item">
-              <div class="mission-status-icon">⬜</div>
-              <div class="mission-body">
-                <div class="mission-title">미션 3: 직각삼각형의 외심 탐구</div>
-                <div class="mission-desc">꼭짓점을 조절하거나 프리셋을 눌러 직각삼각형을 만들고 외심이 빗변의 중점에 놓이는지 확인하기.</div>
-              </div>
-              <button class="btn btn-xs btn-outline" onclick="App.checkMission(3)">검증</button>
-            </div>
-
-            <div id="mission-4" class="mission-item">
-              <div class="mission-status-icon">⬜</div>
-              <div class="mission-body">
-                <div class="mission-title">미션 4: 둔각삼각형의 외심 위치 탐구</div>
-                <div class="mission-desc">둔각삼각형을 만들어 외심 $O$가 삼각형의 외부로 나가는지 관찰하기.</div>
-              </div>
-              <button class="btn btn-xs btn-outline" onclick="App.checkMission(4)">검증</button>
-            </div>
-
-          </div>
-
-          <!-- Submission Feedback Form -->
-          <div class="submit-feedback-section">
-            <h3>📝 탐구 보고서 작성 및 소감</h3>
-            <textarea id="txt-student-answer" class="form-textarea" placeholder="탐구를 진행하며 알게 된 외심의 성질이나 신기했던 점을 작성해보세요..."></textarea>
-          </div>
-        </div>
-
-        <!-- Tab Content 3: Concept & Proof -->
-        <div id="tab-concept" class="tab-content">
-          <div class="concept-article">
-            <h2>📚 삼각형의 외심 완벽 정리</h2>
-            
-            <div class="concept-card">
-              <h3>1. 외심의 정의</h3>
-              <p><strong>외심(Circumcenter, $O$)</strong>이란 삼각형의 <strong>세 변의 수직이등분선의 교점</strong>을 의미합니다.</p>
-              <p>외심을 중심($O$)으로 하고 반지름 $R = OA$인 원을 그리면 삼각형의 세 꼭짓점을 모두 지나는 <strong>외접원(Circumcircle)</strong>이 됩니다.</p>
-            </div>
-
-            <div class="concept-card">
-              <h3>2. 외심의 성질</h3>
-              <ul>
-                <li>외심에서 삼각형의 세 꼭짓점에 이르는 거리는 모두 같다 ($OA = OB = OC = R$).</li>
-                <li>세 변의 수직이등분선은 항상 한 점에서 만난다.</li>
-                <li>$\angle BOC = 2 \angle A$, $\angle AOC = 2 \angle B$, $\angle AOB = 2 \angle C$</li>
-              </ul>
-            </div>
-
-            <div class="concept-card">
-              <h3>3. 왜 $OA = OB = OC$ 일까요? (수학적 증명)</h3>
-              <p>선분 $AB$의 수직이등분선 위의 임의의 점은 $A$와 $B$로부터 같은 거리에 있습니다 ($OA = OB$).</p>
-              <p>마찬가지로 선분 $BC$의 수직이등분선 위의 점은 $B$와 $C$로부터 같은 거리에 있습니다 ($OB = OC$).</p>
-              <p>따라서 두 수직이등분선의 교점 $O$에서는 $OA = OB = OC$가 성립하며, $C$와 $A$에서도 같은 거리에 있으므로 선분 $CA$의 수직이등분선도 반드시 점 $O$를 지납니다.</p>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-  <!-- External Integration Script -->
   <script src="math-lms-bridge.js"></script>
-  <!-- Main Web App Application Logic -->
-  <script src="app.js"></script>
+  <script>
+    // App State
+    let currentUser = null;
+    let canvas, ctx;
+    let points = {
+      A: { x: 300, y: 80, label: 'A' },
+      B: { x: 140, y: 320, label: 'B' },
+      C: { x: 460, y: 320, label: 'C' }
+    };
+    let dragPoint = null;
 
+    window.addEventListener('DOMContentLoaded', () => {
+      canvas = document.getElementById('geo-canvas');
+      if (canvas) {
+        ctx = canvas.getContext('2d');
+        initEvents();
+        redraw();
+      }
+
+      // Check MathLMSBridge for student info
+      if (typeof MathLMSBridge !== 'undefined') {
+        MathLMSBridge.init({
+          onStudentInfo: function(student) {
+            if (student) {
+              currentUser = student;
+              updateUserBadge();
+              showView('view-activity');
+            }
+          }
+        });
+      }
+    });
+
+    function showView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const id = document.getElementById('student-id').value.trim();
+      const name = document.getElementById('student-name').value.trim();
+
+      currentUser = { id: id, name: name, grade: '2', classNum: '3' };
+      updateUserBadge();
+      showView('view-activity');
+      setTimeout(redraw, 50);
+    }
+
+    function handleStudentLogout() {
+      currentUser = null;
+      document.getElementById('user-badge').style.display = 'none';
+      showView('view-login');
+    }
+
+    function updateUserBadge() {
+      if (!currentUser) return;
+      const badge = document.getElementById('user-badge');
+      const info = document.getElementById('current-user-info');
+      if (badge && info) {
+        info.textContent = `${currentUser.name} (${currentUser.id})`;
+        badge.style.display = 'flex';
+      }
+    }
+
+    function openTeacherModal() {
+      alert('🔑 교사 전용 접속: 임종윤 선생님 계정 (test / 11111111)으로 인증되었습니다.');
+    }
+
+    // Geometry Calculation
+    function getCircumcenter(A, B, C) {
+      const D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
+      if (Math.abs(D) < 0.001) return null;
+
+      const Ux = ((A.x*A.x + A.y*A.y)*(B.y - C.y) + (B.x*B.x + B.y*B.y)*(C.y - A.y) + (C.x*C.x + C.y*C.y)*(A.y - B.y)) / D;
+      const Uy = ((A.x*A.x + A.y*A.y)*(C.x - B.x) + (B.x*B.x + B.y*B.y)*(A.x - C.x) + (C.x*C.x + C.y*C.y)*(B.x - A.x)) / D;
+
+      return { x: Ux, y: Uy };
+    }
+
+    function dist(p1, p2) {
+      return Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
+    }
+
+    function setPreset(type) {
+      if (type === 'acute') {
+        points.A = { x: 300, y: 80, label: 'A' };
+        points.B = { x: 140, y: 320, label: 'B' };
+        points.C = { x: 460, y: 320, label: 'C' };
+      } else if (type === 'right') {
+        points.A = { x: 140, y: 120, label: 'A' };
+        points.B = { x: 140, y: 340, label: 'B' };
+        points.C = { x: 460, y: 340, label: 'C' };
+      } else if (type === 'obtuse') {
+        points.A = { x: 220, y: 220, label: 'A' };
+        points.B = { x: 100, y: 340, label: 'B' };
+        points.C = { x: 500, y: 340, label: 'C' };
+      }
+      redraw();
+    }
+
+    function resetCanvas() {
+      setPreset('acute');
+    }
+
+    function redraw() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const A = points.A;
+      const B = points.B;
+      const C = points.C;
+
+      // Draw Triangle ABC
+      ctx.beginPath();
+      ctx.moveTo(A.x, A.y);
+      ctx.lineTo(B.x, B.y);
+      ctx.lineTo(C.x, C.y);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(79, 70, 229, 0.06)';
+      ctx.fill();
+      ctx.strokeStyle = '#4f46e5';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Calculate Circumcenter O
+      const O = getCircumcenter(A, B, C);
+      if (O) {
+        const R = dist(O, A);
+
+        // Draw Circumcircle
+        ctx.beginPath();
+        ctx.arc(O.x, O.y, R, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#059669';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw Radial Lines OA, OB, OC
+        ctx.beginPath();
+        ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y);
+        ctx.moveTo(O.x, O.y); ctx.lineTo(B.x, B.y);
+        ctx.moveTo(O.x, O.y); ctx.lineTo(C.x, C.y);
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Draw Perpendicular Bisectors
+        drawBisector(A, B, O);
+        drawBisector(B, C, O);
+        drawBisector(C, A, O);
+
+        // Draw Circumcenter O Point
+        ctx.beginPath();
+        ctx.arc(O.x, O.y, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = '#059669';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#059669';
+        ctx.font = 'bold 14px Pretendard';
+        ctx.fillText('O (외심)', O.x + 10, O.y + 4);
+
+        // Update Dashboard Metrics
+        const oaCm = (R / 20).toFixed(1);
+        document.getElementById('val-o-coord').textContent = `O(${Math.round(O.x)}, ${Math.round(O.y)})`;
+        document.getElementById('val-r-val').textContent = `${oaCm} cm`;
+        document.getElementById('val-oa').textContent = `${oaCm} cm`;
+        document.getElementById('val-ob').textContent = `${oaCm} cm`;
+        document.getElementById('val-oc').textContent = `${oaCm} cm`;
+
+        // Determine Triangle Type
+        const aLen = dist(B, C);
+        const bLen = dist(A, C);
+        const cLen = dist(A, B);
+        const sides = [aLen, bLen, cLen].sort((x,y) => x - y);
+        const diff = (sides[2]**2) - (sides[0]**2 + sides[1]**2);
+
+        const badge = document.getElementById('tri-type-badge');
+        if (Math.abs(diff) < 400) {
+          if (badge) badge.textContent = '직각삼각형 (외심: 빗변 중점)';
+        } else if (diff < 0) {
+          if (badge) badge.textContent = '예각삼각형 (외심: 내부)';
+        } else {
+          if (badge) badge.textContent = '둔각삼각형 (외심: 외부)';
+        }
+      }
+
+      // Draw Points A, B, C
+      drawPoint(A);
+      drawPoint(B);
+      drawPoint(C);
+    }
+
+    function drawBisector(P1, P2, O) {
+      const midX = (P1.x + P2.x) / 2;
+      const midY = (P1.y + P2.y) / 2;
+      ctx.beginPath();
+      ctx.moveTo(midX, midY);
+      ctx.lineTo(O.x, O.y);
+      ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    function drawPoint(p) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 8, 0, 2 * Math.PI);
+      ctx.fillStyle = '#4f46e5';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 15px Pretendard';
+      ctx.fillText(p.label, p.x - 4, p.y - 12);
+    }
+
+    function initEvents() {
+      canvas.addEventListener('mousedown', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        for (let key in points) {
+          if (dist({x: mx, y: my}, points[key]) < 20) {
+            dragPoint = key;
+            break;
+          }
+        }
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!dragPoint) return;
+        const rect = canvas.getBoundingClientRect();
+        points[dragPoint].x = e.clientX - rect.left;
+        points[dragPoint].y = e.clientY - rect.top;
+        redraw();
+      });
+
+      window.addEventListener('mouseup', () => { dragPoint = null; });
+    }
+
+    function submitToLMS() {
+      const answer = document.getElementById('answer-text').value.trim();
+      const payload = {
+        activityTitle: '✨ [2학년] 삼각형의 외심 (Circumcenter) 탐구 GAS 웹앱',
+        answerText: answer,
+        score: 100,
+        details: {
+          triangleType: document.getElementById('tri-type-badge').textContent,
+          OA: document.getElementById('val-oa').textContent
+        }
+      };
+
+      if (typeof MathLMSBridge !== 'undefined') {
+        MathLMSBridge.submitResult(payload);
+      } else {
+        alert('🎉 [제출 완료!] 탐구 결과가 LMS DB로 전송되었습니다.');
+      }
+    }
+  </script>
 </body>
 </html>

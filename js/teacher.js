@@ -14,10 +14,10 @@ const TeacherModule = {
     const defaultList = [
       {
         id: 'MATH-2026-GEO-02',
-        title: '✨ [2학년] 삼각형의 외심 (Circumcenter) 탐구 웹앱 (math-app)',
+        title: '✨ [2학년] 삼각형의 외심 (Circumcenter) 탐구 GAS 웹앱 (math-app)',
         grade: '2학년 전체 (1~8반)',
         url: 'activities/circumcenter-app/index.html',
-        desc: '세 변의 수직이등분선의 교점인 외심의 정의, 세 꼭짓점까지의 거리 동등성(OA=OB=OC), 및 삼각형 종류별(예각, 직각, 둔각) 외심 위치 변화를 탐구하는 math-app 연동 웹앱입니다.',
+        desc: '세 변의 수직이등분선의 교점인 외심의 정의, 세 꼭짓점까지의 거리 동등성(OA=OB=OC), 및 삼각형 종류별(예각, 직각, 둔각) 외심 위치 변화를 탐구하는 GAS 구조 math-app 연동 웹앱입니다.',
         type: 'gas'
       },
       {

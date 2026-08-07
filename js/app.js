@@ -258,7 +258,7 @@ const App = {
         <form id="login-form" onsubmit="App.handleLogin(event)">
           <div class="form-group">
             <label class="form-label">아이디 / 학번</label>
-            <input type="text" id="login-id" class="input-control" required placeholder="아이디 또는 학번 입력 (예: test 또는 20328)">
+            <input type="text" id="login-id" class="input-control" required placeholder="아이디 또는 학번 입력">
           </div>
 
           <div class="form-group">
@@ -275,10 +275,6 @@ const App = {
           <button type="button" class="btn btn-outline-violet" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" onclick="App.openSignupModal()">
             ✨ 신규 학생 회원가입 하기
           </button>
-        </div>
-
-        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-dim);">
-          🔑 테스트 교사 계정: 아이디 <code>test</code> / 비밀번호 <code>11111111</code>
         </div>
       </div>
 

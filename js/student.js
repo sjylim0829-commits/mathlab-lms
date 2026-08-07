@@ -80,17 +80,22 @@ const StudentModule = {
         </div>
 
         <!-- Embedded Workspace View (Iframe or Canvas) -->
-        <div class="glass-card" style="margin-bottom: 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
-            <span class="status-indicator live"><span class="dot"></span> 🖥️ 탐구활동 인터랙티브 실습 공간</span>
-            <span style="font-size: 0.75rem; color: var(--text-dim);">
-              ${activeAct.url ? '🌐 math-app 연동 웹 앱 내장됨' : '📐 Canvas 시뮬레이터'}
-            </span>
+        <div class="glass-card embed-workspace-container" id="student-workspace-card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+            <span class="status-indicator live"><span class="dot"></span> 🖥️ 탐구활동 인터랙티브 실습 공간 (확대 가능)</span>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span style="font-size: 0.75rem; color: var(--text-dim);">
+                ${activeAct.url ? '🌐 math-app 연동 웹 앱 내장됨' : '📐 Canvas 시뮬레이터'}
+              </span>
+              <button class="btn btn-primary" onclick="StudentModule.toggleFullscreenEmbed()" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); font-weight: 700;">
+                ⤢ 큰 화면 모드 (전체 화면)
+              </button>
+            </div>
           </div>
 
-          <div id="student-embed-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1rem; min-height: 460px;">
+          <div id="student-embed-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 0.75rem; min-height: 600px;">
             ${activeAct.url ? `
-              <iframe id="math-app-iframe" src="${activeAct.url}" style="width: 100%; height: 520px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}" onload="StudentModule.onIframeLoaded(this)"></iframe>
+              <iframe id="math-app-iframe" src="${activeAct.url}" style="width: 100%; height: 760px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}" onload="StudentModule.onIframeLoaded(this)"></iframe>
             ` : `
               <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
                 <div class="grapher-wrapper">
@@ -198,5 +203,11 @@ const StudentModule = {
     });
 
     alert(`🎉 [제출 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구과제: ${activeTitle}\n제출 수식: ${answerText}\n\n교사 대시보드 및 구글 시트에 실시간 반영되었습니다.`);
+  },
+
+  toggleFullscreenEmbed() {
+    const card = document.getElementById('student-workspace-card') || document.getElementById('teacher-workspace-card');
+    if (!card) return;
+    card.classList.toggle('fullscreen-active');
   }
 };

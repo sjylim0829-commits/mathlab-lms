@@ -416,22 +416,22 @@ const TeacherModule = {
         </div>
 
         <!-- Embedded Activity Interactive Workspace Hub -->
-        <div class="glass-card" style="margin-bottom: 2rem;">
+        <div class="glass-card embed-workspace-container" id="teacher-workspace-card" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
             <div>
-              <span class="status-indicator live"><span class="dot"></span> 🖱️ 선택된 탐구 활동 실시간 실행 공간</span>
+              <span class="status-indicator live"><span class="dot"></span> 🖱️ 선택된 탐구 활동 실시간 실행 공간 (확대 가능)</span>
               <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;" id="active-activity-title">
                 ${activeAct.title}
               </h3>
             </div>
 
-            ${activeAct.type === 'canvas' ? `
-              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+              ${activeAct.type === 'canvas' ? `
                 <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHA')">
-                  📐 RHA 합동 (빗변+한예각)
+                  📐 RHA 합동
                 </button>
                 <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHS')">
-                  📐 RHS 합동 (빗변+한변)
+                  📐 RHS 합동
                 </button>
                 <button class="btn btn-secondary" onclick="TeacherModule.resetTrianglePos()">
                   ⏪ 위치 리셋
@@ -439,14 +439,17 @@ const TeacherModule = {
                 <button class="btn btn-primary" onclick="TeacherModule.autoAnimateTriangleOverlay()">
                   ✨ 자동으로 겹쳐보기
                 </button>
-              </div>
-            ` : ''}
+              ` : ''}
+              <button class="btn btn-primary" onclick="TeacherModule.toggleFullscreenEmbed()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); font-weight: 700;">
+                ⤢ 큰 화면 모드 (전체 화면)
+              </button>
+            </div>
           </div>
 
           <!-- Embedded Workspace (Iframe or Canvas) -->
-          <div id="embed-app-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1.25rem; min-height: 440px; display: flex; flex-direction: column; justify-content: center;">
+          <div id="embed-app-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 0.75rem; min-height: 600px; display: flex; flex-direction: column; justify-content: center;">
             ${activeAct.type === 'canvas' ? `
-              <div class="grapher-canvas-card" style="height: 380px; margin-bottom: 1rem;">
+              <div class="grapher-canvas-card" style="height: 520px; margin-bottom: 1rem;">
                 <canvas id="builder-interactive-grapher" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
               </div>
 
@@ -460,7 +463,7 @@ const TeacherModule = {
                 </div>
               </div>
             ` : `
-              <iframe src="${activeAct.url || 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec'}" style="width: 100%; height: 500px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}"></iframe>
+              <iframe src="${activeAct.url || 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec'}" style="width: 100%; height: 760px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}"></iframe>
             `}
           </div>
         </div>
@@ -801,5 +804,16 @@ const TeacherModule = {
         </div>
       </div>
     `;
+  },
+
+  toggleFullscreenEmbed() {
+    const card = document.getElementById('teacher-workspace-card') || document.getElementById('student-workspace-card');
+    if (!card) return;
+    card.classList.toggle('fullscreen-active');
+    
+    // Auto-scroll inside fullscreen
+    if (card.classList.contains('fullscreen-active')) {
+      card.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 };

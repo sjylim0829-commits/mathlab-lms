@@ -113,8 +113,8 @@ const TeacherModule = {
           <div class="glass-card metric-card hover-lift">
             <span class="metric-label">담당 수업 학급</span>
             <div class="metric-value-row">
-              <span class="metric-value">24<span style="font-size: 1.2rem;">개 반</span></span>
-              <span class="metric-badge violet">1~3학년 (1~8반 전체)</span>
+              <span class="metric-value">22<span style="font-size: 1.2rem;">개 반</span></span>
+              <span class="metric-badge violet">1~2학년 (1~8반), 3학년 (1~6반)</span>
             </div>
           </div>
 

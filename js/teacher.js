@@ -13,6 +13,22 @@ const TeacherModule = {
   getActivities() {
     const defaultList = [
       {
+        id: 'REDBOOK-GEO-01',
+        title: '📘 [2학년] 이등변삼각형 & 직각삼각형의 합동 탐구 (Redbook 웹 앱)',
+        grade: '2학년 전체 (1~8반)',
+        url: 'https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec',
+        desc: 'Redbook 제작: SSS 작도, 두 밑각 성질, 꼭지각 이등분선 및 직각삼각형 RHA/RHS 합동 증명 캔버스 웹 앱 (LMS DB 연동 완료)',
+        type: 'gas'
+      },
+      {
+        id: 'REDBOOK-GEO-02',
+        title: '📐 [2학년] 삼각형의 외심 (Circumcenter) 탐구 (Redbook 웹 앱)',
+        grade: '2학년 전체 (1~8반)',
+        url: 'https://script.google.com/macros/s/AKfycbzAOh_0HNPAhy25scaJKIykIHywtKGRrNTU6TQKdk0L9berPBqV3xm-qWlUdT_Q3eJOcg/exec',
+        desc: 'Redbook 제작: 세 변의 수직이등분선 작도, 외심 O 및 외접원, 외심의 위치 & 각도 성질(∠BOC = 2∠A) 증명 웹 앱 (LMS DB 연동 완료)',
+        type: 'gas'
+      },
+      {
         id: 'MATH-2026-GEO-02',
         title: '✨ [2학년] 삼각형의 외심 (Circumcenter) 탐구 GAS 웹앱 (math-app)',
         grade: '2학년 전체 (1~8반)',

@@ -57,8 +57,10 @@
 
 1. **등록된 탐구활동 목록 선택 시스템 (Activity Catalog System)**:
    - `mathlab_registered_activities` (`localStorage`) 기반 목록 저장 및 연동
-   - 교사가 새로운 GAS 웹앱 URL(`https://script.google.com/macros/s/.../exec`)을 등록하면 목록 카드(`➕ 신규 GAS 탐구활동 주소 등록`)가 자동 생성됨
-   - 목록 카드 클릭 한 번으로 `<iframe>` 공간에 즉시 내장 실행됨
+   - **Redbook 제작 웹 앱 2종 통합 연동 완료**:
+     1) `📘 [2학년] 이등변삼각형 & 직각삼각형의 합동 탐구 (Redbook 웹 앱)`
+     2) `📐 [2학년] 삼각형의 외심 (Circumcenter) 탐구 (Redbook 웹 앱)`
+   - iframe 연동 및 `MathLMSBridge` / `postMessage` (`MATH_LMS_SUBMIT`) 제출 신호 수신을 통해 영서중학교 수학 LMS DB (`영서중학교 수학 LMS DB` 시트의 `탐구활동결과` 탭)에 자동 통합 기록됨.
 2. **직각삼각형의 합동 조건 (RHA & RHS) 통째 겹치기 실습 엔진**:
    - `js/grapher.js` 내 `RightTriangleCongruenceExplorer` 엔진
    - 점 하나씩 이동 방식이 아닌, **삼각형 $\triangle DEF$ 전체를 통째로 마우스/손가락으로 끌어다 포개는** 솔리드 피직스 인터랙션

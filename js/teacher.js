@@ -580,58 +580,133 @@ const TeacherModule = {
     }
   },
 
-  // 3. Student Roster & Analytics
+  testMathAppIntegration() {
+    const demoPayload = {
+      type: 'MATH_LMS_SUBMIT',
+      activityTitle: '[math-app 연동 테스트] 삼각비의 활용 높이 측정 실습',
+      answerText: 'tan(30°) = 0.5773 공식을 활용하여 건물 높이 H = 10m * tan(30°) + 1.6m = 7.37m 로 정확히 유도하였습니다.',
+      score: 100,
+      details: { angle: 30, distance: 10, eyeHeight: 1.6, computedHeight: 7.37 }
+    };
+    window.postMessage(demoPayload, '*');
+  },
+
+  // 3. Student Roster & Analytics & Live Submissions
   renderAnalytics() {
     const students = AppState.demoStudents;
+    const submissions = typeof CloudDB !== 'undefined' ? CloudDB.getSubmissionsFromLocal() : [];
 
     return `
       <div>
-        <div style="margin-bottom: 1.5rem;">
-          <h2 style="font-size: 1.6rem; font-weight: 800;">📑 학업 이해도 분석 & 학생 명부</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-            영서중학교 수학 교과 전체 학생 학업 성취도 및 단원별 이해도 실시간 동기화
-          </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.6rem; font-weight: 800;">📑 학업 이해도 분석 & 통합 탐구 제출 DB</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
+              math-app 연동 탐구 자료 및 영서중학교 수학 교과 전체 학생 학업 제출 이력 실시간 통합
+            </p>
+          </div>
+          <button class="btn btn-outline-violet" onclick="TeacherModule.testMathAppIntegration()">
+            ⚡ math-app 연동 데이터 수신 시뮬레이션 테스트
+          </button>
         </div>
 
-        <div class="glass-card" style="width: 100%; overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-            <thead>
-              <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
-                <th style="padding: 0.8rem 1rem;">학번</th>
-                <th style="padding: 0.8rem 1rem;">성명</th>
-                <th style="padding: 0.8rem 1rem;">소속 학급</th>
-                <th style="padding: 0.8rem 1rem;">가입 일시</th>
-                <th style="padding: 0.8rem 1rem;">상태</th>
-                <th style="padding: 0.8rem 1rem;">관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${students.length === 0 ? `
-                <tr>
-                  <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                    등록된 학생 데이터가 없습니다. 학생들이 가입하면 실시간으로 구글 시트와 연동됩니다.
-                  </td>
+        <!-- Section 1: Integrated Activity Submissions Table -->
+        <div class="glass-card" style="margin-bottom: 2rem; width: 100%;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--violet-bright);">
+              🎯 math-app & 탐구활동 자동 수집 결과 (구글 시트/드라이브 동기화)
+            </h3>
+            <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.12); color: var(--violet-bright); padding: 2px 10px; border-radius: 12px; font-weight: 700;">
+              총 ${submissions.length}건 수집됨
+            </span>
+          </div>
+
+          <div style="width: 100%; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted); background: #f8fafc;">
+                  <th style="padding: 0.75rem 1rem;">제출 일시</th>
+                  <th style="padding: 0.75rem 1rem;">학생 정보</th>
+                  <th style="padding: 0.75rem 1rem;">탐구활동 제목</th>
+                  <th style="padding: 0.75rem 1rem;">제출 수식/답안</th>
+                  <th style="padding: 0.75rem 1rem;">점수</th>
+                  <th style="padding: 0.75rem 1rem;">DB 연동</th>
                 </tr>
-              ` : students.map(s => `
-                <tr style="border-bottom: 1px solid var(--border-card);">
-                  <td style="padding: 0.8rem 1rem; font-family: var(--font-mono); font-weight: 700;">${s.id}</td>
-                  <td style="padding: 0.8rem 1rem; font-weight: 700; color: var(--text-main);">${s.name}</td>
-                  <td style="padding: 0.8rem 1rem;">영서중 ${s.grade || '1'}학년 ${s.classNum || '1'}반</td>
-                  <td style="padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--text-muted);">${s.createdAt || '2026. 8. 6.'}</td>
-                  <td style="padding: 0.8rem 1rem;">
-                    <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); font-weight: 700;">
-                      등록 완료
-                    </span>
-                  </td>
-                  <td style="padding: 0.8rem 1rem;">
-                    <button class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${s.id}')">
-                      상세 보기
-                    </button>
-                  </td>
+              </thead>
+              <tbody>
+                ${submissions.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                      아직 제출된 외부 math-app 탐구 자료가 없습니다. 웹 앱에서 탐구를 완료하면 실시간으로 이곳과 구글 시트 [탐구활동결과] 탭에 자동 기록됩니다.
+                    </td>
+                  </tr>
+                ` : submissions.map(sub => `
+                  <tr style="border-bottom: 1px solid var(--border-card);">
+                    <td style="padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">${sub.submittedAt || '방금 전'}</td>
+                    <td style="padding: 0.75rem 1rem;">
+                      <strong style="color: var(--text-main);">${sub.studentName}</strong>
+                      <span style="font-size: 0.75rem; color: var(--text-dim);">(${sub.studentId})</span>
+                    </td>
+                    <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--violet-bright);">${sub.activityTitle}</td>
+                    <td style="padding: 0.75rem 1rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${sub.answerText}</td>
+                    <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--accent-emerald);">${sub.score}점</td>
+                    <td style="padding: 0.75rem 1rem;">
+                      <span style="font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); font-weight: 700;">
+                        ✓ 구글 시트 저장완료
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Student Roster -->
+        <div class="glass-card" style="width: 100%;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem;">
+            🏫 등록 학생 명부 (총 ${students.length}명)
+          </h3>
+          <div style="width: 100%; overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-card); color: var(--text-muted);">
+                  <th style="padding: 0.8rem 1rem;">학번</th>
+                  <th style="padding: 0.8rem 1rem;">성명</th>
+                  <th style="padding: 0.8rem 1rem;">소속 학급</th>
+                  <th style="padding: 0.8rem 1rem;">가입 일시</th>
+                  <th style="padding: 0.8rem 1rem;">상태</th>
+                  <th style="padding: 0.8rem 1rem;">관리</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${students.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                      등록된 학생 데이터가 없습니다. 학생들이 가입하면 실시간으로 구글 시트와 연동됩니다.
+                    </td>
+                  </tr>
+                ` : students.map(s => `
+                  <tr style="border-bottom: 1px solid var(--border-card);">
+                    <td style="padding: 0.8rem 1rem; font-family: var(--font-mono); font-weight: 700;">${s.id}</td>
+                    <td style="padding: 0.8rem 1rem; font-weight: 700; color: var(--text-main);">${s.name}</td>
+                    <td style="padding: 0.8rem 1rem;">영서중 ${s.grade || '1'}학년 ${s.classNum || '1'}반</td>
+                    <td style="padding: 0.8rem 1rem; font-size: 0.8rem; color: var(--text-muted);">${s.createdAt || '2026. 8. 6.'}</td>
+                    <td style="padding: 0.8rem 1rem;">
+                      <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); font-weight: 700;">
+                        등록 완료
+                      </span>
+                    </td>
+                    <td style="padding: 0.8rem 1rem;">
+                      <button class="btn btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="TeacherModule.showStudentDetail('${s.id}')">
+                        상세 보기
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     `;

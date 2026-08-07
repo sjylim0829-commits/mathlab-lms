@@ -9,6 +9,7 @@ const GOOGLE_SHEETS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnxVF
 const LOCAL_STORAGE_KEY_STUDENTS = 'mathlab_students_cache';
 const LOCAL_STORAGE_KEY_PROGRESS = 'mathlab_progress_cache';
 const LOCAL_STORAGE_KEY_CURRICULUM = 'mathlab_curriculum_cache';
+const LOCAL_STORAGE_KEY_SUBMISSIONS = 'mathlab_submissions_cache';
 
 const CloudDB = {
   getStudentsFromLocal() {
@@ -71,6 +72,30 @@ const CloudDB = {
       localStorage.setItem(LOCAL_STORAGE_KEY_CURRICULUM, JSON.stringify(currList));
     } catch (e) {
       console.warn('[CloudDB] Curriculum local cache save error:', e);
+    }
+  },
+
+  getSubmissionsFromLocal() {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY_SUBMISSIONS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (e) {
+      console.warn('[CloudDB] Submissions local cache read error:', e);
+    }
+    return [];
+  },
+
+  saveSubmissionToLocal(submission) {
+    if (!submission) return;
+    try {
+      const list = this.getSubmissionsFromLocal();
+      list.unshift(submission);
+      localStorage.setItem(LOCAL_STORAGE_KEY_SUBMISSIONS, JSON.stringify(list));
+    } catch (e) {
+      console.warn('[CloudDB] Submission local cache save error:', e);
     }
   },
 
@@ -208,6 +233,8 @@ const CloudDB = {
       score: activityResultData.score || 100,
       submittedAt: new Date().toLocaleString('ko-KR')
     };
+
+    this.saveSubmissionToLocal(payload);
 
     try {
       const response = await fetch(GOOGLE_SHEETS_SCRIPT_URL, {

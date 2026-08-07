@@ -14,8 +14,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const App = {
   async init() {
+    this.bindGlobalMessageListener();
     await this.syncCloudDatabase();
+    this.checkUrlEmbedParameters();
     this.renderAppShell();
+  },
+
+  bindGlobalMessageListener() {
+    if (this._listenerBound) return;
+    this._listenerBound = true;
+
+    window.addEventListener('message', async (event) => {
+      if (!event.data || typeof event.data !== 'object') return;
+      const data = event.data;
+
+      if (data.type === 'MATH_LMS_REQUEST_STUDENT_INFO') {
+        const student = AppState.currentUser || {
+          id: '20328',
+          name: '홍길동',
+          grade: '2',
+          classNum: '3',
+          role: 'student'
+        };
+        if (event.source && typeof event.source.postMessage === 'function') {
+          event.source.postMessage({
+            type: 'MATH_LMS_INIT_STUDENT',
+            student: student
+          }, '*');
+        }
+      } else if (data.type === 'MATH_LMS_SUBMIT') {
+        console.log('[LMS MessageListener] Received math-app activity submission:', data);
+        const currentUser = AppState.currentUser || { id: '20328', name: '홍길동', grade: '2', classNum: '3' };
+        
+        const activityTitle = data.activityTitle || 'math-app 외부 수학 탐구활동';
+        const answerText = data.answerText || (typeof data.details === 'object' ? JSON.stringify(data.details) : String(data.details || ''));
+        const score = typeof data.score === 'number' ? data.score : 100;
+
+        await CloudDB.saveActivityResult({
+          studentId: currentUser.id || '20328',
+          studentName: currentUser.name || '홍길동',
+          grade: currentUser.grade || '2',
+          classNum: currentUser.classNum || '3',
+          activityTitle: activityTitle,
+          answerText: answerText,
+          score: score
+        });
+
+        alert(`🎉 [math-app 탐구 제출 통합 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구활동: ${activityTitle}\n점수: ${score}점\n\n자동으로 구글 시트 [탐구활동결과] 탭 및 LMS DB에 기록되었습니다.`);
+
+        if (typeof TeacherModule !== 'undefined' && TeacherModule.activeTab === 'analytics') {
+          TeacherModule.switchTab('analytics');
+        }
+      }
+    });
+  },
+
+  checkUrlEmbedParameters() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const embedUrl = params.get('embed_url') || params.get('math_app_url');
+      const title = params.get('title') || '[math-app] 외부 수학 탐구활동';
+
+      if (embedUrl) {
+        console.log('[LMS UrlEmbed] Auto-embedding math-app URL:', embedUrl);
+        const activities = TeacherModule.getActivities();
+        const existingIdx = activities.findIndex(a => a.url === embedUrl);
+        let targetId = '';
+
+        if (existingIdx >= 0) {
+          targetId = activities[existingIdx].id;
+        } else {
+          targetId = 'act-auto-' + Date.now();
+          activities.unshift({
+            id: targetId,
+            title: title,
+            grade: '2학년 전체 (1~8반)',
+            url: embedUrl,
+            desc: 'math-app 프로젝트에서 개발하여 자동으로 LMS에 연동 임베딩된 외부 수학 탐구 모듈입니다.',
+            type: 'gas'
+          });
+          TeacherModule.saveActivities(activities);
+        }
+
+        TeacherModule.activeActivityId = targetId;
+      }
+    } catch (e) {
+      console.warn('[LMS UrlEmbed] Check error:', e);
+    }
   },
 
   async syncCloudDatabase() {

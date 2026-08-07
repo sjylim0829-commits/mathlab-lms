@@ -1,17 +1,10 @@
 /**
  * MathLab Student Interactive Learning Portal
- * Interactive Math Function Grapher, Virtual Math Keypad, and Real-time Activity Submission
+ * Supports internal canvas solvers & embedded math-app web applications
  */
 
 const StudentModule = {
-  activeActivity: {
-    id: 'ML-8042',
-    title: '이차함수 y = ax² + bx + c 와 접선의 방정식 탐구',
-    subject: '고등 수학 (수학 II 미분)',
-    teacher: '김대섭 교사 (휘문고등학교)',
-    target: { a: 1.0, b: 0.0, c: -2.0, x0: 1.0 }
-  },
-
+  activeActivityId: 'act-1',
   grapherInstance: null,
   currentFormulaInput: 'f(x) = x^2 - 2',
 
@@ -19,135 +12,161 @@ const StudentModule = {
     this.renderSolver();
   },
 
-  renderSolver() {
-    const contentArea = document.getElementById('student-main-view');
-    if (!contentArea) return;
+  renderLabView() {
+    const activities = typeof TeacherModule !== 'undefined' ? TeacherModule.getActivities() : [];
+    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0] || {
+      id: 'act-1',
+      title: '[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구',
+      desc: '두 직각삼각형을 마우스/손가락으로 통째로 드래그하여 포개어 보며 RHA 및 RHS 합동 조건의 성질을 직관적으로 탐구합니다.',
+      type: 'canvas'
+    };
 
-    contentArea.innerHTML = `
+    const currentUser = (typeof AppState !== 'undefined' && AppState.currentUser) ? AppState.currentUser : {
+      id: '20328', name: '홍길동', grade: '2', classNum: '3'
+    };
+
+    const catalogCardsHtml = activities.map(act => {
+      const isSelected = act.id === activeAct.id;
+      return `
+        <div class="glass-card hover-lift" style="padding: 1rem; border-color: ${isSelected ? 'var(--violet-bright)' : 'var(--border-card)'}; background: ${isSelected ? 'rgba(99, 102, 241, 0.06)' : '#ffffff'}; flex: 1; min-width: 240px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+            <span style="font-size: 0.7rem; font-weight: 700; color: var(--primary-violet); background: rgba(99, 102, 241, 0.1); padding: 2px 6px; border-radius: 8px;">
+              ${act.grade || '2학년'}
+            </span>
+            ${isSelected ? '<span style="font-size: 0.7rem; font-weight: 700; color: var(--accent-emerald);">▶️ 진행 중</span>' : ''}
+          </div>
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.3rem;">
+            ${act.title}
+          </h4>
+          <button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline-violet'}" style="width: 100%; margin-top: 0.5rem; font-size: 0.75rem;" onclick="StudentModule.selectActivity('${act.id}')">
+            ${isSelected ? '현재 실습 중' : '▶️ 이 탐구실 입장'}
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    return `
       <div style="max-width: 1100px; margin: 0 auto;">
         <!-- Header Info -->
         <div class="glass-card" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <span class="role-pill student" style="font-size: 0.75rem;">학생 활동 세션</span>
-            <h2 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.3rem;">${this.activeActivity.title}</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-              수업 코드: <span style="color: var(--cyan-bright); font-weight: 700; font-family: var(--font-mono);">${this.activeActivity.id}</span> | 담당 교사: ${this.activeActivity.teacher}
-            </p>
-          </div>
-          <button class="btn btn-primary" onclick="StudentModule.submitSolution()">
-            🚀 내 답안 제출하기
-          </button>
-        </div>
-
-        <!-- Main Interactive Workspace -->
-        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
-          <!-- Left: Canvas Graph Plotter & Controls -->
-          <div class="glass-card grapher-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h3 style="font-size: 1.1rem; font-weight: 700;">실시간 그래프 모델링</h3>
-              <span id="student-current-formula-badge" style="font-family: var(--font-mono); color: var(--cyan-bright); font-size: 0.9rem;">
-                f(x) = 1.00x² + 0.00x - 2.00
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span class="role-pill student" style="font-size: 0.75rem;">학생 수학 탐구실</span>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">
+                학생: <strong style="color: var(--text-main);">${currentUser.name} (${currentUser.id})</strong>
               </span>
             </div>
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.3rem;" id="student-active-title">${activeAct.title}</h2>
+          </div>
+          
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn btn-outline-violet" onclick="StudentModule.notifyLMSBridgeHandshake()">
+              🔄 연동 핸드셰이크 재요청
+            </button>
+            <button class="btn btn-primary" onclick="StudentModule.submitSolution()">
+              🚀 내 탐구 답안 제출하기
+            </button>
+          </div>
+        </div>
 
-            <div class="grapher-canvas-card">
-              <canvas id="student-grapher-canvas" class="grapher-canvas"></canvas>
-            </div>
+        <!-- Activity Selection Row -->
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.6rem;">
+            📚 참여 가능 수학 탐구 미션 목록
+          </h3>
+          <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
+            ${catalogCardsHtml}
+          </div>
+        </div>
 
-            <!-- Slider Controls -->
-            <div class="grapher-controls">
-              <div class="slider-group">
-                <div class="slider-label">
-                  <span>이차항 계수 (a)</span>
-                  <span id="val-a">1.00</span>
-                </div>
-                <input type="range" class="slider-input" min="-3" max="3" step="0.1" value="1.0" oninput="StudentModule.updateGraphParams()">
-              </div>
-
-              <div class="slider-group">
-                <div class="slider-label">
-                  <span>일차항 계수 (b)</span>
-                  <span id="val-b">0.00</span>
-                </div>
-                <input type="range" class="slider-input" min="-5" max="5" step="0.1" value="0.0" oninput="StudentModule.updateGraphParams()">
-              </div>
-
-              <div class="slider-group">
-                <div class="slider-label">
-                  <span>상수항 (c)</span>
-                  <span id="val-c">-2.00</span>
-                </div>
-                <input type="range" class="slider-input" min="-5" max="5" step="0.5" value="-2.0" oninput="StudentModule.updateGraphParams()">
-              </div>
-
-              <div class="slider-group">
-                <div class="slider-label">
-                  <span>접점 위치 (x₀)</span>
-                  <span id="val-x0">1.00</span>
-                </div>
-                <input type="range" class="slider-input" min="-4" max="4" step="0.2" value="1.0" oninput="StudentModule.updateGraphParams()">
-              </div>
-            </div>
+        <!-- Embedded Workspace View (Iframe or Canvas) -->
+        <div class="glass-card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <span class="status-indicator live"><span class="dot"></span> 🖥️ 탐구활동 인터랙티브 실습 공간</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              ${activeAct.url ? '🌐 math-app 연동 웹 앱 내장됨' : '📐 Canvas 시뮬레이터'}
+            </span>
           </div>
 
-          <!-- Right: Problem Description & Formula Input Keypad -->
-          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-            <!-- Problem Description Card -->
-            <div class="glass-card">
-              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--cyan-bright);">
-                📌 탐구 문제 1번
-              </h3>
-              <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">
-                이차함수 $f(x) = ax^2 + bx + c$ 가 점 <strong>(1, -1)</strong>을 지나고, 해당 위치에서의 <strong>접선의 기울기가 $m = 2.0$</strong> 이 되도록 계수 $a, b, c$를 슬라이더로 맞춘 후 유도된 수식을 입력하세요.
-              </p>
-              <div style="margin-top: 0.8rem; background: rgba(34,211,238,0.06); border-left: 3px solid var(--primary-cyan); padding: 0.6rem 0.8rem; font-size: 0.8rem; border-radius: 4px;">
-                💡 <strong>힌트:</strong> $f'(x) = 2ax + b$ 미분 공식을 활용하여 $x_0 = 1.0$ 일 때 접선의 기울기값 변화를 관찰하세요.
+          <div id="student-embed-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 1rem; min-height: 460px;">
+            ${activeAct.url ? `
+              <iframe id="math-app-iframe" src="${activeAct.url}" style="width: 100%; height: 520px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}" onload="StudentModule.onIframeLoaded(this)"></iframe>
+            ` : `
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem;">
+                <div class="grapher-wrapper">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700;">실시간 그래프 모델링</h3>
+                    <span id="student-current-formula-badge" style="font-family: var(--font-mono); color: var(--violet-bright); font-size: 0.85rem;">
+                      f(x) = 1.00x² + 0.00x - 2.00
+                    </span>
+                  </div>
+                  <div class="grapher-canvas-card" style="height: 320px;">
+                    <canvas id="student-grapher-canvas" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
+                  </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                  <div class="glass-card" style="padding: 1rem;">
+                    <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 0.4rem;">📌 탐구 안내</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;">
+                      ${activeAct.desc}
+                    </p>
+                  </div>
+                  <div class="glass-card" style="padding: 1rem;">
+                    <label class="form-label">탐구 결과 및 작성 수식</label>
+                    <textarea id="student-formula-input" class="input-control" rows="4" placeholder="탐구 결과를 입력하세요.">f(x) = x^2 - 2 (접선의 기울기 m = 2.0)</textarea>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <!-- Virtual Math Keypad Card -->
-            <div class="glass-card">
-              <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">가상 수식 입력기 (Math Keypad)</h3>
-              <input type="text" id="math-formula-input-field" class="input-control" style="font-family: var(--font-mono); font-size: 1.1rem; letter-spacing: 0.05em;" value="f(x) = x^2 - 2">
-
-              <div class="math-keypad">
-                <button class="key-btn" onclick="StudentModule.appendMath('x²')">x²</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('x³')">x³</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('xⁿ')">xⁿ</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('√x')">√x</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('π')">π</button>
-
-                <button class="key-btn" onclick="StudentModule.appendMath('+')">+</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('-')">-</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('×')">×</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('÷')">÷</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('=')">=</button>
-
-                <button class="key-btn" onclick="StudentModule.appendMath('sin(')">sin</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('cos(')">cos</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('tan(')">tan</button>
-                <button class="key-btn" onclick="StudentModule.appendMath('(')">(</button>
-                <button class="key-btn" onclick="StudentModule.appendMath(')')">)</button>
-
-                <button class="key-btn action-key" onclick="StudentModule.appendMath('f\'(x)')">f'(x)</button>
-                <button class="key-btn action-key" onclick="StudentModule.appendMath('lim')">lim</button>
-                <button class="key-btn action-key" onclick="StudentModule.appendMath('∫')">∫</button>
-                <button class="key-btn action-key" style="grid-column: span 2; color: var(--accent-rose);" onclick="StudentModule.clearMathInput()">⌫ 지우기</button>
-              </div>
-            </div>
+            `}
           </div>
         </div>
       </div>
     `;
+  },
 
-    setTimeout(() => {
-      this.initCanvas();
-    }, 50);
+  renderSolver() {
+    const contentArea = document.getElementById('teacher-main-view');
+    if (contentArea) {
+      contentArea.innerHTML = this.renderLabView();
+      setTimeout(() => this.initCanvas(), 50);
+    }
+  },
+
+  selectActivity(actId) {
+    this.activeActivityId = actId;
+    this.renderSolver();
+  },
+
+  onIframeLoaded(iframe) {
+    console.log('[StudentModule] math-app iframe loaded. Sending initial student payload...');
+    const currentUser = (typeof AppState !== 'undefined' && AppState.currentUser) ? AppState.currentUser : {
+      id: '20328', name: '홍길동', grade: '2', classNum: '3'
+    };
+
+    try {
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({
+          type: 'MATH_LMS_INIT_STUDENT',
+          student: currentUser
+        }, '*');
+      }
+    } catch(e) {}
+  },
+
+  notifyLMSBridgeHandshake() {
+    const iframe = document.getElementById('math-app-iframe');
+    if (iframe) {
+      this.onIframeLoaded(iframe);
+      alert('🔄 연동 핸드셰이크 요청을 math-app 웹 앱으로 전송하였습니다.');
+    } else {
+      alert('현재 선택된 탐구실은 캔버스 모드입니다.');
+    }
   },
 
   initCanvas() {
     const canvas = document.getElementById('student-grapher-canvas');
-    if (canvas) {
+    if (canvas && typeof MathGrapher !== 'undefined') {
       this.grapherInstance = new MathGrapher(canvas, {
         funcType: 'quadratic',
         a: 1.0,
@@ -159,48 +178,25 @@ const StudentModule = {
     }
   },
 
-  updateGraphParams() {
-    const sliders = document.querySelectorAll('.slider-input');
-    if (sliders.length < 4) return;
+  async submitSolution() {
+    const input = document.getElementById('student-formula-input');
+    const answerText = input ? input.value : '탐구 미션 제출 완료';
+    const currentUser = (typeof AppState !== 'undefined' && AppState.currentUser) ? AppState.currentUser : {
+      id: '20328', name: '홍길동', grade: '2', classNum: '3'
+    };
 
-    const a = parseFloat(sliders[0].value);
-    const b = parseFloat(sliders[1].value);
-    const c = parseFloat(sliders[2].value);
-    const x0 = parseFloat(sliders[3].value);
+    const activeTitle = document.getElementById('student-active-title') ? document.getElementById('student-active-title').innerText : '수학 탐구활동';
 
-    document.getElementById('val-a').textContent = a.toFixed(2);
-    document.getElementById('val-b').textContent = b.toFixed(2);
-    document.getElementById('val-c').textContent = c.toFixed(2);
-    document.getElementById('val-x0').textContent = x0.toFixed(2);
+    await CloudDB.saveActivityResult({
+      studentId: currentUser.id,
+      studentName: currentUser.name,
+      grade: currentUser.grade || '2',
+      classNum: currentUser.classNum || '3',
+      activityTitle: activeTitle,
+      answerText: answerText,
+      score: 100
+    });
 
-    const bSign = b >= 0 ? `+ ${b.toFixed(2)}x` : `- ${Math.abs(b).toFixed(2)}x`;
-    const cSign = c >= 0 ? `+ ${c.toFixed(2)}` : `- ${Math.abs(c).toFixed(2)}`;
-    const formulaStr = `f(x) = ${a.toFixed(2)}x² ${bSign} ${cSign}`;
-    document.getElementById('student-current-formula-badge').textContent = formulaStr;
-
-    if (this.grapherInstance) {
-      this.grapherInstance.setParams({ a, b, c, x0 });
-    }
-  },
-
-  appendMath(char) {
-    const input = document.getElementById('math-formula-input-field');
-    if (input) {
-      input.value += char;
-    }
-  },
-
-  clearMathInput() {
-    const input = document.getElementById('math-formula-input-field');
-    if (input) {
-      input.value = 'f(x) = ';
-    }
-  },
-
-  submitSolution() {
-    const input = document.getElementById('math-formula-input-field');
-    const formula = input ? input.value : '';
-
-    alert(`🎉 [제출 완료!]\n\n과제: 이차함수와 접선의 방정식 탐구\n제출 수식: ${formula}\n자동 채점 결과: 100점 (정답입니다!)\n\n교사 화면(Live Dashboard)에 실시간 반영되었습니다.`);
+    alert(`🎉 [제출 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구과제: ${activeTitle}\n제출 수식: ${answerText}\n\n교사 대시보드 및 구글 시트에 실시간 반영되었습니다.`);
   }
 };

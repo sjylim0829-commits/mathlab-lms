@@ -298,6 +298,57 @@ const TeacherModule = {
           </button>
         </div>
 
+        <!-- Dedicated Google Sheet & GAS Deployment Management Card -->
+        <div class="glass-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(5,150,105,0.06)); border-color: rgba(99,102,241,0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+              <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(99,102,241,0.15); color: var(--violet-bright); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800;">
+                📊
+              </div>
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
+                  🌐 GAS 웹앱 전용 구글 시트 & 배포 관리 센터
+                </h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  현재 탐구 활동: <strong style="color: var(--violet-bright);">${activeAct.title}</strong>
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+              <a href="https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">
+                📊 전용 구글 시트 DB 바로가기 🔗
+              </a>
+              <button class="btn btn-outline-violet" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="TeacherModule.showDeploymentModal()">
+                ⚙️ 배포 URL 및 clasp 설정 관리
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; background: #ffffff; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">전용 구글 시트 탭 구성</span>
+              <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-top: 0.3rem;">
+                🟢 [외심탐구결과], [학생명단], [교사메모]
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">GAS Script ID / 배포 상태</span>
+              <div style="font-size: 0.88rem; font-weight: 700; color: var(--accent-emerald); margin-top: 0.3rem;">
+                <code>1LaN48-IpYqUX...</code> (v1.0.0 Anyone)
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">자동 배포 커맨드</span>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--violet-bright); margin-top: 0.3rem; font-family: var(--font-mono);">
+                clasp push --force && clasp deploy
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Custom Google Apps Script Web App URL Registration Form -->
         <div id="activity-embed-form-container" class="glass-card" style="margin-bottom: 2rem; display: none;">
           <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 1rem;">
@@ -598,6 +649,10 @@ const TeacherModule = {
         btn.innerHTML = '🚀 탐구 결과 제출 및 구글 시트 (탐구활동결과 탭) 저장';
       }
     }
+  },
+
+  showDeploymentModal() {
+    alert(`⚙️ [GAS 웹앱 전용 구글 시트 & 배포 관리 설정]\n\n1. 📊 전용 구글 시트 마스터 DB:\n   - 시트명: [영서중] 삼각형의 외심 (Circumcenter) 탐구 마스터 DB\n   - 연동 URL: https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit\n   - 탭 구성: [외심탐구결과], [학생명단], [교사메모]\n\n2. 🌐 Google Apps Script (clasp) 배포 세팅:\n   - Script ID: 1LaN48-IpYqUXczfSg_-neJDfj8QghaF0D23F1Y5ji0mzypd7oV7vAMOe\n   - 배포 URL: https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec\n   - 배포 권한: Anyone (모든 사용자 접근 권한 허용)\n\n3. 💻 로컬 자동 배포 스크립트 실행 방법:\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\setup_clasp.bat\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\deploy.bat`);
   },
 
   testMathAppIntegration() {

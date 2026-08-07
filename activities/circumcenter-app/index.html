@@ -265,13 +265,16 @@
       <span>📐 세 변의 수직이등분선 & 삼각형의 외심(Circumcenter) 탐구</span>
     </div>
     <div class="header-actions">
+      <a href="https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit#gid=0" target="_blank" class="btn btn-sm btn-outline" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="전용 구글 시트 마스터 DB 열기">
+        📊 전용 구글 시트 DB 🔗
+      </a>
       <!-- Student Info Badge & Logout Button -->
       <div id="user-badge" class="user-badge" style="display: none;">
         👤 <span id="current-user-info">로그인 필요</span>
         <button class="btn-logout" onclick="handleStudentLogout()" title="로그아웃">🚪 로그아웃</button>
       </div>
       <button id="btn-mode-toggle" class="btn btn-amber" onclick="openTeacherModal()">
-        🔑 교사 전용 접속
+        🔑 교사 접속 & GAS 배포 관리
       </button>
     </div>
   </header>
@@ -472,7 +475,7 @@
     }
 
     function openTeacherModal() {
-      alert('🔑 교사 전용 접속: 임종윤 선생님 계정 (test / 11111111)으로 인증되었습니다.');
+      alert(`🔑 [교사 전용 접속 & GAS 웹앱 배포 관리 센터]\n\n담당 교사: 임종윤 교사 (영서중학교)\n\n1. 📊 전용 구글 시트 마스터 DB:\n   - 시트명: [영서중] 삼각형의 외심 탐구 마스터 DB\n   - 연동 탭: [외심탐구결과], [학생명단], [교사메모]\n   - 시트 URL: https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit\n\n2. 🌐 GAS 웹앱 배포 및 버전 정보:\n   - Script ID: 1LaN48-IpYqUXczfSg_-neJDfj8QghaF0D23F1Y5ji0mzypd7oV7vAMOe\n   - 배포 URL: https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec\n   - 배포 권한: Anyone (모든 사용자 접근 가능)\n\n3. ⚡ clasp 자동 배포 스크립트:\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\setup_clasp.bat\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\deploy.bat`);
     }
 
     // Geometry Calculation

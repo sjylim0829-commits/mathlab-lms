@@ -419,7 +419,7 @@ const App = {
       return;
     }
 
-    alert('아이디 또는 비밀번호가 올바르지 않습니다. 교사 계정: test / 11111111');
+    alert('아이디 또는 비밀번호가 올바르지 않습니다.');
   },
 
   toggleUserRole() {

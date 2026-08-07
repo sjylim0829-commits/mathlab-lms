@@ -99,7 +99,7 @@ const ProgressModule = {
       teacherNote: '기울기와 y절편 탐구 학습 진행 중'
     })),
 
-    3: Array.from({ length: 8 }, (_, i) => ({
+    3: Array.from({ length: 6 }, (_, i) => ({
       classNum: i + 1,
       unit: 'Ⅲ. 이차방정식 - 1. 이차방정식의 풀이 (인수분해, 근의 공식과 활용)',
       pages: `p.${84 + i * 3} ~ p.${96 + i * 3}`,
@@ -134,7 +134,7 @@ const ProgressModule = {
               <h2 style="font-size: 1.6rem; font-weight: 800;">전 학급 수업 진도 기록부 (구글 시트 교육과정DB 연동)</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 24개 학급 실시간 진도 구글 시트 저장
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 총 22개 학급 실시간 진도 구글 시트 저장
             </p>
           </div>
 
@@ -157,7 +157,7 @@ const ProgressModule = {
             🌿 2학년 (1반 ~ 8반)
           </button>
           <button class="grade-tab-btn ${this.activeGrade === 3 ? 'active' : ''}" onclick="ProgressModule.switchGrade(3)">
-            🌳 3학년 (1반 ~ 8반)
+            🌳 3학년 (1반 ~ 6반)
           </button>
         </div>
 

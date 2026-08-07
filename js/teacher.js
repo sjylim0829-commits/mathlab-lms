@@ -47,7 +47,7 @@ const TeacherModule = {
       {
         id: 'act-4',
         title: '[3학년] 이차함수 y=a(x-p)²+q 포물선 모양 탐구',
-        grade: '3학년 전체 (1~8반)',
+        grade: '3학년 전체 (1~6반)',
         url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
         desc: '꼭짓점 (p, q)의 위치 변화 및 폭 a에 따른 포물선 대칭축과 최댓값/최솟값 변화를 분석합니다.',
         type: 'gas'
@@ -365,7 +365,7 @@ const TeacherModule = {
                 <select id="embed-grade-select" class="input-control">
                   <option value="1학년 전체 (1~8반)">1학년 전체 (1~8반)</option>
                   <option value="2학년 전체 (1~8반)" selected>2학년 전체 (1~8반)</option>
-                  <option value="3학년 전체 (1~8반)">3학년 전체 (1~8반)</option>
+                  <option value="3학년 전체 (1~6반)">3학년 전체 (1~6반)</option>
                 </select>
               </div>
             </div>

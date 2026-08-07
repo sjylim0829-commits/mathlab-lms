@@ -316,7 +316,7 @@ const TeacherModule = {
             </div>
 
             <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-              <a href="https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">
+              <a href="https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">
                 📊 전용 구글 시트 DB 바로가기 🔗
               </a>
               <button class="btn btn-outline-violet" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="TeacherModule.showDeploymentModal()">
@@ -652,7 +652,7 @@ const TeacherModule = {
   },
 
   showDeploymentModal() {
-    alert(`⚙️ [GAS 웹앱 전용 구글 시트 & 배포 관리 설정]\n\n1. 📊 전용 구글 시트 마스터 DB:\n   - 시트명: [영서중] 삼각형의 외심 (Circumcenter) 탐구 마스터 DB\n   - 연동 URL: https://docs.google.com/spreadsheets/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit\n   - 탭 구성: [외심탐구결과], [학생명단], [교사메모]\n\n2. 🌐 Google Apps Script (clasp) 배포 세팅:\n   - Script ID: 1LaN48-IpYqUXczfSg_-neJDfj8QghaF0D23F1Y5ji0mzypd7oV7vAMOe\n   - 배포 URL: https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec\n   - 배포 권한: Anyone (모든 사용자 접근 권한 허용)\n\n3. 💻 로컬 자동 배포 스크립트 실행 방법:\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\setup_clasp.bat\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\deploy.bat`);
+    alert(`⚙️ [GAS 웹앱 전용 구글 시트 & 배포 관리 설정]\n\n담당 교사: 임종윤 교사 (영서중학교)\n\n1. 📊 전용 구글 시트 마스터 DB:\n   - 시트명: [영서중] 학교 LMS DB (학생명부/수업진도/탐구활동결과)\n   - 시트 URL: https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit\n   - 연동 탭: [탐구활동결과], [학생명부], [수업진도]\n\n2. 🌐 Google Apps Script (clasp) 배포 세팅:\n   - Script ID: 17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT\n   - 스크립트 편집기: https://script.google.com/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit\n   - 배포 URL: https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec\n   - 배포 권한: Anyone (모든 사용자 접근 권한 허용)\n\n3. 💻 로컬 자동 배포 스크립트 실행 위치:\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\setup_clasp.bat\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\deploy.bat`);
   },
 
   testMathAppIntegration() {

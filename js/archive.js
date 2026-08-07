@@ -4,50 +4,11 @@
  */
 
 const ArchiveModule = {
-  selectedStudentId: '20302', // Default 김민준
+  selectedStudentId: '10830', // Default 실제 연동 학생
   selectedTone: 'academic',
 
   // Database of archived student math activities & tailored 세특 templates
-  archiveData: {
-    '20302': {
-      name: '김민준',
-      gradeClass: '2학년 3반 (20302)',
-      activitiesCount: 8,
-      avgScore: 98,
-      inquirySkill: '최상급 (수학적 모델링 및 미분계수 직관적 파악)',
-      recentSubmissions: [
-        { date: '2026-08-01', title: '일차함수 y = ax + b 기울기와 절편 탐구', score: 100, formula: 'f(x) = 2x - 3', note: '기울기 변화에 따른 직선의 평행 관계를 완벽히 유도함' },
-        { date: '2026-07-28', title: '일차부등식의 해와 수직선 영역 시각화', score: 95, formula: '2x - 4 > 0 ⇒ x > 2', note: '경계값의 포함 여부를 수직선 원 표시로 정확히 구분' },
-        { date: '2026-07-22', title: '다항식의 곱셈공식과 인수분해 기하적 모델링', score: 100, formula: '(a+b)² = a² + 2ab + b²', note: '도형의 넓이 분할을 통해 인수분해 공식을 기하적으로 증명함' }
-      ],
-      generatedSeteuk: `일차함수 $y = ax + b$의 계수 변화에 따른 그래프의 기하학적 변화를 탐구하는 활동에서, 기울기 $a$가 직선의 경사도 및 평행 관계에 미치는 영향을 논리적으로 분석함. 가상 그래프 모듈을 활용하여 점과 절편의 이동 과정을 시각화하고, 주어진 조건에 적합한 직선의 방정식을 정교하게 유도하는 우수한 수학적 모델링 능력을 보여줌. 문제 해결 과정에서 미분적 사고의 기초가 되는 순간 변화율의 직관적 의미를 수치적으로 검증하며, 수학적 아이디어를 표현하고 소통하는 태도가 매우 뛰어남.`
-    },
-
-    '20307': {
-      name: '이서연',
-      gradeClass: '2학년 3반 (20307)',
-      activitiesCount: 9,
-      avgScore: 100,
-      inquirySkill: '최상급 (수학적 논증 및 창의적 문제 해결)',
-      recentSubmissions: [
-        { date: '2026-08-01', title: '일차함수 y = ax + b 기울기와 절편 탐구', score: 100, formula: 'f(x) = -1.5x + 4', note: 'y절편과 x절편을 이용한 빠른 직선 그리기 원리 파악' },
-        { date: '2026-07-29', title: '연립일차방정식의 해와 두 직선의 교점', score: 100, formula: 'x=2, y=1', note: '방정식의 해가 두 직선의 교점 좌표와 일치함을 시각적으로 증명' }
-      ],
-      generatedSeteuk: `연립방정식과 일차함수의 관계를 탐구하는 수업에서 두 직선의 교점이 연립방정식의 해와 일치함을 기하학적으로 명확히 입증함. 계수 변화에 따른 해의 개수(일치, 평행, 한 점 교차)를 스스로 추론하여 법칙화하였으며, 수식 입력기를 통해 복잡한 과제에서도 오답 없이 정확한 수학적 기호로 해를 작성하는 뛰어난 분석력과 수리적 치밀함을 발휘함.`
-    },
-
-    '20305': {
-      name: '박현우',
-      gradeClass: '2학년 3반 (20305)',
-      activitiesCount: 7,
-      avgScore: 92,
-      inquirySkill: '상급 (적극적 실습 및 응용력 우수)',
-      recentSubmissions: [
-        { date: '2026-08-01', title: '일차함수 y = ax + b 기울기와 절편 탐구', score: 92, formula: 'f(x) = x - 2', note: '기울기 1인 직선의 성질 파악' }
-      ],
-      generatedSeteuk: `수학적 실습 도구를 활용한 함수 단위 탐구 활동에서 주도적인 태도로 그래프 계수 슬라이더를 조작하며 변수 간의 상관관계를 체계적으로 탐색함. 함수의 절편과 기울기 사이의 관계를 빠르게 파악하여 실제 문제 해결에 적용하는 응용력이 뛰어나며, 모둠원들과 탐구 결과를 공유할 때 명확한 수학 용어를 사용하여 설명하는 소통 능력이 돋보임.`
-    }
-  },
+  archiveData: {},
 
   renderView() {
     const studentIds = AppState.demoStudents.map(s => s.id);

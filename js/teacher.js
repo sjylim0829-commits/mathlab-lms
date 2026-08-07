@@ -8,7 +8,7 @@ const LOCAL_STORAGE_KEY_ACTIVITIES = 'mathlab_registered_activities';
 const TeacherModule = {
   activeTab: 'dashboard',
   triangleExplorer: null,
-  activeActivityId: 'MATH-2026-GEO-02',
+  activeActivityId: 'REDBOOK-GEO-01',
 
   getActivities() {
     const defaultList = [
@@ -27,46 +27,6 @@ const TeacherModule = {
         url: 'https://script.google.com/macros/s/AKfycbzAOh_0HNPAhy25scaJKIykIHywtKGRrNTU6TQKdk0L9berPBqV3xm-qWlUdT_Q3eJOcg/exec',
         desc: 'Redbook 제작: 세 변의 수직이등분선 작도, 외심 O 및 외접원, 외심의 위치 & 각도 성질(∠BOC = 2∠A) 증명 웹 앱 (LMS DB 연동 완료)',
         type: 'gas'
-      },
-      {
-        id: 'MATH-2026-GEO-02',
-        title: '✨ [2학년] 삼각형의 외심 (Circumcenter) 탐구 GAS 웹앱 (math-app)',
-        grade: '2학년 전체 (1~8반)',
-        url: 'activities/circumcenter-app/index.html',
-        desc: '세 변의 수직이등분선의 교점인 외심의 정의, 세 꼭짓점까지의 거리 동등성(OA=OB=OC), 및 삼각형 종류별(예각, 직각, 둔각) 외심 위치 변화를 탐구하는 GAS 구조 math-app 연동 웹앱입니다.',
-        type: 'gas'
-      },
-      {
-        id: 'act-1',
-        title: '[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구',
-        grade: '2학년 전체 (1~8반)',
-        url: '', // Interactive Canvas solid drag overlay
-        desc: '두 직각삼각형을 마우스/손가락으로 통째로 드래그하여 포개어 보며 RHA 및 RHS 합동 조건의 성질을 직관적으로 탐구합니다.',
-        type: 'canvas'
-      },
-      {
-        id: 'act-2',
-        title: '[2학년] 일차함수 y=ax+b 기울기와 y절편 실시간 탐구',
-        grade: '2학년 전체 (1~8반)',
-        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
-        desc: '기울기 a의 양수/음수 변화 및 y절편 b에 따른 그래프의 평행이동과 사분면 지나감을 탐구합니다.',
-        type: 'gas'
-      },
-      {
-        id: 'act-3',
-        title: '[1학년] n각형의 내각의 합 및 외각의 성질 실습',
-        grade: '1학년 전체 (1~8반)',
-        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
-        desc: '삼각형 분할을 이용한 n각형 내각의 합 [180° × (n-2)] 수식을 구하고 외각의 합 360° 성질을 확인합니다.',
-        type: 'gas'
-      },
-      {
-        id: 'act-4',
-        title: '[3학년] 이차함수 y=a(x-p)²+q 포물선 모양 탐구',
-        grade: '3학년 전체 (1~6반)',
-        url: 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec',
-        desc: '꼭짓점 (p, q)의 위치 변화 및 폭 a에 따른 포물선 대칭축과 최댓값/최솟값 변화를 분석합니다.',
-        type: 'gas'
       }
     ];
 
@@ -75,18 +35,16 @@ const TeacherModule = {
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge default items into parsed if missing
+          // Filter out old demo apps
+          const cleanList = parsed.filter(a => a.id.startsWith('REDBOOK-') || a.id.startsWith('act-auto-'));
+          const redbookIds = defaultList.map(a => a.id);
           defaultList.forEach(defItem => {
-            const idx = parsed.findIndex(p => p.id === defItem.id || (defItem.url && p.url === defItem.url));
-            if (idx >= 0) {
-              // Update metadata
-              parsed[idx] = Object.assign({}, parsed[idx], defItem);
-            } else {
-              parsed.unshift(defItem);
+            if (!cleanList.some(p => p.id === defItem.id)) {
+              cleanList.push(defItem);
             }
           });
-          this.saveActivities(parsed);
-          return parsed;
+          this.saveActivities(cleanList);
+          return cleanList;
         }
       }
     } catch(e) {}

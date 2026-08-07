@@ -1,0 +1,31 @@
+{
+  "activityId": "MATH-2026-GEO-02",
+  "deploymentSpecId": "AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N",
+  "title": "삼각형의 외심 (Circumcenter) 탐구 웹앱",
+  "subject": "중학교 2학년 수학 (기하 단원)",
+  "grade": 2,
+  "category": "기하 탐구",
+  "author": "임종윤 (영서중학교)",
+  "version": "1.0.0",
+  "entryPoint": "index.html",
+  "localPath": "C:/Users/sjyli/.gemini/antigravity/scratch/math-apps/circumcenter-app/index.html",
+  "description": "세 변의 수직이등분선의 교점인 외심의 정의, 세 꼭짓점까지의 거리 동등성(OA=OB=OC), 및 삼각형 종류별(예각, 직각, 둔각) 외심의 위치 변화를 동적으로 탐구하는 인터랙티브 웹앱",
+  "interactiveFeatures": [
+    "마우스/터치 지원 꼭짓점 A, B, C 실시간 드래그 시뮬레이션",
+    "세 변의 수직이등분선 및 외접원(Circumcircle) 실시간 계산/렌더링",
+    "외심에서 꼭짓점까지의 거리(OA, OB, OC) 실시간 측정 및 동등성 검증",
+    "삼각형 종류별(예각/직각/둔각) 외심 위치 픽스 프리셋 버튼",
+    "4단계 탐구 미션 검증 시스템 및 소감 작성 제출",
+    "MathLMSBridge SDK 기반 LMS 자동 학생 연동 및 탐구 결과 제출"
+  ],
+  "submissionSchema": {
+    "activityId": "MATH-2026-GEO-02",
+    "score": 100,
+    "answerText": "string",
+    "details": {
+      "distances": { "OA": "number", "OB": "number", "OC": "number" },
+      "triangleType": "acute | right | obtuse",
+      "missionsCompleted": { "1": "boolean", "2": "boolean", "3": "boolean", "4": "boolean" }
+    }
+  }
+}

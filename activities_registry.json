@@ -1,0 +1,22 @@
+{
+  "lastUpdated": "2026-08-07T12:18:00+09:00",
+  "totalActivities": 2,
+  "activities": [
+    {
+      "activityId": "MATH-2026-GEO-01",
+      "deploymentSpecId": "AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N",
+      "title": "이등변삼각형의 성질 탐구",
+      "grade": 2,
+      "entryPoint": "C:/Users/sjyli/.gemini/antigravity/scratch/mathlab-lms/index.html",
+      "manifestPath": "C:/Users/sjyli/.gemini/antigravity/scratch/mathlab-lms/activity_manifest.json"
+    },
+    {
+      "activityId": "MATH-2026-GEO-02",
+      "deploymentSpecId": "AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N",
+      "title": "삼각형의 외심 (Circumcenter) 탐구 웹앱",
+      "grade": 2,
+      "entryPoint": "C:/Users/sjyli/.gemini/antigravity/scratch/math-apps/circumcenter-app/index.html",
+      "manifestPath": "C:/Users/sjyli/.gemini/antigravity/scratch/math-apps/circumcenter-app/activity_manifest.json"
+    }
+  ]
+}

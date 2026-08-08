@@ -32,7 +32,7 @@ const TeacherModule = {
         id: 'REDBOOK-GEO-03',
         title: '📐 [2학년] 삼각형의 내심 (Incenter) 탐구 (Redbook 웹 앱)',
         grade: '2학년 전체 (1~8반)',
-        url: 'https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec',
+        url: 'https://script.google.com/macros/s/AKfycbw6TTLyvTkX2CmMVt9a-T3iNuhjK261pG4kXEObPSDg7yl4CvgFt-5ttiiA34H-4yJ0/exec',
         desc: 'Redbook 제작: 세 내각의 이등분선 작도, 내심 I 및 내접원(r), 세 변까지의 거리(ID=IE=IF) & 각도 성질(∠BIC = 90° + ½∠A) 증명 웹 앱 (구글 시트 DB 1m97-hqz... 연동 완료)',
         type: 'gas'
       }

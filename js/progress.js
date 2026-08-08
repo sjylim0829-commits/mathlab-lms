@@ -6,6 +6,7 @@
 
 const ProgressModule = {
   activeGrade: 2, // 기본값: 2학년
+  hasUnsavedChanges: false, // 저장 버튼 누르기 전 수정 여부 플래그
 
   // 중학교 2학년 수학 (2학기) 50차시 세부 진도표 마스터 데이터 (5단원 ~ 8단원)
   syllabus50: [
@@ -70,7 +71,6 @@ const ProgressModule = {
 
   // 각 학학년/학반별 50차시 완료 체크리스트 상태 ({ period: [checked_classNums] })
   checklistData: {
-    // 2학년 기본 더미 데이터
     2: {
       1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
       2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
@@ -84,6 +84,12 @@ const ProgressModule = {
   },
 
   switchGrade(grade) {
+    if (this.hasUnsavedChanges) {
+      if (!confirm('⚠️ 저장되지 않은 수정사항이 있습니다. 학년을 변경하면 변경 내용이 사라질 수 있습니다. 이동하시겠습니까?')) {
+        return;
+      }
+    }
+    this.hasUnsavedChanges = false;
     this.activeGrade = grade;
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
@@ -91,7 +97,6 @@ const ProgressModule = {
     }
   },
 
-  // 구글 시트 백엔드에서 50차시 체크리스트 데이터 수합 시 갱신
   updateFromSheet(checklistItems) {
     if (!Array.isArray(checklistItems) || checklistItems.length === 0) return;
 
@@ -124,7 +129,7 @@ const ProgressModule = {
     }
   },
 
-  // 반별 체크박스 토글 핸들러
+  // 1. 반별 체크박스 개별 토글 (저장 버튼 누르기 전까지 임시 상태)
   toggleCheck(period, classNum) {
     if (!this.checklistData[this.activeGrade]) {
       this.checklistData[this.activeGrade] = {};
@@ -141,8 +146,73 @@ const ProgressModule = {
       list.push(period);
     }
 
+    this.markAsUnsaved();
     this.updateStatsUI();
-    this.syncToCloudDB();
+  },
+
+  // 2. 차시별 전체 학반 체크/해제 토글 버튼 핸들러
+  toggleAllForPeriod(period) {
+    const totalClasses = (this.activeGrade === 3) ? 6 : 8;
+    if (!this.checklistData[this.activeGrade]) {
+      this.checklistData[this.activeGrade] = {};
+    }
+
+    // 현재 해당 차시가 전체 학반에 대해 다 체크되었는지 판단
+    let allChecked = true;
+    for (let c = 1; c <= totalClasses; c++) {
+      const list = this.checklistData[this.activeGrade][c] || [];
+      if (!list.includes(period)) {
+        allChecked = false;
+        break;
+      }
+    }
+
+    // 이미 다 체크되어 있으면 전체 해제, 하나라도 안 되어있으면 전체 체크
+    for (let c = 1; c <= totalClasses; c++) {
+      if (!this.checklistData[this.activeGrade][c]) {
+        this.checklistData[this.activeGrade][c] = [];
+      }
+      const list = this.checklistData[this.activeGrade][c];
+      const idx = list.indexOf(period);
+
+      if (allChecked) {
+        // 전체 해제
+        if (idx >= 0) list.splice(idx, 1);
+      } else {
+        // 전체 체크
+        if (idx < 0) list.push(period);
+      }
+    }
+
+    this.markAsUnsaved();
+    this.renderTableOnly();
+    this.updateStatsUI();
+  },
+
+  // 3. 50차시 텍스트 직접 수정
+  handleTextEdit(period, field, value) {
+    const target = this.syllabus50.find(s => s.period === period);
+    if (target) {
+      target[field] = value;
+      this.markAsUnsaved();
+    }
+  },
+
+  // 변경사항 발생 시 저장 버튼 강조 표시
+  markAsUnsaved() {
+    this.hasUnsavedChanges = true;
+    const saveBtn = document.getElementById('save-syllabus-btn');
+    if (saveBtn) {
+      saveBtn.style.animation = 'pulseSave 1.5s infinite alternate';
+      saveBtn.style.boxShadow = '0 0 20px rgba(79, 70, 229, 0.6)';
+    }
+
+    const syncStatusEl = document.getElementById('cloud-sync-status');
+    if (syncStatusEl) {
+      syncStatusEl.innerHTML = '⚠️ <span style="color: #d97706; font-weight: 800;">수정사항 있음 (저장 버튼을 누르세요)</span>';
+      syncStatusEl.style.background = '#fef3c7';
+      syncStatusEl.style.borderColor = '#fde68a';
+    }
   },
 
   // 실시간 진도율 수치 재계산 UI
@@ -168,23 +238,22 @@ const ProgressModule = {
       const countEl = document.getElementById(`completed-count-${item.period}`);
       if (countEl) {
         countEl.textContent = `${count}/${totalClasses}개반`;
-        countEl.style.background = count === totalClasses ? 'rgba(16, 185, 129, 0.15)' : count > 0 ? 'rgba(99, 102, 241, 0.15)' : 'rgba(241, 245, 249, 0.9)';
-        countEl.style.color = count === totalClasses ? '#059669' : count > 0 ? '#4f46e5' : '#64748b';
+        countEl.style.background = count === totalClasses ? '#d1fae5' : count > 0 ? '#e0e7ff' : '#f1f5f9';
+        countEl.style.color = count === totalClasses ? '#047857' : count > 0 ? '#3730a3' : '#64748b';
       }
     });
   },
 
-  handleTextEdit(period, field, value) {
-    const target = this.syllabus50.find(s => s.period === period);
-    if (target) {
-      target[field] = value;
-    }
-  },
-
-  async syncToCloudDB() {
+  // 4. [저장] 버튼 클릭시에만 구글 드라이브 DB 및 로컬 저장소로 수정사항 최종 반영!
+  async saveToCloudDB() {
     const syncStatusEl = document.getElementById('cloud-sync-status');
+    const saveBtn = document.getElementById('save-syllabus-btn');
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '⏳ 구글 드라이브 DB 저장 중...';
+    }
     if (syncStatusEl) {
-      syncStatusEl.innerHTML = '🔄 <span style="color: #d97706; font-weight: 700;">구글 드라이브 DB 저장 중...</span>';
+      syncStatusEl.innerHTML = '🔄 <span style="color: #4f46e5; font-weight: 800;">구글 드라이브 DB 전송 중...</span>';
     }
 
     const totalClasses = (this.activeGrade === 3) ? 6 : 8;
@@ -208,15 +277,115 @@ const ProgressModule = {
     try {
       if (window.CloudDB && CloudDB.saveSyllabusChecklist) {
         await CloudDB.saveSyllabusChecklist(payloadItems);
-        if (syncStatusEl) {
-          syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 동기화 완료!</span>';
-        }
       }
-    } catch (err) {
+      this.hasUnsavedChanges = false;
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.style.animation = 'none';
+        saveBtn.style.boxShadow = '0 4px 14px rgba(79, 70, 229, 0.25)';
+        saveBtn.innerHTML = '💾 50차시 진도 수정사항 저장하기';
+      }
       if (syncStatusEl) {
-        syncStatusEl.innerHTML = '⚠️ <span style="color: #dc2626; font-weight: 700;">로컬 저장 완료 (DB 오프라인)</span>';
+        syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">구글 드라이브 DB 저장 완료!</span>';
+        syncStatusEl.style.background = '#d1fae5';
+        syncStatusEl.style.borderColor = '#6ee7b7';
       }
+      alert('✅ 50차시 세부 진도표 및 반별 체크리스트 수정사항이 구글 드라이브 DB에 성공적으로 저장되었습니다!');
+    } catch (err) {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '💾 50차시 진도 수정사항 저장하기';
+      }
+      alert('⚠️ 로컬에 임시 저장되었습니다. (구글 드라이브 연결 확인 필요)');
     }
+  },
+
+  renderTableOnly() {
+    const tableContainer = document.getElementById('syllabus-table-container');
+    if (tableContainer) {
+      tableContainer.innerHTML = this.renderTableRowsHtml();
+    }
+  },
+
+  renderTableRowsHtml() {
+    const totalClasses = (this.activeGrade === 3) ? 6 : 8;
+    const classArray = Array.from({ length: totalClasses }, (_, i) => i + 1);
+
+    return `
+      <table class="syllabus-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+        <thead>
+          <tr style="background: linear-gradient(135deg, #e0e7ff, #ede9fe); border-bottom: 2px solid #a5b4fc; color: #1e1b4b;">
+            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 65px; font-weight: 800;">차시</th>
+            <th style="padding: 0.8rem 0.6rem; width: 190px; font-weight: 800;">대단원</th>
+            <th style="padding: 0.8rem 0.6rem; width: 170px; font-weight: 800;">중단원 / 소단원</th>
+            <th style="padding: 0.8rem 0.6rem; min-width: 270px; font-weight: 800;">학습 주제 및 핵심 개념</th>
+            ${classArray.map(c => `
+              <th style="padding: 0.8rem 0.3rem; text-align: center; width: 50px; font-weight: 800; color: #3730a3;">${c}반</th>
+            `).join('')}
+            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 95px; font-weight: 800;">차시 전체</th>
+            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 85px; font-weight: 800;">완료 학급</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${this.syllabus50.map(item => {
+            let completedCount = 0;
+            classArray.forEach(c => {
+              const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
+              if (list.includes(item.period)) completedCount++;
+            });
+            const isAllChecked = completedCount === totalClasses;
+
+            return `
+              <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                <td style="padding: 0.7rem 0.5rem; text-align: center; font-weight: 800; color: #059669; font-family: var(--font-mono); font-size: 0.9rem;">
+                  ${String(item.period).padStart(2, '0')}차시
+                </td>
+
+                <!-- 대단원 (직접 수정 가능) -->
+                <td style="padding: 0.45rem 0.5rem;">
+                  <input type="text" class="input-inline" value="${item.mainUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'mainUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 800; color: #3730a3; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                </td>
+
+                <!-- 소단원 (직접 수정 가능) -->
+                <td style="padding: 0.45rem 0.5rem;">
+                  <input type="text" class="input-inline" value="${item.subUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'subUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 600; color: #334155; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                </td>
+
+                <!-- 학습 주제 및 핵심 개념 (직접 수정 가능) -->
+                <td style="padding: 0.45rem 0.5rem;">
+                  <input type="text" class="input-inline" value="${item.topic}" onchange="ProgressModule.handleTextEdit(${item.period}, 'topic', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 500; color: #1e293b; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                </td>
+
+                <!-- 학반별 체크박스 -->
+                ${classArray.map(c => {
+                  const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
+                  const isChecked = list.includes(item.period);
+                  return `
+                    <td style="padding: 0.7rem 0.3rem; text-align: center;">
+                      <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="ProgressModule.toggleCheck(${item.period}, ${c})" style="width: 19px; height: 19px; cursor: pointer; accent-color: #4f46e5;">
+                    </td>
+                  `;
+                }).join('')}
+
+                <!-- 차시별 전체 학반 체크/해제 동시 선택 버튼 -->
+                <td style="padding: 0.7rem 0.4rem; text-align: center;">
+                  <button type="button" onclick="ProgressModule.toggleAllForPeriod(${item.period})" style="padding: 3px 8px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; border: 1px solid ${isAllChecked ? '#fca5a5' : '#a5b4fc'}; background: ${isAllChecked ? '#fef2f2' : '#e0e7ff'}; color: ${isAllChecked ? '#dc2626' : '#4338ca'}; cursor: pointer; transition: all 0.15s ease;">
+                    ${isAllChecked ? '해제☐' : '전체☑'}
+                  </button>
+                </td>
+
+                <!-- 완료 학급 수 -->
+                <td style="padding: 0.7rem; text-align: center;">
+                  <span id="completed-count-${item.period}" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: ${completedCount === totalClasses ? '#d1fae5' : completedCount > 0 ? '#e0e7ff' : '#f1f5f9'}; color: ${completedCount === totalClasses ? '#047857' : completedCount > 0 ? '#3730a3' : '#64748b'}; border: 1px solid ${completedCount === totalClasses ? '#a7f3d0' : completedCount > 0 ? '#c7d2fe' : '#e2e8f0'};">
+                    ${completedCount}/${totalClasses}개반
+                  </span>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
   },
 
   renderView() {
@@ -235,17 +404,20 @@ const ProgressModule = {
               <h2 style="font-size: 1.6rem; font-weight: 800; color: #1e1b4b;">50차시 세부 진도표 & 반별 체크리스트</h2>
             </div>
             <p style="font-size: 0.85rem; color: #475569; margin-top: 0.3rem;">
-              담당 교사: <strong style="color: #1e1b4b;">임종윤 교사 (영서중학교)</strong> | 1차시부터 50차시까지 학반별 진도 완료 체크박스를 클릭하여 실시간 기록하세요.
+              담당 교사: <strong style="color: #1e1b4b;">임종윤 교사 (영서중학교)</strong> | 학반별 진도 완료를 수정한 후 <strong style="color: #4f46e5;">[💾 50차시 진도 수정사항 저장하기]</strong> 버튼을 누르면 구글 드라이브 DB에 반영됩니다.
             </p>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <div id="cloud-sync-status" style="font-size: 0.85rem; font-weight: 600; background: #ffffff; padding: 6px 14px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              ✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 연동 완료</span>
+          <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+            <div id="cloud-sync-status" style="font-size: 0.85rem; font-weight: 600; background: #ffffff; padding: 7px 14px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              ${this.hasUnsavedChanges ? '⚠️ <span style="color: #d97706; font-weight: 800;">수정사항 있음 (저장 버튼을 누르세요)</span>' : '✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 준비 완료</span>'}
             </div>
-            <button class="btn btn-primary" onclick="ProgressModule.syncToCloudDB()" style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none; font-weight: 700; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);">
-              💾 구글 드라이브 DB 수동 저장
+
+            <!-- 핵심 [저장] 버튼 (저장 버튼 클릭시에만 수정사항 구글 드라이브 DB로 반영) -->
+            <button id="save-syllabus-btn" class="btn btn-primary" onclick="ProgressModule.saveToCloudDB()" style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none; font-weight: 800; font-size: 0.95rem; padding: 0.65rem 1.4rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3); transition: all 0.2s ease;">
+              💾 50차시 진도 수정사항 저장하기
             </button>
+            
             <button class="btn btn-outline-violet" onclick="window.print()" style="background: #ffffff; color: #4338ca; border: 1px solid #c7d2fe; font-weight: 700;">
               🖨️ 50차시 진도표 인쇄
             </button>
@@ -265,7 +437,7 @@ const ProgressModule = {
           </button>
         </div>
 
-        <!-- Class Progress Bright Cards Overview (밝고 세련된 라이트 톤) -->
+        <!-- Class Progress Bright Cards Overview -->
         <div style="margin-bottom: 1.8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 0.85rem;">
           ${classArray.map(c => {
             const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
@@ -286,9 +458,9 @@ const ProgressModule = {
           }).join('')}
         </div>
 
-        <!-- 50-Period Syllabus Checkbox Matrix Table (화사한 라이트 톤 헤더 & 고시인성 디자인) -->
+        <!-- 50-Period Syllabus Checkbox Matrix Table Container -->
         <div class="glass-card" style="overflow-x: auto; padding: 1.25rem; background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04); border-radius: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <h3 style="font-size: 1.2rem; font-weight: 800; color: #1e1b4b; display: flex; align-items: center; gap: 0.5rem;">
               <span>📋 50차시 세부 진도표 및 반별 완료 체크리스트</span>
               <span style="font-size: 0.8rem; background: #e0e7ff; color: #3730a3; padding: 3px 10px; border-radius: 10px; font-weight: 700; border: 1px solid #c7d2fe;">
@@ -296,74 +468,13 @@ const ProgressModule = {
               </span>
             </h3>
             <span style="font-size: 0.82rem; color: #64748b; font-weight: 600;">
-              💡 각 반별 체크박스를 누르거나 텍스트를 직접 클릭하여 바로 수정할 수 있습니다.
+              💡 각 차시별 <strong style="color: #4338ca;">[전체☑]</strong> 버튼을 누르면 해당 차시의 전체 학반 체크박스가 동시에 선택/해제됩니다.
             </span>
           </div>
 
-          <table class="syllabus-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
-            <thead>
-              <tr style="background: linear-gradient(135deg, #e0e7ff, #ede9fe); border-bottom: 2px solid #a5b4fc; color: #1e1b4b;">
-                <th style="padding: 0.8rem 0.5rem; text-align: center; width: 65px; font-weight: 800;">차시</th>
-                <th style="padding: 0.8rem 0.6rem; width: 190px; font-weight: 800;">대단원</th>
-                <th style="padding: 0.8rem 0.6rem; width: 170px; font-weight: 800;">중단원 / 소단원</th>
-                <th style="padding: 0.8rem 0.6rem; min-width: 270px; font-weight: 800;">학습 주제 및 핵심 개념</th>
-                ${classArray.map(c => `
-                  <th style="padding: 0.8rem 0.3rem; text-align: center; width: 50px; font-weight: 800; color: #3730a3;">${c}반</th>
-                `).join('')}
-                <th style="padding: 0.8rem; text-align: center; width: 90px; font-weight: 800;">완료 학급</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${this.syllabus50.map(item => {
-                let completedCount = 0;
-                classArray.forEach(c => {
-                  const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
-                  if (list.includes(item.period)) completedCount++;
-                });
-
-                return `
-                  <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                    <td style="padding: 0.7rem 0.5rem; text-align: center; font-weight: 800; color: #059669; font-family: var(--font-mono); font-size: 0.9rem;">
-                      ${String(item.period).padStart(2, '0')}차시
-                    </td>
-
-                    <!-- 대단원 (직접 수정 가능) -->
-                    <td style="padding: 0.45rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.mainUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'mainUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 800; color: #3730a3; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
-                    </td>
-
-                    <!-- 소단원 (직접 수정 가능) -->
-                    <td style="padding: 0.45rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.subUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'subUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 600; color: #334155; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
-                    </td>
-
-                    <!-- 학습 주제 및 핵심 개념 (직접 수정 가능) -->
-                    <td style="padding: 0.45rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.topic}" onchange="ProgressModule.handleTextEdit(${item.period}, 'topic', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 500; color: #1e293b; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
-                    </td>
-
-                    <!-- 학반별 체크박스 -->
-                    ${classArray.map(c => {
-                      const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
-                      const isChecked = list.includes(item.period);
-                      return `
-                        <td style="padding: 0.7rem 0.3rem; text-align: center;">
-                          <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="ProgressModule.toggleCheck(${item.period}, ${c})" style="width: 19px; height: 19px; cursor: pointer; accent-color: #4f46e5;">
-                        </td>
-                      `;
-                    }).join('')}
-
-                    <!-- 완료 학급 수 -->
-                    <td style="padding: 0.7rem; text-align: center;">
-                      <span id="completed-count-${item.period}" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: ${completedCount === totalClasses ? '#d1fae5' : completedCount > 0 ? '#e0e7ff' : '#f1f5f9'}; color: ${completedCount === totalClasses ? '#047857' : completedCount > 0 ? '#3730a3' : '#64748b'}; border: 1px solid ${completedCount === totalClasses ? '#a7f3d0' : completedCount > 0 ? '#c7d2fe' : '#e2e8f0'};">
-                        ${completedCount}/${totalClasses}개반
-                      </span>
-                    </td>
-                  </tr>
-                `;
-              }).join('')}
-            </tbody>
-          </table>
+          <div id="syllabus-table-container">
+            ${this.renderTableRowsHtml()}
+          </div>
         </div>
       </div>
     `;

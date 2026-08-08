@@ -223,6 +223,7 @@ function doPost(e) {
           item.subUnit,
           item.topic,
           Array.isArray(item.checkedClasses) ? item.checkedClasses.join(',') : (item.checkedClasses || ''),
+          item.grade || 2,
           today
         ]);
       });

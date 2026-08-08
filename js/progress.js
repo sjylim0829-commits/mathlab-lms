@@ -322,8 +322,8 @@ const ProgressModule = {
             ${classArray.map(c => `
               <th style="padding: 0.8rem 0.3rem; text-align: center; width: 50px; font-weight: 800; color: #3730a3;">${c}반</th>
             `).join('')}
-            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 95px; font-weight: 800;">차시 전체</th>
-            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 85px; font-weight: 800;">완료 학급</th>
+            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 75px; font-weight: 800; white-space: nowrap;">차시 전체</th>
+            <th style="padding: 0.8rem 0.5rem; text-align: center; width: 85px; font-weight: 800; white-space: nowrap;">완료 학급</th>
           </tr>
         </thead>
         <tbody>
@@ -333,11 +333,10 @@ const ProgressModule = {
               const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
               if (list.includes(item.period)) completedCount++;
             });
-            const isAllChecked = completedCount === totalClasses;
 
             return `
               <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                <td style="padding: 0.7rem 0.5rem; text-align: center; font-weight: 800; color: #059669; font-family: var(--font-mono); font-size: 0.9rem;">
+                <td style="padding: 0.7rem 0.5rem; text-align: center; font-weight: 800; color: #059669; font-family: var(--font-mono); font-size: 0.9rem; white-space: nowrap;">
                   ${String(item.period).padStart(2, '0')}차시
                 </td>
 
@@ -367,16 +366,16 @@ const ProgressModule = {
                   `;
                 }).join('')}
 
-                <!-- 차시별 전체 학반 체크/해제 동시 선택 버튼 -->
+                <!-- 차시별 전체 학반 선택 고정 버튼 ('전체' 라벨 고정) -->
                 <td style="padding: 0.7rem 0.4rem; text-align: center;">
-                  <button type="button" onclick="ProgressModule.toggleAllForPeriod(${item.period})" style="padding: 3px 8px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; border: 1px solid ${isAllChecked ? '#fca5a5' : '#a5b4fc'}; background: ${isAllChecked ? '#fef2f2' : '#e0e7ff'}; color: ${isAllChecked ? '#dc2626' : '#4338ca'}; cursor: pointer; transition: all 0.15s ease;">
-                    ${isAllChecked ? '해제☐' : '전체☑'}
+                  <button type="button" onclick="ProgressModule.toggleAllForPeriod(${item.period})" style="padding: 4px 10px; font-size: 0.78rem; font-weight: 800; border-radius: 8px; border: 1px solid #c7d2fe; background: #e0e7ff; color: #3730a3; cursor: pointer; white-space: nowrap; transition: all 0.15s ease;" title="해당 차시의 전체 학반 체크박스 선택/해제">
+                    전체
                   </button>
                 </td>
 
-                <!-- 완료 학급 수 -->
-                <td style="padding: 0.7rem; text-align: center;">
-                  <span id="completed-count-${item.period}" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: ${completedCount === totalClasses ? '#d1fae5' : completedCount > 0 ? '#e0e7ff' : '#f1f5f9'}; color: ${completedCount === totalClasses ? '#047857' : completedCount > 0 ? '#3730a3' : '#64748b'}; border: 1px solid ${completedCount === totalClasses ? '#a7f3d0' : completedCount > 0 ? '#c7d2fe' : '#e2e8f0'};">
+                <!-- 완료 학급 수 (줄바꿈 방지) -->
+                <td style="padding: 0.7rem; text-align: center; white-space: nowrap;">
+                  <span id="completed-count-${item.period}" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; display: inline-block; white-space: nowrap; background: ${completedCount === totalClasses ? '#d1fae5' : completedCount > 0 ? '#e0e7ff' : '#f1f5f9'}; color: ${completedCount === totalClasses ? '#047857' : completedCount > 0 ? '#3730a3' : '#64748b'}; border: 1px solid ${completedCount === totalClasses ? '#a7f3d0' : completedCount > 0 ? '#c7d2fe' : '#e2e8f0'};">
                     ${completedCount}/${totalClasses}개반
                   </span>
                 </td>

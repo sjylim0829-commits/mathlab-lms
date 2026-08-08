@@ -156,8 +156,8 @@ const App = {
                       <path d="M16 32 L24 16 L32 32" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <div>
-                      <span class="brand-name">영서중 수학 LMS</span>
-                      <span class="brand-tag">${isTeacher ? '임종윤 교사' : '학생 탐구실'}</span>
+                      <span class="brand-name" style="white-space: nowrap;">영서중 수학 LMS</span>
+                      <span class="brand-tag" style="white-space: nowrap; flex-shrink: 0;">${isTeacher ? '임종윤 교사' : '학생 탐구실'}</span>
                     </div>
                   </a>
                 </div>
@@ -165,26 +165,26 @@ const App = {
                 <!-- Vertical Sidebar Menu -->
                 <nav class="sidebar-nav">
                   ${isTeacher ? `
-                    <button class="sidebar-nav-item teacher-tab-btn active" data-tab="dashboard">
+                    <button class="sidebar-nav-item teacher-tab-btn active" data-tab="dashboard" style="white-space: nowrap;">
                       📊 수업 메인 대시보드
                     </button>
-                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="progress-tracker">
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="progress-tracker" style="white-space: nowrap;">
                       📚 수업 진도 관리
                     </button>
-                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk">
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="archive-seteuk" style="white-space: nowrap;">
                       📜 학생 기록 및 세특 생성
                     </button>
-                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder">
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="builder" style="white-space: nowrap;">
                       📐 탐구 활동
                     </button>
-                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="analytics">
+                    <button class="sidebar-nav-item teacher-tab-btn" data-tab="analytics" style="white-space: nowrap;">
                       📑 학업 이해도 분석
                     </button>
                   ` : `
-                    <button class="sidebar-nav-item student-tab-btn active" data-tab="lab">
+                    <button class="sidebar-nav-item student-tab-btn active" data-tab="lab" style="white-space: nowrap;">
                       📐 나의 수학 탐구실
                     </button>
-                    <button class="sidebar-nav-item student-tab-btn" data-tab="history">
+                    <button class="sidebar-nav-item student-tab-btn" data-tab="history" style="white-space: nowrap;">
                       📜 제출 이력 및 세특 기록
                     </button>
                   `}
@@ -193,21 +193,21 @@ const App = {
 
               <!-- Sidebar Footer User Profile -->
               <div class="sidebar-footer">
-                <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem;" onclick="App.toggleUserRole()">
+                <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem; white-space: nowrap;" onclick="App.toggleUserRole()">
                   🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 대시보드로 전환'}
                 </button>
 
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366f1; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: nowrap;">
+                  <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0;">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366f1; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;">
                       ${AppState.currentUser.name ? AppState.currentUser.name[0] : '임'}
                     </div>
-                    <div>
-                      <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">${AppState.currentUser.name}</div>
-                      <div style="font-size: 0.7rem; color: var(--text-muted);">${isTeacher ? '교사' : '학생'}</div>
+                    <div style="min-width: 0; overflow: hidden;">
+                      <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${AppState.currentUser.name}</div>
+                      <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${isTeacher ? '교사' : '학생'}</div>
                     </div>
                   </div>
-                  <button onclick="App.logout()" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 4px;" title="로그아웃">
+                  <button onclick="App.logout()" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 4px 6px; white-space: nowrap; flex-shrink: 0;" title="로그아웃">
                     🚪 로그아웃
                   </button>
                 </div>

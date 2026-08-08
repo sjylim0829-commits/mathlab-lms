@@ -436,16 +436,16 @@ const ProgressModule = {
           </button>
         </div>
 
-        <!-- Class Progress Bright Cards Overview -->
-        <div style="margin-bottom: 1.8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 0.85rem;">
+        <!-- Class Progress Bright Cards Overview (줄바꿈 원천 차단) -->
+        <div style="margin-bottom: 1.8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 0.85rem;">
           ${classArray.map(c => {
             const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
             const pct = Math.round((list.length / 50) * 100);
             return `
-              <div class="glass-card hover-lift" style="padding: 0.9rem; border: 1px solid #c7d2fe; background: linear-gradient(135deg, #ffffff, #f8fafc); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.08); border-radius: 14px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                  <strong style="font-size: 1.05rem; font-weight: 800; color: #3730a3;">${this.activeGrade}학년 ${c}반</strong>
-                  <span id="pct-badge-${c}" style="font-size: 0.8rem; font-weight: 800; color: #047857; background: #d1fae5; padding: 2px 8px; border-radius: 10px;">
+              <div class="glass-card hover-lift" style="padding: 0.85rem 0.75rem; border: 1px solid #c7d2fe; background: linear-gradient(135deg, #ffffff, #f8fafc); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.08); border-radius: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; gap: 0.3rem; flex-wrap: nowrap;">
+                  <strong style="font-size: 0.98rem; font-weight: 800; color: #3730a3; white-space: nowrap; flex-shrink: 0;">${this.activeGrade}학년 ${c}반</strong>
+                  <span id="pct-badge-${c}" style="font-size: 0.76rem; font-weight: 800; color: #047857; background: #d1fae5; padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0;">
                     ${pct}% (${list.length}/50차시)
                   </span>
                 </div>

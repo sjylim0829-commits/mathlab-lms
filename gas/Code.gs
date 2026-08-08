@@ -63,11 +63,30 @@ function doGet(e) {
     }
   }
 
+  // 4. 50차시 반별 체크리스트 DB 조회 (50차시진도표 탭)
+  var sylSheet = ss.getSheetByName("50차시진도표");
+  var syllabusChecklist = [];
+  if (sylSheet) {
+    var sData = sylSheet.getDataRange().getValues();
+    for (var m = 1; m < sData.length; m++) {
+      if (sData[m][0]) {
+        syllabusChecklist.push({
+          period: Number(sData[m][0]),
+          mainUnit: String(sData[m][1]),
+          subUnit: String(sData[m][2]),
+          topic: String(sData[m][3]),
+          checkedClasses: String(sData[m][4] || '')
+        });
+      }
+    }
+  }
+
   return ContentService.createTextOutput(JSON.stringify({
     students: students,
     progress: progress,
     curriculum: curriculum,
-    apiVersion: "v3.1_safe_editor_test"
+    syllabusChecklist: syllabusChecklist,
+    apiVersion: "v3.2_syllabus_50hrs"
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -185,6 +204,45 @@ function doPost(e) {
       driveFileUrl: driveFileUrl
     })).setMimeType(ContentService.MimeType.JSON);
 
+  } else if (data.type === "syllabus_checklist_save") {
+    // 50차시 진도표 반별 체크리스트 전체/개별 갱신
+    var sylSheet = ss.getSheetByName("50차시진도표");
+    if (!sylSheet) {
+      sylSheet = ss.insertSheet("50차시진도표");
+      sylSheet.appendRow(["차시", "대단원", "중단원소단원", "학습주제", "완료학반목록", "최종수정일"]);
+    }
+
+    if (Array.isArray(data.items)) {
+      sylSheet.clearContents();
+      sylSheet.appendRow(["차시", "대단원", "중단원소단원", "학습주제", "완료학반목록", "최종수정일"]);
+      var today = new Date().toLocaleDateString('ko-KR');
+      data.items.forEach(function(item) {
+        sylSheet.appendRow([
+          item.period,
+          item.mainUnit,
+          item.subUnit,
+          item.topic,
+          Array.isArray(item.checkedClasses) ? item.checkedClasses.join(',') : (item.checkedClasses || ''),
+          today
+        ]);
+      });
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      apiVersion: "v3.2_syllabus_50hrs",
+      action: "syllabus_saved"
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } else if (data.type === "organize_drive") {
+    // 4. 구글 드라이브 마스터 아카이브 폴더 생성 및 정리
+    var result = organizeDriveArchive(data.handoffDocs || {});
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      apiVersion: "v3.1_safe_editor_test",
+      result: result
+    })).setMimeType(ContentService.MimeType.JSON);
+
   } else {
     // 3. 학생 명부 신규 회원가입 (type: 'student')
     var studentSheet = ss.getSheetByName("학생명부") || ss.getSheets()[0];
@@ -204,3 +262,76 @@ function doPost(e) {
     })).setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * 선생님 구글 드라이브 내 '영서중학교 수학 LMS 마스터 아카이브' 폴더 생성 및 자동 정돈
+ */
+function organizeDriveArchive(handoffDocs) {
+  try {
+    var masterFolderName = "영서중학교 수학 LMS 마스터 아카이브";
+    var masterFolders = DriveApp.getFoldersByName(masterFolderName);
+    var masterFolder = masterFolders.hasNext() ? masterFolders.next() : DriveApp.createFolder(masterFolderName);
+
+    // 3개 서브 폴더 생성 및 가져오기
+    var sub1Name = "01_데이터베이스_및_기록";
+    var sub2Name = "02_학생_탐구보고서_자동생성";
+    var sub3Name = "03_웹앱_소스코드_및_인수인계_문서";
+
+    var f1s = masterFolder.getFoldersByName(sub1Name);
+    var folder1 = f1s.hasNext() ? f1s.next() : masterFolder.createFolder(sub1Name);
+
+    var f2s = masterFolder.getFoldersByName(sub2Name);
+    var folder2 = f2s.hasNext() ? f2s.next() : masterFolder.createFolder(sub2Name);
+
+    var f3s = masterFolder.getFoldersByName(sub3Name);
+    var folder3 = f3s.hasNext() ? f3s.next() : masterFolder.createFolder(sub3Name);
+
+    // 1. 현재 active 구글 시트를 01번 폴더에 정리
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ssFile = DriveApp.getFileById(ss.getId());
+    ssFile.moveTo(folder1);
+
+    // 2. 기존 '영서중학교 수학 LMS 탐구보고서' 폴더를 02번 폴더 안으로 정리
+    var oldReportFolders = DriveApp.getFoldersByName("영서중학교 수학 LMS 탐구보고서");
+    if (oldReportFolders.hasNext()) {
+      var oldReportFolder = oldReportFolders.next();
+      oldReportFolder.moveTo(folder2);
+    }
+
+    // 3. 인수인계 기록 문서들을 03번 폴더에 파일로 자동 업데이트/생성
+    if (handoffDocs.lmsMaster) {
+      folder3.createFile("LMS_DEVELOPMENT_MASTER_MEMORY.txt", handoffDocs.lmsMaster);
+    }
+    if (handoffDocs.redbookGeo) {
+      folder3.createFile("REDBOOK_GEOMETRY_HANDOFF_RECORDS.txt", handoffDocs.redbookGeo);
+    }
+    if (handoffDocs.redbookCircum) {
+      folder3.createFile("REDBOOK_CIRCUMCENTER_HANDOFF_RECORDS.txt", handoffDocs.redbookCircum);
+    }
+
+    return {
+      success: true,
+      masterFolderUrl: masterFolder.getUrl(),
+      subFolder1Url: folder1.getUrl(),
+      subFolder2Url: folder2.getUrl(),
+      subFolder3Url: folder3.getUrl()
+    };
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+/**
+ * 구글 에디터 직접 실행용 테스트 헬퍼 함수
+ */
+function testDriveOrganize() {
+  var res = organizeDriveArchive({
+    lmsMaster: "영서중학교 수학 LMS 인수인계 마스터 기록문서 내용",
+    redbookGeo: "Redbook 이등변삼각형 및 직각삼각형의 합동 인수인계 내용",
+    redbookCircum: "Redbook 삼각형의 외심 탐구 인수인계 내용"
+  });
+  Logger.log("Drive organize result: " + JSON.stringify(res));
+  return res;
+}
+
+

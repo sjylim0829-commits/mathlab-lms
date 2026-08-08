@@ -267,5 +267,26 @@ const CloudDB = {
       console.warn('[CloudDB] Activity result Google Sheet save error:', err);
       return { verified: false, error: err.message };
     }
+  },
+
+  // Save 50-Period Syllabus Checkboard Data to Google Sheet
+  async saveSyllabusChecklist(items) {
+    if (!Array.isArray(items)) return;
+
+    const payload = {
+      type: 'syllabus_checklist_save',
+      items: items
+    };
+
+    try {
+      await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      console.log('[CloudDB] 50-Period Syllabus checklist saved to Google Sheet!');
+    } catch (err) {
+      console.warn('[CloudDB] Syllabus checklist save error:', err);
+    }
   }
 };

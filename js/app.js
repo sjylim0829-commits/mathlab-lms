@@ -380,11 +380,11 @@ const App = {
       return;
     }
 
-    // 1. Teacher Master Account Check
-    if ((inputId === 'test' || inputId === 'teacher' || inputId === '임종윤') && inputPw === '11111111') {
+    // 1. Teacher Master Account Check (Secure)
+    if (inputId === 'sjylim' && inputPw === 'whddbs01!') {
       AppState.currentUser = {
-        id: 'test',
-        name: '임종윤 교사 (영서중학교)',
+        id: 'sjylim',
+        name: '임종윤 교사',
         role: 'teacher'
       };
       this.renderAppShell();

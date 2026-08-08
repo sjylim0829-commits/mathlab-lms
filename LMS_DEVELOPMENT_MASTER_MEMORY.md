@@ -9,7 +9,7 @@
 | 항목 | 상세 정보 및 URL / ID |
 | :--- | :--- |
 | **담당 교사** | **임종윤 교사 (영서중학교 수학과)** |
-| **마스터 교사 로그인 계정** | **아이디**: `test` / **비밀번호**: `11111111` |
+| **마스터 교사 로그인 계정** | **아이디**: `sjylim` / **비밀번호**: (선생님 전용 보안 비밀번호) |
 | **Vercel 실시간 배포 URL** | **[https://curlymath.vercel.app/](https://curlymath.vercel.app/)** |
 | **GitHub 소스코드 저장소** | **[https://github.com/sjylim0829-commits/mathlab-lms.git](https://github.com/sjylim0829-commits/mathlab-lms.git)** |
 | **구글 앱스 스크립트 Script ID** | `17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT` |

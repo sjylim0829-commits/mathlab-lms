@@ -72,7 +72,7 @@ const ProgressModule = {
   checklistData: {
     // 2학년 기본 더미 데이터
     2: {
-      1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], // 30차시 완료
+      1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
       2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
       3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
       4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
@@ -99,9 +99,8 @@ const ProgressModule = {
       const p = Number(item.period);
       if (p >= 1 && p <= 50) {
         const checkedClassesStr = String(item.checkedClasses || '');
-        const classNums = checkedClassesStr.split(',').map(n => Number(n.strip ? n.strip() : n)).filter(n => n > 0);
+        const classNums = checkedClassesStr.split(',').map(n => Number(n.trim ? n.trim() : n)).filter(n => n > 0);
         
-        // 2학년 체크리스트 반영
         if (!this.checklistData[2]) this.checklistData[2] = {};
         classNums.forEach(c => {
           if (!this.checklistData[2][c]) this.checklistData[2][c] = [];
@@ -110,7 +109,6 @@ const ProgressModule = {
           }
         });
 
-        // 50차시 제목 반영
         const target = this.syllabus50.find(s => s.period === p);
         if (target) {
           if (item.mainUnit) target.mainUnit = item.mainUnit;
@@ -138,15 +136,12 @@ const ProgressModule = {
     const list = this.checklistData[this.activeGrade][classNum];
     const idx = list.indexOf(period);
     if (idx >= 0) {
-      list.splice(idx, 1); // 체크 해제
+      list.splice(idx, 1);
     } else {
-      list.push(period); // 체크 등록
+      list.push(period);
     }
 
-    // 화면 진도율 및 카운트 실시간 재계산
     this.updateStatsUI();
-
-    // 구글 드라이브 시트 DB 자동 동기화 (Background Sync)
     this.syncToCloudDB();
   },
 
@@ -164,7 +159,6 @@ const ProgressModule = {
       if (fillEl) fillEl.style.width = `${pct}%`;
     }
 
-    // 각 차시별 완료 학급 수 업데이트
     this.syllabus50.forEach(item => {
       let count = 0;
       for (let c = 1; c <= totalClasses; c++) {
@@ -174,12 +168,12 @@ const ProgressModule = {
       const countEl = document.getElementById(`completed-count-${item.period}`);
       if (countEl) {
         countEl.textContent = `${count}/${totalClasses}개반`;
-        countEl.className = `badge ${count === totalClasses ? 'badge-success' : count > 0 ? 'badge-violet' : 'badge-secondary'}`;
+        countEl.style.background = count === totalClasses ? 'rgba(16, 185, 129, 0.15)' : count > 0 ? 'rgba(99, 102, 241, 0.15)' : 'rgba(241, 245, 249, 0.9)';
+        countEl.style.color = count === totalClasses ? '#059669' : count > 0 ? '#4f46e5' : '#64748b';
       }
     });
   },
 
-  // 50차시 텍스트 직접 수정 시 반영
   handleTextEdit(period, field, value) {
     const target = this.syllabus50.find(s => s.period === period);
     if (target) {
@@ -187,11 +181,10 @@ const ProgressModule = {
     }
   },
 
-  // 구글 드라이브 DB 연동 저장
   async syncToCloudDB() {
     const syncStatusEl = document.getElementById('cloud-sync-status');
     if (syncStatusEl) {
-      syncStatusEl.innerHTML = '🔄 <span style="color: var(--accent-gold);">구글 드라이브 DB 저장 중...</span>';
+      syncStatusEl.innerHTML = '🔄 <span style="color: #d97706; font-weight: 700;">구글 드라이브 DB 저장 중...</span>';
     }
 
     const totalClasses = (this.activeGrade === 3) ? 6 : 8;
@@ -216,12 +209,12 @@ const ProgressModule = {
       if (window.CloudDB && CloudDB.saveSyllabusChecklist) {
         await CloudDB.saveSyllabusChecklist(payloadItems);
         if (syncStatusEl) {
-          syncStatusEl.innerHTML = '✅ <span style="color: var(--accent-emerald);">구글 드라이브 DB 동기화 완료!</span>';
+          syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 동기화 완료!</span>';
         }
       }
     } catch (err) {
       if (syncStatusEl) {
-        syncStatusEl.innerHTML = '⚠️ <span style="color: #f87171;">로컬 동기화 완료 (DB 오프라인)</span>';
+        syncStatusEl.innerHTML = '⚠️ <span style="color: #dc2626; font-weight: 700;">로컬 저장 완료 (DB 오프라인)</span>';
       }
     }
   },
@@ -236,24 +229,24 @@ const ProgressModule = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(139, 92, 246, 0.2); color: var(--primary-violet);">
+              <span class="role-pill teacher" style="font-size: 0.8rem; font-weight: 700; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;">
                 🏫 영서중학교 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">50차시 세부 진도표 & 반별 체크리스트 (구글 드라이브 DB 연동)</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800; color: #1e1b4b;">50차시 세부 진도표 & 반별 체크리스트</h2>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 1차시부터 50차시까지 학반별 진도 완료 체크박스를 클릭하여 실시간 기록하세요.
+            <p style="font-size: 0.85rem; color: #475569; margin-top: 0.3rem;">
+              담당 교사: <strong style="color: #1e1b4b;">임종윤 교사 (영서중학교)</strong> | 1차시부터 50차시까지 학반별 진도 완료 체크박스를 클릭하여 실시간 기록하세요.
             </p>
           </div>
 
           <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <div id="cloud-sync-status" style="font-size: 0.85rem; font-weight: 600; background: rgba(15, 23, 42, 0.6); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-card);">
-              ✅ <span style="color: var(--accent-emerald);">구글 드라이브 DB 연동 준비됨</span>
+            <div id="cloud-sync-status" style="font-size: 0.85rem; font-weight: 600; background: #ffffff; padding: 6px 14px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              ✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 연동 완료</span>
             </div>
-            <button class="btn btn-primary" onclick="ProgressModule.syncToCloudDB()">
+            <button class="btn btn-primary" onclick="ProgressModule.syncToCloudDB()" style="background: linear-gradient(135deg, #4f46e5, #6366f1); border: none; font-weight: 700; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);">
               💾 구글 드라이브 DB 수동 저장
             </button>
-            <button class="btn btn-outline-violet" onclick="window.print()">
+            <button class="btn btn-outline-violet" onclick="window.print()" style="background: #ffffff; color: #4338ca; border: 1px solid #c7d2fe; font-weight: 700;">
               🖨️ 50차시 진도표 인쇄
             </button>
           </div>
@@ -261,63 +254,63 @@ const ProgressModule = {
 
         <!-- Grade Selector Tabs -->
         <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
-          <button class="grade-tab-btn ${this.activeGrade === 1 ? 'active' : ''}" onclick="ProgressModule.switchGrade(1)">
+          <button class="grade-tab-btn ${this.activeGrade === 1 ? 'active' : ''}" onclick="ProgressModule.switchGrade(1)" style="font-weight: 700;">
             🌱 1학년 (1~8반)
           </button>
-          <button class="grade-tab-btn ${this.activeGrade === 2 ? 'active' : ''}" onclick="ProgressModule.switchGrade(2)">
+          <button class="grade-tab-btn ${this.activeGrade === 2 ? 'active' : ''}" onclick="ProgressModule.switchGrade(2)" style="font-weight: 800;">
             🌿 2학년 2학기 (50차시 마스터 진도표)
           </button>
-          <button class="grade-tab-btn ${this.activeGrade === 3 ? 'active' : ''}" onclick="ProgressModule.switchGrade(3)">
+          <button class="grade-tab-btn ${this.activeGrade === 3 ? 'active' : ''}" onclick="ProgressModule.switchGrade(3)" style="font-weight: 700;">
             🌳 3학년 (1~6반)
           </button>
         </div>
 
-        <!-- Class Progress Metric Cards Overview -->
-        <div style="margin-bottom: 1.8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.75rem;">
+        <!-- Class Progress Bright Cards Overview (밝고 세련된 라이트 톤) -->
+        <div style="margin-bottom: 1.8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 0.85rem;">
           ${classArray.map(c => {
             const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
             const pct = Math.round((list.length / 50) * 100);
             return `
-              <div class="glass-card" style="padding: 0.8rem; border-color: rgba(99, 102, 241, 0.2); background: rgba(15, 23, 42, 0.4);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                  <strong style="font-size: 0.95rem; color: var(--violet-bright);">${this.activeGrade}학년 ${c}반</strong>
-                  <span id="pct-badge-${c}" style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald);">
+              <div class="glass-card hover-lift" style="padding: 0.9rem; border: 1px solid #c7d2fe; background: linear-gradient(135deg, #ffffff, #f8fafc); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.08); border-radius: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                  <strong style="font-size: 1.05rem; font-weight: 800; color: #3730a3;">${this.activeGrade}학년 ${c}반</strong>
+                  <span id="pct-badge-${c}" style="font-size: 0.8rem; font-weight: 800; color: #047857; background: #d1fae5; padding: 2px 8px; border-radius: 10px;">
                     ${pct}% (${list.length}/50차시)
                   </span>
                 </div>
-                <div class="progress-bar-track" style="height: 6px;">
-                  <div id="bar-fill-${c}" class="progress-bar-fill" style="width: ${pct}%;"></div>
+                <div class="progress-bar-track" style="height: 8px; background: #e2e8f0; border-radius: 6px;">
+                  <div id="bar-fill-${c}" class="progress-bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 6px;"></div>
                 </div>
               </div>
             `;
           }).join('')}
         </div>
 
-        <!-- 50-Period Syllabus Checkbox Matrix Table -->
-        <div class="glass-card" style="overflow-x: auto; padding: 1.25rem;">
+        <!-- 50-Period Syllabus Checkbox Matrix Table (화사한 라이트 톤 헤더 & 고시인성 디자인) -->
+        <div class="glass-card" style="overflow-x: auto; padding: 1.25rem; background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04); border-radius: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 800; color: #1e1b4b; display: flex; align-items: center; gap: 0.5rem;">
               <span>📋 50차시 세부 진도표 및 반별 완료 체크리스트</span>
-              <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.15); color: var(--violet-bright); padding: 2px 8px; border-radius: 8px;">
+              <span style="font-size: 0.8rem; background: #e0e7ff; color: #3730a3; padding: 3px 10px; border-radius: 10px; font-weight: 700; border: 1px solid #c7d2fe;">
                 5단원 삼각형의 성질 ~ 8단원 경우의 수와 확률
               </span>
             </h3>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">
+            <span style="font-size: 0.82rem; color: #64748b; font-weight: 600;">
               💡 각 반별 체크박스를 누르거나 텍스트를 직접 클릭하여 바로 수정할 수 있습니다.
             </span>
           </div>
 
-          <table class="syllabus-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <table class="syllabus-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
             <thead>
-              <tr style="background: rgba(30, 41, 59, 0.8); border-bottom: 2px solid var(--border-card); color: var(--violet-bright);">
-                <th style="padding: 0.65rem 0.5rem; text-align: center; width: 65px;">차시</th>
-                <th style="padding: 0.65rem; width: 180px;">대단원</th>
-                <th style="padding: 0.65rem; width: 160px;">중단원 / 소단원</th>
-                <th style="padding: 0.65rem; min-width: 260px;">학습 주제 및 핵심 개념</th>
+              <tr style="background: linear-gradient(135deg, #e0e7ff, #ede9fe); border-bottom: 2px solid #a5b4fc; color: #1e1b4b;">
+                <th style="padding: 0.8rem 0.5rem; text-align: center; width: 65px; font-weight: 800;">차시</th>
+                <th style="padding: 0.8rem 0.6rem; width: 190px; font-weight: 800;">대단원</th>
+                <th style="padding: 0.8rem 0.6rem; width: 170px; font-weight: 800;">중단원 / 소단원</th>
+                <th style="padding: 0.8rem 0.6rem; min-width: 270px; font-weight: 800;">학습 주제 및 핵심 개념</th>
                 ${classArray.map(c => `
-                  <th style="padding: 0.65rem 0.3rem; text-align: center; width: 48px;">${c}반</th>
+                  <th style="padding: 0.8rem 0.3rem; text-align: center; width: 50px; font-weight: 800; color: #3730a3;">${c}반</th>
                 `).join('')}
-                <th style="padding: 0.65rem; text-align: center; width: 85px;">완료 학급</th>
+                <th style="padding: 0.8rem; text-align: center; width: 90px; font-weight: 800;">완료 학급</th>
               </tr>
             </thead>
             <tbody>
@@ -329,24 +322,24 @@ const ProgressModule = {
                 });
 
                 return `
-                  <tr style="border-bottom: 1px solid var(--border-card); transition: background 0.15s ease;" onmouseover="this.style.background='rgba(99,102,241,0.05)'" onmouseout="this.style.background='transparent'">
-                    <td style="padding: 0.65rem 0.5rem; text-align: center; font-weight: 700; color: var(--accent-emerald); font-family: var(--font-mono);">
+                  <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 0.7rem 0.5rem; text-align: center; font-weight: 800; color: #059669; font-family: var(--font-mono); font-size: 0.9rem;">
                       ${String(item.period).padStart(2, '0')}차시
                     </td>
 
                     <!-- 대단원 (직접 수정 가능) -->
-                    <td style="padding: 0.4rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.mainUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'mainUnit', this.value)" style="width: 100%; font-size: 0.8rem; font-weight: 700; color: var(--violet-bright); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 4px;" onfocus="this.style.borderColor='var(--violet-bright)'; this.style.background='rgba(15,23,42,0.8)'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                    <td style="padding: 0.45rem 0.5rem;">
+                      <input type="text" class="input-inline" value="${item.mainUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'mainUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 800; color: #3730a3; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
                     </td>
 
                     <!-- 소단원 (직접 수정 가능) -->
-                    <td style="padding: 0.4rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.subUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'subUnit', this.value)" style="width: 100%; font-size: 0.8rem; color: var(--text-main); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 4px;" onfocus="this.style.borderColor='var(--violet-bright)'; this.style.background='rgba(15,23,42,0.8)'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                    <td style="padding: 0.45rem 0.5rem;">
+                      <input type="text" class="input-inline" value="${item.subUnit}" onchange="ProgressModule.handleTextEdit(${item.period}, 'subUnit', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 600; color: #334155; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
                     </td>
 
                     <!-- 학습 주제 및 핵심 개념 (직접 수정 가능) -->
-                    <td style="padding: 0.4rem 0.5rem;">
-                      <input type="text" class="input-inline" value="${item.topic}" onchange="ProgressModule.handleTextEdit(${item.period}, 'topic', this.value)" style="width: 100%; font-size: 0.85rem; color: var(--text-main); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 2px 4px;" onfocus="this.style.borderColor='var(--violet-bright)'; this.style.background='rgba(15,23,42,0.8)'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
+                    <td style="padding: 0.45rem 0.5rem;">
+                      <input type="text" class="input-inline" value="${item.topic}" onchange="ProgressModule.handleTextEdit(${item.period}, 'topic', this.value)" style="width: 100%; font-size: 0.85rem; font-weight: 500; color: #1e293b; background: transparent; border: 1px solid transparent; border-radius: 6px; padding: 4px 6px;" onfocus="this.style.borderColor='#6366f1'; this.style.background='#ffffff'" onblur="this.style.borderColor='transparent'; this.style.background='transparent'">
                     </td>
 
                     <!-- 학반별 체크박스 -->
@@ -354,15 +347,15 @@ const ProgressModule = {
                       const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
                       const isChecked = list.includes(item.period);
                       return `
-                        <td style="padding: 0.65rem 0.3rem; text-align: center;">
-                          <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="ProgressModule.toggleCheck(${item.period}, ${c})" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-violet);">
+                        <td style="padding: 0.7rem 0.3rem; text-align: center;">
+                          <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="ProgressModule.toggleCheck(${item.period}, ${c})" style="width: 19px; height: 19px; cursor: pointer; accent-color: #4f46e5;">
                         </td>
                       `;
                     }).join('')}
 
                     <!-- 완료 학급 수 -->
-                    <td style="padding: 0.65rem; text-align: center;">
-                      <span id="completed-count-${item.period}" style="font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: ${completedCount === totalClasses ? 'rgba(16, 185, 129, 0.2)' : completedCount > 0 ? 'rgba(99, 102, 241, 0.2)' : 'rgba(148, 163, 184, 0.1)'}; color: ${completedCount === totalClasses ? 'var(--accent-emerald)' : completedCount > 0 ? 'var(--violet-bright)' : 'var(--text-muted)'};">
+                    <td style="padding: 0.7rem; text-align: center;">
+                      <span id="completed-count-${item.period}" style="font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 12px; background: ${completedCount === totalClasses ? '#d1fae5' : completedCount > 0 ? '#e0e7ff' : '#f1f5f9'}; color: ${completedCount === totalClasses ? '#047857' : completedCount > 0 ? '#3730a3' : '#64748b'}; border: 1px solid ${completedCount === totalClasses ? '#a7f3d0' : completedCount > 0 ? '#c7d2fe' : '#e2e8f0'};">
                         ${completedCount}/${totalClasses}개반
                       </span>
                     </td>

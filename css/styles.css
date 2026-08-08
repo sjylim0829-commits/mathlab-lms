@@ -701,3 +701,31 @@ body {
   height: calc(100vh - 140px) !important;
 }
 
+/* Grade Tab Buttons & Syllabus Table High-Contrast Styles */
+.grade-tab-btn {
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.grade-tab-btn:hover {
+  background: #f8fafc;
+  border-color: #a5b4fc;
+  color: #3730a3;
+}
+
+.grade-tab-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  border-color: #4338ca;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+}
+
+

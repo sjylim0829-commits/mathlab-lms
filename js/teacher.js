@@ -271,63 +271,17 @@ const TeacherModule = {
               <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 등록 목록 & 실행 센터</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사 (영서중학교)</strong> | 등록된 구글 앱스 스크립트 웹앱 주소 목록 선택 및 실시간 실습
+              담당 교사: <strong style="color: var(--text-main);">임종윤 교사</strong> | 등록된 구글 앱스 스크립트 웹앱 주소 목록 선택 및 실시간 실습
             </p>
           </div>
 
-          <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()">
-            ➕ 신규 GAS 탐구활동 주소 등록
-          </button>
-        </div>
-
-        <!-- Dedicated Google Sheet & GAS Deployment Management Card -->
-        <div class="glass-card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(5,150,105,0.06)); border-color: rgba(99,102,241,0.3);">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
-              <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(99,102,241,0.15); color: var(--violet-bright); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800;">
-                📊
-              </div>
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main);">
-                  🌐 GAS 웹앱 전용 구글 시트 & 배포 관리 센터
-                </h3>
-                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
-                  현재 탐구 활동: <strong style="color: var(--violet-bright);">${activeAct.title}</strong>
-                </p>
-              </div>
-            </div>
-
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-              <a href="https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">
-                📊 전용 구글 시트 DB 바로가기 🔗
-              </a>
-              <button class="btn btn-outline-violet" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="TeacherModule.showDeploymentModal()">
-                ⚙️ 배포 URL 및 clasp 설정 관리
-              </button>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; background: #ffffff; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-card);">
-            <div>
-              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">전용 구글 시트 탭 구성</span>
-              <div style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-top: 0.3rem;">
-                🟢 [외심탐구결과], [학생명단], [교사메모]
-              </div>
-            </div>
-
-            <div>
-              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">GAS Script ID / 배포 상태</span>
-              <div style="font-size: 0.88rem; font-weight: 700; color: var(--accent-emerald); margin-top: 0.3rem;">
-                <code>1LaN48-IpYqUX...</code> (v1.0.0 Anyone)
-              </div>
-            </div>
-
-            <div>
-              <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">자동 배포 커맨드</span>
-              <div style="font-size: 0.85rem; font-weight: 700; color: var(--violet-bright); margin-top: 0.3rem; font-family: var(--font-mono);">
-                clasp push --force && clasp deploy
-              </div>
-            </div>
+          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;">
+            <a href="https://docs.google.com/spreadsheets/d/1nNlovh7dRVtzUAIOaWQIBG4MmeO4JvPRr2znzgLQsOk/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; text-decoration: none; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);">
+              📊 전용 구글 시트 DB 바로가기 🔗
+            </a>
+            <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()" style="font-weight: 800; padding: 0.6rem 1.1rem; border-radius: 10px;">
+              ➕ 신규 GAS 탐구활동 주소 등록
+            </button>
           </div>
         </div>
 

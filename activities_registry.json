@@ -20,10 +20,10 @@
     },
     {
       "activityId": "MATH-2026-GEO-03",
-      "deploymentSpecId": "AKfycbyQmSU5OQlbIVOXuOa_6sEi66mnf3lbiGreaW3VlgHve8VSFQLuBlaizUvRbyXvMzQl",
+      "deploymentSpecId": "AKfycbzW96RWTHPkvDA6oy7JCHiOUsClwGruOhpRYsknKhsPCG03wiviY_HPhMKkx9ApYSNF",
       "title": "삼각형의 내심 (Incenter) 탐구 웹앱",
       "grade": 2,
-      "entryPoint": "https://script.google.com/macros/s/AKfycbyQmSU5OQlbIVOXuOa_6sEi66mnf3lbiGreaW3VlgHve8VSFQLuBlaizUvRbyXvMzQl/exec",
+      "entryPoint": "https://script.google.com/macros/s/AKfycbzW96RWTHPkvDA6oy7JCHiOUsClwGruOhpRYsknKhsPCG03wiviY_HPhMKkx9ApYSNF/exec",
       "manifestPath": "C:/Users/sjyli/OneDrive/바탕 화면/Redbook/gas_project_incenter/PROJECT_HANDOFF_RECORDS.md"
     }
   ]

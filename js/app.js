@@ -14,10 +14,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const App = {
   async init() {
+    this.restoreUserSession();
     this.bindGlobalMessageListener();
     await this.syncCloudDatabase();
     this.checkUrlEmbedParameters();
     this.renderAppShell();
+  },
+
+  restoreUserSession() {
+    try {
+      const saved = localStorage.getItem('curlymath_session_user');
+      if (saved) {
+        AppState.currentUser = JSON.parse(saved);
+      }
+    } catch (e) {}
+  },
+
+  saveUserSession(user) {
+    AppState.currentUser = user;
+    try {
+      localStorage.setItem('curlymath_session_user', JSON.stringify(user));
+    } catch (e) {}
+  },
+
+  logout() {
+    if (confirm('🔒 로그아웃 하시겠습니까?')) {
+      AppState.currentUser = null;
+      try {
+        localStorage.removeItem('curlymath_session_user');
+      } catch (e) {}
+      this.renderAppShell();
+    }
   },
 
   bindGlobalMessageListener() {
@@ -207,7 +234,7 @@ const App = {
                       <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${isTeacher ? '교사' : '학생'}</div>
                     </div>
                   </div>
-                  <button onclick="App.logout()" style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 4px 6px; white-space: nowrap; flex-shrink: 0;" title="로그아웃">
+                  <button onclick="App.logout()" style="background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 800; padding: 5px 10px; white-space: nowrap; flex-shrink: 0; transition: all 0.15s ease;" title="안전하게 로그아웃">
                     🚪 로그아웃
                   </button>
                 </div>
@@ -382,11 +409,11 @@ const App = {
 
     // 1. Teacher Master Account Check (Secure)
     if (inputId === 'sjylim' && inputPw === 'whddbs01!') {
-      AppState.currentUser = {
+      this.saveUserSession({
         id: 'sjylim',
         name: '임종윤 교사',
         role: 'teacher'
-      };
+      });
       this.renderAppShell();
       return;
     }
@@ -394,13 +421,13 @@ const App = {
     // 2. Student Authentication Check
     const found = AppState.demoStudents.find(s => String(s.id) === inputId && String(s.password) === inputPw);
     if (found) {
-      AppState.currentUser = {
+      this.saveUserSession({
         id: found.id,
         name: found.name,
         grade: found.grade || '1',
         classNum: found.classNum || '1',
         role: 'student'
-      };
+      });
       this.renderAppShell();
       return;
     }
@@ -408,13 +435,13 @@ const App = {
     // Fallback: If ID matches but password is dummy or initial login
     const foundById = AppState.demoStudents.find(s => String(s.id) === inputId);
     if (foundById) {
-      AppState.currentUser = {
+      this.saveUserSession({
         id: foundById.id,
         name: foundById.name,
         grade: foundById.grade || '1',
         classNum: foundById.classNum || '1',
         role: 'student'
-      };
+      });
       this.renderAppShell();
       return;
     }

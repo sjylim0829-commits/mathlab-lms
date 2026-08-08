@@ -10,7 +10,7 @@
 | :--- | :--- |
 | **담당 교사** | **임종윤 교사 (영서중학교 수학과)** |
 | **마스터 교사 로그인 계정** | **아이디**: `test` / **비밀번호**: `11111111` |
-| **Vercel 실시간 배포 URL** | **[https://mathlab-lms-9fdt.vercel.app/](https://mathlab-lms-9fdt.vercel.app/)** |
+| **Vercel 실시간 배포 URL** | **[https://curlymath.vercel.app/](https://curlymath.vercel.app/)** |
 | **GitHub 소스코드 저장소** | **[https://github.com/sjylim0829-commits/mathlab-lms.git](https://github.com/sjylim0829-commits/mathlab-lms.git)** |
 | **구글 앱스 스크립트 Script ID** | `17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT` |
 | **구글 앱스 스크립트 라이브 WebApp URL** | `https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec` |

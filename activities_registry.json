@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-07T12:18:00+09:00",
-  "totalActivities": 2,
+  "lastUpdated": "2026-08-08T19:20:00+09:00",
+  "totalActivities": 3,
   "activities": [
     {
       "activityId": "MATH-2026-GEO-01",
@@ -17,6 +17,14 @@
       "grade": 2,
       "entryPoint": "C:/Users/sjyli/.gemini/antigravity/scratch/math-apps/circumcenter-app/index.html",
       "manifestPath": "C:/Users/sjyli/.gemini/antigravity/scratch/math-apps/circumcenter-app/activity_manifest.json"
+    },
+    {
+      "activityId": "MATH-2026-GEO-03",
+      "deploymentSpecId": "AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N",
+      "title": "삼각형의 내심 (Incenter) 탐구 웹앱",
+      "grade": 2,
+      "entryPoint": "C:/Users/sjyli/OneDrive/바탕 화면/Redbook/gas_project_incenter/Index.html",
+      "manifestPath": "C:/Users/sjyli/OneDrive/바탕 화면/Redbook/gas_project_incenter/PROJECT_HANDOFF_RECORDS.md"
     }
   ]
 }

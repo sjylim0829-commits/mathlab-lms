@@ -1,0 +1,60 @@
+{
+  "activityId": "MATH-2026-GEO-03",
+  "activityTitle": "삼각형의 내심 (Incenter) 탐구 웹앱",
+  "generatedAt": "2026-08-08T19:20:00+09:00",
+  "totalStudents": 4,
+  "records": [
+    {
+      "studentId": "test999",
+      "studentName": "테스트(Inspector)",
+      "currentStep": 4,
+      "progressPercent": 100,
+      "incenter": { "x": 390, "y": 285 },
+      "radiusPx": 95,
+      "perpendicularsMatch": true,
+      "rhsAnimationCompleted": true,
+      "quizAnswer": "140 (90° + ½A)",
+      "quizCorrect": true,
+      "updatedAt": "2026-08-08 19:18:10"
+    },
+    {
+      "studentId": "202601",
+      "studentName": "김수학",
+      "currentStep": 4,
+      "progressPercent": 100,
+      "incenter": { "x": 385, "y": 290 },
+      "radiusPx": 92,
+      "perpendicularsMatch": true,
+      "rhsAnimationCompleted": true,
+      "quizAnswer": "140 (90° + ½A)",
+      "quizCorrect": true,
+      "updatedAt": "2026-08-08 19:15:04"
+    },
+    {
+      "studentId": "202602",
+      "studentName": "이영서",
+      "currentStep": 3,
+      "progressPercent": 80,
+      "incenter": { "x": 392, "y": 280 },
+      "radiusPx": 98,
+      "perpendicularsMatch": true,
+      "rhsAnimationCompleted": true,
+      "quizAnswer": "진행 중",
+      "quizCorrect": false,
+      "updatedAt": "2026-08-08 19:16:22"
+    },
+    {
+      "studentId": "202603",
+      "studentName": "박도형",
+      "currentStep": 2,
+      "progressPercent": 60,
+      "incenter": { "x": 388, "y": 288 },
+      "radiusPx": 94,
+      "perpendicularsMatch": true,
+      "rhsAnimationCompleted": false,
+      "quizAnswer": "미제출",
+      "quizCorrect": false,
+      "updatedAt": "2026-08-08 19:17:45"
+    }
+  ]
+}

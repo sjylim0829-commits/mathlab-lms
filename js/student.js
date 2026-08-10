@@ -13,16 +13,27 @@ const StudentModule = {
   },
 
   renderLabView() {
-    const activities = typeof TeacherModule !== 'undefined' ? TeacherModule.getActivities() : [];
-    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0] || {
-      id: 'act-1',
-      title: '[2학년] 직각삼각형의 합동 조건 (RHA & RHS) 겹치기 탐구',
-      desc: '두 직각삼각형을 마우스/손가락으로 통째로 드래그하여 포개어 보며 RHA 및 RHS 합동 조건의 성질을 직관적으로 탐구합니다.',
-      type: 'canvas'
-    };
-
+    const allActivities = typeof TeacherModule !== 'undefined' ? TeacherModule.getActivities() : [];
     const currentUser = (typeof AppState !== 'undefined' && AppState.currentUser) ? AppState.currentUser : {
       id: '20328', name: '홍길동', grade: '2', classNum: '3'
+    };
+
+    const studentGrade = String(currentUser.grade || '2');
+
+    // 학생 본인의 학년(또는 전체 학년 대상) 탐구 활동만 노출되도록 완벽 필터링!
+    const filteredActivities = allActivities.filter(act => {
+      if (!act.targetGrade || act.targetGrade === 'all' || act.targetGrade === '전체') return true;
+      if (String(act.targetGrade) === studentGrade) return true;
+      if (act.grade && (act.grade.includes(studentGrade + '학년') || act.grade.includes('전체'))) return true;
+      return false;
+    });
+
+    const activities = filteredActivities.length > 0 ? filteredActivities : allActivities;
+    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0] || {
+      id: 'act-1',
+      title: `[${studentGrade}학년] 수학 탐구 미션`,
+      desc: '담당 선생님이 등록하신 수학 탐구 실습 과제입니다.',
+      type: 'canvas'
     };
 
     const catalogCardsHtml = activities.map(act => {
@@ -31,7 +42,7 @@ const StudentModule = {
         <div class="glass-card hover-lift" style="padding: 1rem; border-color: ${isSelected ? 'var(--violet-bright)' : 'var(--border-card)'}; background: ${isSelected ? 'rgba(99, 102, 241, 0.06)' : '#ffffff'}; flex: 1; min-width: 240px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
             <span style="font-size: 0.7rem; font-weight: 700; color: var(--primary-violet); background: rgba(99, 102, 241, 0.1); padding: 2px 6px; border-radius: 8px;">
-              ${act.grade || '2학년'}
+              ${act.grade || studentGrade + '학년전용'}
             </span>
             ${isSelected ? '<span style="font-size: 0.7rem; font-weight: 700; color: var(--accent-emerald);">▶️ 진행 중</span>' : ''}
           </div>
@@ -51,9 +62,9 @@ const StudentModule = {
         <div class="glass-card" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-              <span class="role-pill student" style="font-size: 0.75rem;">학생 수학 탐구실</span>
+              <span class="role-pill student" style="font-size: 0.75rem;">${studentGrade}학년 수학 탐구실</span>
               <span style="font-size: 0.85rem; color: var(--text-muted);">
-                학생: <strong style="color: var(--text-main);">${currentUser.name} (${currentUser.id})</strong>
+                학생: <strong style="color: var(--text-main);">${currentUser.name} (${studentGrade}학년 ${currentUser.classNum || 1}반 ${currentUser.id})</strong>
               </span>
             </div>
             <h2 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.3rem;" id="student-active-title">${activeAct.title}</h2>
@@ -72,7 +83,7 @@ const StudentModule = {
         <!-- Activity Selection Row -->
         <div style="margin-bottom: 1.5rem;">
           <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.6rem;">
-            📚 참여 가능 수학 탐구 미션 목록
+            📚 [${studentGrade}학년] 참여 가능 수학 탐구 미션 목록
           </h3>
           <div style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
             ${catalogCardsHtml}

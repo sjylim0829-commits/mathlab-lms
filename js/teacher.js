@@ -15,7 +15,8 @@ const TeacherModule = {
       {
         id: 'REDBOOK-GEO-01',
         title: '📘 [2학년] 이등변삼각형 & 직각삼각형의 합동 탐구 (Redbook 웹 앱)',
-        grade: '2학년 전체 (1~8반)',
+        grade: '2학년전용',
+        targetGrade: '2',
         url: 'https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec',
         desc: 'Redbook 제작: SSS 작도, 두 밑각 성질, 꼭지각 이등분선 및 직각삼각형 RHA/RHS 합동 증명 캔버스 웹 앱 (LMS DB 연동 완료)',
         type: 'gas'
@@ -23,7 +24,8 @@ const TeacherModule = {
       {
         id: 'REDBOOK-GEO-02',
         title: '📐 [2학년] 삼각형의 외심 (Circumcenter) 탐구 (Redbook 웹 앱)',
-        grade: '2학년 전체 (1~8반)',
+        grade: '2학년전용',
+        targetGrade: '2',
         url: 'https://script.google.com/macros/s/AKfycbzAOh_0HNPAhy25scaJKIykIHywtKGRrNTU6TQKdk0L9berPBqV3xm-qWlUdT_Q3eJOcg/exec',
         desc: 'Redbook 제작: 세 변의 수직이등분선 작도, 외심 O 및 외접원, 외심의 위치 & 각도 성질(∠BOC = 2∠A) 증명 웹 앱 (LMS DB 연동 완료)',
         type: 'gas'
@@ -31,7 +33,8 @@ const TeacherModule = {
       {
         id: 'REDBOOK-GEO-03',
         title: '📐 [2학년] 삼각형의 내심 (Incenter) 탐구 (Redbook 웹 앱)',
-        grade: '2학년 전체 (1~8반)',
+        grade: '2학년전용',
+        targetGrade: '2',
         url: 'https://script.google.com/macros/s/AKfycbw6TTLyvTkX2CmMVt9a-T3iNuhjK261pG4kXEObPSDg7yl4CvgFt-5ttiiA34H-4yJ0/exec',
         desc: 'Redbook 제작: 세 내각의 이등분선 작도, 내심 I 및 내접원(r), 세 변까지의 거리(ID=IE=IF) & 각도 성질(∠BIC = 90° + ½∠A) 증명 웹 앱 (구글 시트 DB 1m97-hqz... 연동 완료)',
         type: 'gas'
@@ -297,11 +300,12 @@ const TeacherModule = {
                 <input type="text" id="embed-title-input" class="input-control" required placeholder="예: [2학년] 피타고라스 정리 가상 실습">
               </div>
               <div class="form-group">
-                <label class="form-label">대상 학년 및 학반</label>
-                <select id="embed-grade-select" class="input-control">
-                  <option value="1학년 전체 (1~8반)">1학년 전체 (1~8반)</option>
-                  <option value="2학년 전체 (1~8반)" selected>2학년 전체 (1~8반)</option>
-                  <option value="3학년 전체 (1~6반)">3학년 전체 (1~6반)</option>
+                <label class="form-label" style="font-weight: 700;">노출 대상 학년 선택</label>
+                <select id="embed-grade-select" class="input-control" style="font-weight: 700; color: #3730a3;">
+                  <option value="1">🌱 1학년 전용 (1학년 노출)</option>
+                  <option value="2" selected>🌿 2학년 전용 (2학년 노출)</option>
+                  <option value="3">🌳 3학년 전용 (3학년 노출)</option>
+                  <option value="all">🏫 전체 학년 공통 (1~3학년 전체 노출)</option>
                 </select>
               </div>
             </div>
@@ -452,7 +456,7 @@ const TeacherModule = {
   handleRegisterEmbeddedActivity(e) {
     e.preventDefault();
     const title = document.getElementById('embed-title-input').value.trim();
-    const grade = document.getElementById('embed-grade-select').value;
+    const targetGrade = document.getElementById('embed-grade-select').value;
     const url = document.getElementById('embed-url-input').value.trim();
     const desc = document.getElementById('embed-desc-input').value.trim() || '선생님이 신규 등록한 구글 앱스 스크립트 기반 수학 탐구 활동입니다.';
 
@@ -461,12 +465,18 @@ const TeacherModule = {
       return;
     }
 
+    let gradeLabel = '전체학년공통';
+    if (targetGrade === '1') gradeLabel = '1학년전용';
+    else if (targetGrade === '2') gradeLabel = '2학년전용';
+    else if (targetGrade === '3') gradeLabel = '3학년전용';
+
     const activities = this.getActivities();
     const newId = 'act-' + (activities.length + 1);
     const newAct = {
       id: newId,
       title: title,
-      grade: grade,
+      grade: gradeLabel,
+      targetGrade: targetGrade,
       url: url,
       desc: desc,
       type: 'gas'

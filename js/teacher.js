@@ -1,6 +1,6 @@
 /**
- * Yeongseo Middle School Teacher Management Module & Inquiry Activities Hub
- * Teacher: Jongyoon Lim (임종윤 교사 - 영서중학교)
+ * Teacher Management Module & Inquiry Activities Hub
+ * Math LMS - CurlyMath
  */
 
 const LOCAL_STORAGE_KEY_ACTIVITIES = 'mathlab_registered_activities';
@@ -8,52 +8,18 @@ const LOCAL_STORAGE_KEY_ACTIVITIES = 'mathlab_registered_activities';
 const TeacherModule = {
   activeTab: 'dashboard',
   triangleExplorer: null,
-  activeActivityId: 'REDBOOK-GEO-01',
+  activeActivityId: null,
 
   getActivities() {
-    const defaultList = [
-      {
-        id: 'REDBOOK-GEO-01',
-        title: '📘 [2학년] 이등변삼각형 & 직각삼각형의 합동 탐구 (Redbook 웹 앱)',
-        grade: '2학년전용',
-        targetGrade: '2',
-        url: 'https://script.google.com/macros/s/AKfycbz1zC7figOuC7FjoEAT4uQ39Kt3fLirKdSOetoIXvavxzqR4WETvwaf875VNBiBQV1N/exec',
-        desc: 'Redbook 제작: SSS 작도, 두 밑각 성질, 꼭지각 이등분선 및 직각삼각형 RHA/RHS 합동 증명 캔버스 웹 앱 (LMS DB 연동 완료)',
-        type: 'gas'
-      },
-      {
-        id: 'REDBOOK-GEO-02',
-        title: '📐 [2학년] 삼각형의 외심 (Circumcenter) 탐구 (Redbook 웹 앱)',
-        grade: '2학년전용',
-        targetGrade: '2',
-        url: 'https://script.google.com/macros/s/AKfycbzAOh_0HNPAhy25scaJKIykIHywtKGRrNTU6TQKdk0L9berPBqV3xm-qWlUdT_Q3eJOcg/exec',
-        desc: 'Redbook 제작: 세 변의 수직이등분선 작도, 외심 O 및 외접원, 외심의 위치 & 각도 성질(∠BOC = 2∠A) 증명 웹 앱 (LMS DB 연동 완료)',
-        type: 'gas'
-      },
-      {
-        id: 'REDBOOK-GEO-03',
-        title: '📐 [2학년] 삼각형의 내심 (Incenter) 탐구 (Redbook 웹 앱)',
-        grade: '2학년전용',
-        targetGrade: '2',
-        url: 'https://script.google.com/macros/s/AKfycbw6TTLyvTkX2CmMVt9a-T3iNuhjK261pG4kXEObPSDg7yl4CvgFt-5ttiiA34H-4yJ0/exec',
-        desc: 'Redbook 제작: 세 내각의 이등분선 작도, 내심 I 및 내접원(r), 세 변까지의 거리(ID=IE=IF) & 각도 성질(∠BIC = 90° + ½∠A) 증명 웹 앱 (구글 시트 DB 1m97-hqz... 연동 완료)',
-        type: 'gas'
-      }
-    ];
+    const defaultList = [];
 
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY_ACTIVITIES);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Filter out old demo apps
-          const cleanList = parsed.filter(a => a.id.startsWith('REDBOOK-') || a.id.startsWith('act-auto-'));
-          const redbookIds = defaultList.map(a => a.id);
-          defaultList.forEach(defItem => {
-            if (!cleanList.some(p => p.id === defItem.id)) {
-              cleanList.push(defItem);
-            }
-          });
+          // 기존 REDBOOK 하드코딩 데이터 자동 정리
+          const cleanList = parsed.filter(a => !a.id.startsWith('REDBOOK-'));
           this.saveActivities(cleanList);
           return cleanList;
         }
@@ -162,7 +128,7 @@ const TeacherModule = {
                 📚 수업 진도 기록부
               </h3>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
-                영서중학교 1~3학년 1~8반 학반별 진도 단원, 진도율(%), 수업 과제 및 교사 메모를 기록하고 구글 시트 <code>수업진도</code> 탭과 실시간 동기화합니다.
+                1~3학년 1~8반 학반별 진도 단원, 진도율(%), 수업 과제 및 교사 메모를 기록하고 구글 시트 <code>수업진도</code> 탭과 실시간 동기화합니다.
               </p>
             </div>
             <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
@@ -224,24 +190,24 @@ const TeacherModule = {
     const student = AppState.demoStudents.find(s => String(s.id) === String(studentId));
     if (!student) return;
 
-    alert(`[영서중 학생 정보 및 답안]\n학생명: ${student.name}\n학번: ${student.id}\n소속: 영서중학교 ${student.grade || '1'}학년 ${student.classNum || '1'}반\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
+    alert(`[학생 정보 및 답안]\n학생명: ${student.name}\n학번: ${student.id}\n소속: ${student.grade || '1'}학년 ${student.classNum || '1'}반\n상태: ${student.status === 'submitted' ? '제출 완료' : '진행 중'}\n점수: ${student.score}점\n제출 수식: f(x) = x^2 - 2`);
   },
 
   // 2. Inquiry Activities View & Embed Catalog Hub (📐 탐구 활동)
   renderActivityBuilder() {
     const activities = this.getActivities();
-    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0];
+    const activeAct = activities.find(a => a.id === this.activeActivityId) || activities[0] || null;
 
     const catalogCardsHtml = activities.map(act => {
-      const isSelected = act.id === activeAct.id;
+      const isSelected = activeAct && act.id === activeAct.id;
       return `
         <div class="glass-card hover-lift" style="padding: 1.1rem; border-color: ${isSelected ? 'var(--violet-bright)' : 'var(--border-card)'}; background: ${isSelected ? 'rgba(99, 102, 241, 0.06)' : '#ffffff'}; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
               <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-violet); background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 10px;">
-                ${act.grade}
+                ${act.grade || '전체학년'}
               </span>
-              ${isSelected ? '<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald); background: rgba(5, 150, 105, 0.12); padding: 2px 8px; border-radius: 10px;">▶️ 현재 실행 중</span>' : ''}
+              ${isSelected ? '<span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald); background: rgba(5, 150, 105, 0.12); padding: 2px 8px; border-radius: 10px;">▶️ 실행 중</span>' : ''}
             </div>
             <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
               ${act.title}
@@ -251,16 +217,87 @@ const TeacherModule = {
             </p>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.6rem; margin-top: 0.4rem;">
-            <span style="font-size: 0.75rem; color: var(--text-dim);">
-              ${act.url ? '🌐 구글 앱스 스크립트 웹앱' : '📐 대화형 캔버스 실습'}
-            </span>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <span style="font-size: 0.7rem; color: var(--text-dim);">🌐 GAS 웹앱</span>
+              <button class="btn btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; cursor: pointer;" onclick="TeacherModule.deleteActivity('${act.id}')">
+                🗑️ 삭제
+              </button>
+            </div>
             <button class="btn btn-sm ${isSelected ? 'btn-primary' : 'btn-outline-violet'}" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;" onclick="TeacherModule.selectActivity('${act.id}')">
-              ${isSelected ? '실행 중' : '▶️ 이 탐구활동 선택하기'}
+              ${isSelected ? '실행 중' : '▶️ 선택'}
             </button>
           </div>
         </div>
       `;
     }).join('');
+
+    const emptyStateHtml = `
+      <div class="glass-card" style="padding: 3rem 2rem; text-align: center; border: 2px dashed var(--border-card); background: rgba(99, 102, 241, 0.02);">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">등록된 탐구 활동이 없습니다</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
+          위쪽의 <strong style="color: var(--violet-bright);">➕ 신규 GAS 탐구활동 주소 등록</strong> 버튼을 눌러<br>
+          구글 앱스 스크립트 웹앱 URL을 입력하면 학생들에게 탐구 활동이 노출됩니다.
+        </p>
+      </div>
+    `;
+
+    const workspaceHtml = activeAct ? `
+        <div class="glass-card embed-workspace-container" id="teacher-workspace-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+            <div>
+              <span class="status-indicator live"><span class="dot"></span> 🖱️ 선택된 탐구 활동 실시간 실행 공간</span>
+              <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;" id="active-activity-title">
+                ${activeAct.title}
+              </h3>
+            </div>
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+              <button class="btn btn-primary" onclick="TeacherModule.toggleFullscreenEmbed()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); font-weight: 700;">
+                ⤢ 큰 화면 모드 (전체 화면)
+              </button>
+            </div>
+          </div>
+          <div id="embed-app-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 0.75rem; min-height: 600px; display: flex; flex-direction: column; justify-content: center;">
+            <iframe src="${activeAct.url || ''}" style="width: 100%; height: 760px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}"></iframe>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
+              📝 탐구 실습 결과 제출 및 구글 시트 저장
+            </h3>
+            <span style="font-size: 0.75rem; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
+              구글 시트 & 드라이브 자동 연동
+            </span>
+          </div>
+          <form onsubmit="TeacherModule.handleSubmitActivityResult(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;">
+              <div class="form-group">
+                <label class="form-label">학번</label>
+                <input type="text" id="act-student-id" class="input-control" value="${AppState.currentUser && AppState.currentUser.role !== 'teacher' ? AppState.currentUser.id : ''}" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">학생 성명</label>
+                <input type="text" id="act-student-name" class="input-control" value="${AppState.currentUser && AppState.currentUser.role !== 'teacher' ? AppState.currentUser.name : ''}" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">소속 학급</label>
+                <input type="text" id="act-student-class" class="input-control" value="" readonly style="background: #f1f5f9;">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">탐구 결과 및 작성 수식 메모</label>
+              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="탐구 실습 후 발견한 수학적 개념 및 작성한 수식을 정리해 보세요."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" id="act-submit-btn" class="btn btn-primary" style="padding: 0.7rem 1.25rem;">
+                🚀 탐구 결과 제출 및 구글 시트 저장
+              </button>
+            </div>
+          </form>
+        </div>
+    ` : '';
 
     return `
       <div>
@@ -269,12 +306,12 @@ const TeacherModule = {
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem;">
               <span class="role-pill teacher" style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.12); color: var(--violet-bright);">
-                🏫 영서중학교 수학과
+                🏫 수학과
               </span>
-              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 등록 목록 & 실행 센터</h2>
+              <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 등록 & 실행 센터</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              담당 교사: <strong style="color: var(--text-main);">임종윤 교사</strong> | 등록된 구글 앱스 스크립트 웹앱 주소 목록 선택 및 실시간 실습
+              구글 앱스 스크립트 웹앱 URL을 등록하여 학년별로 학생에게 탐구 활동을 배포합니다. | 현재 등록: <strong style="color: var(--violet-bright);">${activities.length}개</strong>
             </p>
           </div>
 
@@ -288,7 +325,7 @@ const TeacherModule = {
           </div>
         </div>
 
-        <!-- Custom Google Apps Script Web App URL Registration Form -->
+        <!-- Registration Form -->
         <div id="activity-embed-form-container" class="glass-card" style="margin-bottom: 2rem; display: none;">
           <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 1rem;">
             🔗 신규 구글 앱스 스크립트(GAS) 탐구활동 주소 등록하기
@@ -302,138 +339,50 @@ const TeacherModule = {
               <div class="form-group">
                 <label class="form-label" style="font-weight: 700;">노출 대상 학년 선택</label>
                 <select id="embed-grade-select" class="input-control" style="font-weight: 700; color: #3730a3;">
-                  <option value="1">🌱 1학년 전용 (1학년 노출)</option>
-                  <option value="2" selected>🌿 2학년 전용 (2학년 노출)</option>
-                  <option value="3">🌳 3학년 전용 (3학년 노출)</option>
-                  <option value="all">🏫 전체 학년 공통 (1~3학년 전체 노출)</option>
+                  <option value="1">🌱 1학년 전용</option>
+                  <option value="2" selected>🌿 2학년 전용</option>
+                  <option value="3">🌳 3학년 전용</option>
+                  <option value="all">🏫 전체 학년 공통</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group">
               <label class="form-label" style="color: var(--violet-bright); font-weight: 700;">
-                🌐 선생님의 구글 앱스 스크립트 웹 앱 URL 주소
+                🌐 구글 앱스 스크립트 웹 앱 URL 주소
               </label>
               <input type="url" id="embed-url-input" class="input-control" required placeholder="https://script.google.com/macros/s/.../exec 주소를 입력하세요">
             </div>
 
             <div class="form-group">
-              <label class="form-label">탐구 활동 설명 및 실습 안내</label>
+              <label class="form-label">탐구 활동 설명 (선택)</label>
               <textarea id="embed-desc-input" class="input-control" rows="2" placeholder="학생들이 실습 시 참고할 문제 설명 및 수식 안내를 입력하세요."></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
               <button type="button" class="btn btn-secondary" onclick="TeacherModule.toggleEmbedForm()">취소</button>
-              <button type="submit" class="btn btn-primary">🚀 목록에 탐구 활동 추가 등록하기</button>
+              <button type="submit" class="btn btn-primary" style="font-weight: 800;">🚀 탐구 활동 등록하기</button>
             </div>
           </form>
         </div>
 
-        <!-- Catalog List Grid Section -->
+        <!-- Catalog List -->
         <div style="margin-bottom: 2rem;">
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
-            📚 등록된 탐구 활동 목록 (선택 시 아래 캔버스/웹앱 실행)
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.8rem;">
+            📚 등록된 탐구 활동 목록 ${activities.length > 0 ? '(카드 선택 시 아래에서 실행)' : ''}
           </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
-            ${catalogCardsHtml}
-          </div>
+          ${activities.length > 0 ? `
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
+              ${catalogCardsHtml}
+            </div>
+          ` : emptyStateHtml}
         </div>
 
-        <!-- Embedded Activity Interactive Workspace Hub -->
-        <div class="glass-card embed-workspace-container" id="teacher-workspace-card" style="margin-bottom: 2rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
-            <div>
-              <span class="status-indicator live"><span class="dot"></span> 🖱️ 선택된 탐구 활동 실시간 실행 공간 (확대 가능)</span>
-              <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;" id="active-activity-title">
-                ${activeAct.title}
-              </h3>
-            </div>
-
-            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
-              ${activeAct.type === 'canvas' ? `
-                <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHA')">
-                  📐 RHA 합동
-                </button>
-                <button class="btn btn-outline-violet" onclick="TeacherModule.setTriangleMode('RHS')">
-                  📐 RHS 합동
-                </button>
-                <button class="btn btn-secondary" onclick="TeacherModule.resetTrianglePos()">
-                  ⏪ 위치 리셋
-                </button>
-                <button class="btn btn-primary" onclick="TeacherModule.autoAnimateTriangleOverlay()">
-                  ✨ 자동으로 겹쳐보기
-                </button>
-              ` : ''}
-              <button class="btn btn-primary" onclick="TeacherModule.toggleFullscreenEmbed()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); font-weight: 700;">
-                ⤢ 큰 화면 모드 (전체 화면)
-              </button>
-            </div>
-          </div>
-
-          <!-- Embedded Workspace (Iframe or Canvas) -->
-          <div id="embed-app-container" style="background: #f8fafc; border: 1px solid var(--border-card); border-radius: var(--radius-md); padding: 0.75rem; min-height: 600px; display: flex; flex-direction: column; justify-content: center;">
-            ${activeAct.type === 'canvas' ? `
-              <div class="grapher-canvas-card" style="height: 520px; margin-bottom: 1rem;">
-                <canvas id="builder-interactive-grapher" class="grapher-canvas" style="width: 100%; height: 100%;"></canvas>
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 0.8rem 1.2rem; border: 1px solid var(--border-card); border-radius: var(--radius-sm); flex-wrap: wrap; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
-                  <label style="font-size: 0.85rem; color: var(--violet-bright); font-weight: 700; white-space: nowrap;">🔄 이동 삼각형 회전 (0°~360°)</label>
-                  <input type="range" min="0" max="360" step="5" value="0" class="slider-input" oninput="TeacherModule.rotateTriangle(this.value)" style="flex: 1;">
-                </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">
-                  💡 <strong>안내:</strong> 점을 하나씩 옮기지 않고 <strong>삼각형 통째로 마우스/손가락으로 드래그</strong>하여 포갭니다.
-                </div>
-              </div>
-            ` : `
-              <iframe src="${activeAct.url || 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec'}" style="width: 100%; height: 760px; border: none; border-radius: var(--radius-sm);" title="${activeAct.title}"></iframe>
-            `}
-          </div>
-        </div>
-
-        <!-- Student Exploration Submission Form (Google Sheets & Drive Sync) -->
-        <div class="glass-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
-              📝 탐구 실습 결과 제출 및 구글 시트 (탐구활동결과 탭) 실시간 저장
-            </h3>
-            <span style="font-size: 0.75rem; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
-              구글 시트 & 드라이브 자동 연동
-            </span>
-          </div>
-
-          <form onsubmit="TeacherModule.handleSubmitActivityResult(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem;">
-              <div class="form-group">
-                <label class="form-label">학번</label>
-                <input type="text" id="act-student-id" class="input-control" value="${AppState.currentUser && AppState.currentUser.id !== 'test' ? AppState.currentUser.id : '20328'}" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label">학생 성명</label>
-                <input type="text" id="act-student-name" class="input-control" value="${AppState.currentUser && AppState.currentUser.id !== 'test' ? AppState.currentUser.name : '홍길동'}" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label">소속 학급</label>
-                <input type="text" id="act-student-class" class="input-control" value="2학년 3반" readonly style="background: #f1f5f9;">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">탐구 결과 및 작성 수식 메모</label>
-              <textarea id="act-answer-text" class="input-control" rows="3" required placeholder="탐구 실습 후 발견한 수학적 개념 및 작성한 수식을 정리해 보세요.">두 직각삼각형에서 직각(R)과 빗변의 길이(H=10cm)가 같고, 한 예각의 크기(A=37°)가 서로 같으므로 두 직각삼각형을 통째로 끌어다 포개었을 때 완전히 일치합니다. 따라서 RHA 합동(△ABC ≡ △DEF)이 성립합니다.</textarea>
-            </div>
-
-            <div style="display: flex; justify-content: flex-end;">
-              <button type="submit" id="act-submit-btn" class="btn btn-primary" style="padding: 0.7rem 1.25rem;">
-                🚀 탐구 결과 제출 및 구글 시트 (탐구활동결과 탭) 저장
-              </button>
-            </div>
-          </form>
-        </div>
+        ${workspaceHtml}
       </div>
     `;
   },
+
 
   selectActivity(actId) {
     this.activeActivityId = actId;
@@ -499,10 +448,22 @@ const TeacherModule = {
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
       mainView.innerHTML = this.renderActivityBuilder();
-      if (this.activeActivityId === 'act-1') {
-        setTimeout(() => this.initTriangleExplorer(), 50);
-      }
     }
+  },
+
+  deleteActivity(actId) {
+    if (!confirm('정말 이 탐구 활동을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.')) return;
+    const activities = this.getActivities();
+    const updated = activities.filter(a => a.id !== actId);
+    this.saveActivities(updated);
+    if (this.activeActivityId === actId) {
+      this.activeActivityId = updated.length > 0 ? updated[0].id : null;
+    }
+    const mainView = document.getElementById('teacher-main-view');
+    if (mainView) {
+      mainView.innerHTML = this.renderActivityBuilder();
+    }
+    alert('🗑️ 탐구 활동이 삭제되었습니다.');
   },
 
   toggleFullscreenEmbed() {

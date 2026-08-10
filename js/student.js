@@ -4,7 +4,7 @@
  */
 
 const StudentModule = {
-  activeActivityId: 'MATH-2026-GEO-02',
+  activeActivityId: null,
   grapherInstance: null,
   currentFormulaInput: 'f(x) = x^2 - 2',
 

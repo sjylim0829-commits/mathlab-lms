@@ -316,7 +316,7 @@ const TeacherModule = {
           </div>
 
           <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;">
-            <a href="https://docs.google.com/spreadsheets/d/1nNlovh7dRVtzUAIOaWQIBG4MmeO4JvPRr2znzgLQsOk/edit#gid=0" target="_blank" class="btn btn-emerald" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; text-decoration: none; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);">
+            <a href="https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit" target="_blank" class="btn btn-emerald" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; text-decoration: none; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);">
               📊 전용 구글 시트 DB 바로가기 🔗
             </a>
             <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()" style="font-weight: 800; padding: 0.6rem 1.1rem; border-radius: 10px;">

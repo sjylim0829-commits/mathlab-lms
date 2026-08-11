@@ -115,7 +115,16 @@ const CloudDB = {
       clearTimeout(timer);
 
       if (res && res.ok) {
-        const remoteData = await res.json();
+        const text = await res.text();
+        let remoteData = null;
+        try {
+          remoteData = JSON.parse(text);
+        } catch (e) {
+          console.warn('[CloudDB] WebApp response is not JSON. (Google Apps Script WebApp Access Permission setting [Anyone/모든 사용자] required):', text.slice(0, 150));
+          this.isAccessBlocked = true;
+          return localList;
+        }
+        this.isAccessBlocked = false;
         
         let remoteStudents = [];
         if (Array.isArray(remoteData)) {

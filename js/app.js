@@ -407,8 +407,8 @@ const App = {
       return;
     }
 
-    // 1. Teacher Master Account Check (Secure)
-    if (inputId === 'sjylim' && inputPw === 'whddbs01!') {
+    // 1. Teacher Master Account Check (Secure Admin Role)
+    if (inputId === 'sjylim' && (inputPw === 'whddbs012' || inputPw === 'whddbs01!')) {
       this.saveUserSession({
         id: 'sjylim',
         name: '임종윤 교사',

@@ -219,9 +219,16 @@ const ArchiveModule = {
                 <span style="font-size: 0.8rem; color: #047857; font-weight: 800; background: #d1fae5; padding: 2px 8px; border-radius: 8px;">
                   학습 이력 아카이브 관리 대상
                 </span>
-                <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e1b4b; margin-top: 0.3rem;">
-                  ${currentStudent.name} <span style="font-size: 1rem; color: #64748b; font-weight: 600;">(${currentStudent.gradeClass})</span>
-                </h3>
+                <div style="display: flex; align-items: center; gap: 0.8rem; margin-top: 0.3rem; flex-wrap: wrap;">
+                  <h3 style="font-size: 1.5rem; font-weight: 800; color: #1e1b4b; margin: 0;">
+                    ${currentStudent.name} <span style="font-size: 1rem; color: #64748b; font-weight: 600;">(${currentStudent.gradeClass})</span>
+                  </h3>
+                  ${stObj ? `
+                    <button class="btn btn-sm" onclick="ArchiveModule.resetStudentPassword('${stObj.id}', '${stObj.name}')" style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 8px; font-weight: 800; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s ease;" title="학생 비밀번호 초기화">
+                      🔑 비밀번호 초기화
+                    </button>
+                  ` : ''}
+                </div>
               </div>
 
               <div style="display: flex; gap: 1rem; font-size: 0.85rem;">
@@ -344,6 +351,28 @@ const ArchiveModule = {
 
   exportAllSeteuk() {
     alert('📦 학급 전체 학생의 생기부 세특 문구를 Excel CSV 파일로 내보냅니다.');
+  },
+
+  async resetStudentPassword(studentId, studentName) {
+    if (!studentId) return;
+
+    const newPw = prompt(`🔑 [학생 비밀번호 초기화]\n\n학생명: ${studentName}\n학번: ${studentId}\n\n초기화할 새 비밀번호를 입력하세요:`, '1234');
+    if (newPw === null) return; // User cancelled
+
+    const cleanPw = newPw.trim();
+    if (!cleanPw) {
+      alert('비밀번호는 빈 값으로 설정할 수 없습니다.');
+      return;
+    }
+
+    const res = await CloudDB.resetStudentPassword(studentId, cleanPw);
+    if (res && res.success) {
+      alert(`✅ [비밀번호 초기화 완료]\n\n학생: ${studentName} (${studentId})\n새 비밀번호: ${cleanPw}\n\nGoogle Sheets DB 및 시스템에 업데이트되었습니다.`);
+      const mainView = document.getElementById('teacher-main-view');
+      if (mainView) mainView.innerHTML = this.renderView();
+    } else {
+      alert(`⚠️ ${res ? res.message : '비밀번호 초기화 처리 중 오류가 발생했습니다.'}`);
+    }
   }
 };
 

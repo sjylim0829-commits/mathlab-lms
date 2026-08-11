@@ -321,24 +321,28 @@ const ProgressModule = {
       syncStatusEl.innerHTML = '🔄 <span style="color: #4f46e5; font-weight: 800;">구글 드라이브 DB 전송 중...</span>';
     }
 
-    const totalClasses = (this.activeGrade === 3) ? 6 : 8;
-    const syl = this.getCurrentSyllabus();
-    const payloadItems = syl.map(item => {
-      const checkedClasses = [];
-      for (let c = 1; c <= totalClasses; c++) {
-        const list = (this.checklistData[this.activeGrade] && this.checklistData[this.activeGrade][c]) || [];
-        if (list.includes(item.period)) {
-          checkedClasses.push(c);
+    this.initSyllabusData();
+    const payloadItems = [];
+    [1, 2, 3].forEach(g => {
+      const syl = this.syllabusData[g] || [];
+      const totalClasses = (g === 3) ? 6 : 8;
+      syl.forEach(item => {
+        const checkedClasses = [];
+        for (let c = 1; c <= totalClasses; c++) {
+          const list = (this.checklistData[g] && this.checklistData[g][c]) || [];
+          if (list.includes(item.period)) {
+            checkedClasses.push(c);
+          }
         }
-      }
-      return {
-        grade: this.activeGrade,
-        period: item.period,
-        mainUnit: item.mainUnit,
-        subUnit: item.subUnit,
-        topic: item.topic,
-        checkedClasses: checkedClasses
-      };
+        payloadItems.push({
+          grade: g,
+          period: item.period,
+          mainUnit: item.mainUnit,
+          subUnit: item.subUnit,
+          topic: item.topic,
+          checkedClasses: checkedClasses
+        });
+      });
     });
 
     try {

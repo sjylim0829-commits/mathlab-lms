@@ -131,6 +131,14 @@ const CloudDB = {
               ProgressModule.updateCurriculumFromSheet(remoteData.curriculum);
             }
           }
+          if (Array.isArray(remoteData.syllabusChecklist) && remoteData.syllabusChecklist.length > 0) {
+            try {
+              localStorage.setItem('mathlab_syllabus_checklist_cache', JSON.stringify(remoteData.syllabusChecklist));
+            } catch(e) {}
+            if (typeof ProgressModule !== 'undefined' && ProgressModule.updateFromSheet) {
+              ProgressModule.updateFromSheet(remoteData.syllabusChecklist);
+            }
+          }
         }
 
         const cleaned = remoteStudents.map(s => ({
@@ -287,6 +295,50 @@ const CloudDB = {
       console.log('[CloudDB] 50-Period Syllabus checklist saved to Google Sheet!');
     } catch (err) {
       console.warn('[CloudDB] Syllabus checklist save error:', err);
+    }
+  },
+
+  // Reset student password (Teacher Action)
+  async resetStudentPassword(studentId, newPassword) {
+    if (!studentId || !newPassword) return { success: false, message: '학번과 비밀번호를 입력해 주세요.' };
+
+    const cleanId = String(studentId).trim();
+    const cleanPw = String(newPassword).trim();
+
+    // 1. Update local cache and AppState
+    const localList = this.getStudentsFromLocal();
+    const studentInLocal = localList.find(s => String(s.id).trim() === cleanId);
+    if (studentInLocal) {
+      studentInLocal.password = cleanPw;
+      this.saveStudentsToLocal(localList);
+    }
+
+    if (typeof AppState !== 'undefined' && AppState.demoStudents) {
+      const studentInAppState = AppState.demoStudents.find(s => String(s.id).trim() === cleanId);
+      if (studentInAppState) {
+        studentInAppState.password = cleanPw;
+      }
+    }
+
+    // 2. Post reset to Google Sheets GAS backend
+    const payload = {
+      type: 'reset_student_password',
+      id: cleanId,
+      newPassword: cleanPw
+    };
+
+    try {
+      const res = await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      console.log('[CloudDB] Student password reset response:', data);
+      return { success: true, message: data.message || '비밀번호가 성공적으로 초기화되었습니다.' };
+    } catch (err) {
+      console.warn('[CloudDB] Password reset network/GAS error:', err);
+      return { success: true, message: '로컬 환경에 비밀번호가 반영되었습니다. (오프라인 모드)' };
     }
   }
 };

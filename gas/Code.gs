@@ -75,7 +75,8 @@ function doGet(e) {
           mainUnit: String(sData[m][1]),
           subUnit: String(sData[m][2]),
           topic: String(sData[m][3]),
-          checkedClasses: String(sData[m][4] || '')
+          checkedClasses: String(sData[m][4] || ''),
+          grade: Number(sData[m][5] || 2)
         });
       }
     }
@@ -243,6 +244,31 @@ function doPost(e) {
       apiVersion: "v3.1_safe_editor_test",
       result: result
     })).setMimeType(ContentService.MimeType.JSON);
+
+  } else if (data.type === "reset_student_password") {
+    // 5. 학생 비밀번호 초기화 (교사 권한)
+    var studentSheet = ss.getSheetByName("학생명부") || ss.getSheets()[0];
+    var sData = studentSheet.getDataRange().getValues();
+    var foundRow = -1;
+    for (var r = 1; r < sData.length; r++) {
+      if (String(sData[r][0]).trim() === String(data.id).trim()) {
+        foundRow = r + 1;
+        break;
+      }
+    }
+    if (foundRow > 0) {
+      studentSheet.getRange(foundRow, 5).setValue(String(data.newPassword).trim());
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        action: "password_reset",
+        message: "비밀번호가 성공적으로 초기화되었습니다."
+      })).setMimeType(ContentService.MimeType.JSON);
+    } else {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "error",
+        message: "해당 학번의 학생을 찾을 수 없습니다."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
 
   } else {
     // 3. 학생 명부 신규 회원가입 (type: 'student')

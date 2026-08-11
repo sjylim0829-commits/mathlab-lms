@@ -397,7 +397,7 @@ const App = {
     alert(`🎉 ${name} 학생 환영합니다! 가입 및 로그인이 완료되었습니다.`);
   },
 
-  handleLogin(e) {
+  async handleLogin(e) {
     e.preventDefault();
     const inputId = document.getElementById('login-id').value.trim();
     const inputPw = document.getElementById('login-pw').value.trim();
@@ -418,8 +418,15 @@ const App = {
       return;
     }
 
-    // 2. Student Authentication Check
-    const found = AppState.demoStudents.find(s => String(s.id) === inputId && String(s.password) === inputPw);
+    // 2. Initial Student Authentication Check
+    let found = AppState.demoStudents.find(s => String(s.id).trim() === inputId && String(s.password).trim() === inputPw);
+
+    // If not found or freshly updated on another PC, sync latest DB from Google Sheets
+    if (!found) {
+      await this.syncCloudDatabase();
+      found = AppState.demoStudents.find(s => String(s.id).trim() === inputId && String(s.password).trim() === inputPw);
+    }
+
     if (found) {
       this.saveUserSession({
         id: found.id,
@@ -432,21 +439,14 @@ const App = {
       return;
     }
 
-    // Fallback: If ID matches but password is dummy or initial login
-    const foundById = AppState.demoStudents.find(s => String(s.id) === inputId);
+    // Check if ID exists but password was wrong
+    const foundById = AppState.demoStudents.find(s => String(s.id).trim() === inputId);
     if (foundById) {
-      this.saveUserSession({
-        id: foundById.id,
-        name: foundById.name,
-        grade: foundById.grade || '1',
-        classNum: foundById.classNum || '1',
-        role: 'student'
-      });
-      this.renderAppShell();
+      alert(`⚠️ [로그인 실패]\n\n비밀번호가 올바르지 않습니다.\n비밀번호를 잊으신 경우 선생님께 비밀번호 초기화를 요청해 주세요.`);
       return;
     }
 
-    alert('아이디 또는 비밀번호가 올바르지 않습니다.');
+    alert('⚠️ [로그인 실패]\n\n가입되지 않은 학번입니다.\n아래의 [✨ 신규 학생 회원가입 하기] 버튼을 눌러 먼저 가입해 주세요.');
   },
 
   toggleUserRole() {

@@ -430,7 +430,7 @@ const ProgressModule = {
       if (mainView) {
         mainView.innerHTML = this.renderView();
       }
-      alert(`🎉 ${targetGrade}학년 진도표 ${parsedItems.length}개 차시가 성공적으로 교체 등록되었습니다!\n[💾 ${targetGrade}학년 진도 수정사항 저장하기] 버튼을 누르면 구글 드라이브 DB에 반영됩니다.`);
+      alert(`🎉 ${targetGrade}학년 진도표 ${parsedItems.length}개 차시가 성공적으로 교체 등록되었습니다!\n[💾 ${targetGrade}학년 진도 수정사항 저장하기] 버튼을 누르면 클라우드 DB에 반영됩니다.`);
     }
   },
 
@@ -545,7 +545,7 @@ const ProgressModule = {
 
           <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
             <div id="cloud-sync-status" style="font-size: 0.85rem; font-weight: 600; background: #ffffff; padding: 7px 14px; border-radius: 10px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              ${this.hasUnsavedChanges ? '⚠️ <span style="color: #d97706; font-weight: 800;">수정사항 있음 (저장 버튼을 누르세요)</span>' : '✅ <span style="color: #059669; font-weight: 700;">구글 드라이브 DB 준비 완료</span>'}
+              ${this.hasUnsavedChanges ? '⚠️ <span style="color: #d97706; font-weight: 800;">수정사항 있음 (저장 버튼을 누르세요)</span>' : '✅ <span style="color: #059669; font-weight: 700;">클라우드 DB 동기화 완료</span>'}
             </div>
 
             <!-- 학년 진도표 업로드 버튼 -->

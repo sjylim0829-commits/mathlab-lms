@@ -168,7 +168,7 @@ const TeacherModule = {
                 📐 탐구 활동 센터
               </h3>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.5;">
-                선생님이 제작하신 GAS 웹앱 URL을 등록하고, 직각삼각형 겹치기 등 교과서 연계 수학 탐구 실습을 사이트에 즉시 내장 실행합니다.
+                Git 리포지토리에 커밋·푸시된 수학 탐구 모듈을 연결하여 학생들에게 실습 활동을 배포합니다.
               </p>
             </div>
             <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
@@ -218,7 +218,7 @@ const TeacherModule = {
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-card); padding-top: 0.6rem; margin-top: 0.4rem;">
             <div style="display: flex; gap: 0.4rem; align-items: center;">
-              <span style="font-size: 0.7rem; color: var(--text-dim);">🌐 GAS 웹앱</span>
+              <span style="font-size: 0.7rem; color: var(--text-dim);">📐 탐구 모듈</span>
               <button class="btn btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background: rgba(239, 68, 68, 0.08); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; cursor: pointer;" onclick="TeacherModule.deleteActivity('${act.id}')">
                 🗑️ 삭제
               </button>
@@ -236,8 +236,8 @@ const TeacherModule = {
         <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
         <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">등록된 탐구 활동이 없습니다</h3>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
-          위쪽의 <strong style="color: var(--violet-bright);">➕ 신규 GAS 탐구활동 주소 등록</strong> 버튼을 눌러<br>
-          구글 앱스 스크립트 웹앱 URL을 입력하면 학생들에게 탐구 활동이 노출됩니다.
+          위쪽의 <strong style="color: var(--violet-bright);">➕ 신규 탐구활동 모듈 등록</strong> 버튼을 눌러<br>
+          탐구 활동 모듈 URL을 입력하면 학생들에게 탐구 활동이 노출됩니다.
         </p>
       </div>
     `;
@@ -311,13 +311,13 @@ const TeacherModule = {
               <h2 style="font-size: 1.6rem; font-weight: 800;">📐 탐구 활동: 등록 & 실행 센터</h2>
             </div>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">
-              구글 앱스 스크립트 웹앱 URL을 등록하여 학년별로 학생에게 탐구 활동을 배포합니다. | 현재 등록: <strong style="color: var(--violet-bright);">${activities.length}개</strong>
+              Git에 커밋·푸시된 수학 탐구 모듈 URL을 등록하여 학년별로 학생에게 탐구 활동을 배포합니다. | 현재 등록: <strong style="color: var(--violet-bright);">${activities.length}개</strong>
             </p>
           </div>
 
           <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;">
             <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()" style="font-weight: 800; padding: 0.6rem 1.1rem; border-radius: 10px;">
-              ➕ 신규 GAS 탐구활동 주소 등록
+              ➕ 신규 탐구활동 모듈 등록
             </button>
           </div>
         </div>
@@ -325,7 +325,7 @@ const TeacherModule = {
         <!-- Registration Form -->
         <div id="activity-embed-form-container" class="glass-card" style="margin-bottom: 2rem; display: none;">
           <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--violet-bright); margin-bottom: 1rem;">
-            🔗 신규 구글 앱스 스크립트(GAS) 탐구활동 주소 등록하기
+            🔗 신규 수학 탐구활동 모듈 등록하기
           </h3>
           <form onsubmit="TeacherModule.handleRegisterEmbeddedActivity(event)" style="display: flex; flex-direction: column; gap: 1rem;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -346,9 +346,9 @@ const TeacherModule = {
 
             <div class="form-group">
               <label class="form-label" style="color: var(--violet-bright); font-weight: 700;">
-                🌐 구글 앱스 스크립트 웹 앱 URL 주소
+                🌐 탐구 활동 모듈 URL 주소
               </label>
-              <input type="url" id="embed-url-input" class="input-control" required placeholder="https://script.google.com/macros/s/.../exec 주소를 입력하세요">
+              <input type="url" id="embed-url-input" class="input-control" required placeholder="탐구 활동 모듈 URL 주소를 입력하세요">
             </div>
 
             <div class="form-group">
@@ -404,10 +404,10 @@ const TeacherModule = {
     const title = document.getElementById('embed-title-input').value.trim();
     const targetGrade = document.getElementById('embed-grade-select').value;
     const url = document.getElementById('embed-url-input').value.trim();
-    const desc = document.getElementById('embed-desc-input').value.trim() || '선생님이 신규 등록한 구글 앱스 스크립트 기반 수학 탐구 활동입니다.';
+    const desc = document.getElementById('embed-desc-input').value.trim() || 'Git에 커밋·푸시되어 연동된 수학 탐구 활동 모듈입니다.';
 
     if (!title || !url) {
-      alert('활동 제목과 구글 앱스 스크립트 URL을 입력해 주세요.');
+      alert('활동 제목과 탐구 활동 모듈 URL을 입력해 주세요.');
       return;
     }
 

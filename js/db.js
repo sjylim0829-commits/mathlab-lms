@@ -3,9 +3,9 @@
  * Live URL: https://curlymath.vercel.app
  */
 
-// 🔑 Supabase Project Credentials (Paste your keys from https://supabase.com dashboard)
-const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// 🔑 Supabase Project Credentials
+const SUPABASE_URL = 'https://agcmetuneycqzhvshmoe.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_r_0ZhunAe99ftol-JqL5qg_ADZ1BH_X';
 
 // Legacy Google Sheets GAS Backup Endpoint
 const GOOGLE_SHEETS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec';

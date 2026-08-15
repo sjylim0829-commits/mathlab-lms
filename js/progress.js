@@ -315,10 +315,10 @@ const ProgressModule = {
     const saveBtn = document.getElementById('save-syllabus-btn');
     if (saveBtn) {
       saveBtn.disabled = true;
-      saveBtn.innerHTML = '⏳ 구글 드라이브 DB 저장 중...';
+      saveBtn.innerHTML = '⏳ 클라우드 DB 저장 중...';
     }
     if (syncStatusEl) {
-      syncStatusEl.innerHTML = '🔄 <span style="color: #4f46e5; font-weight: 800;">구글 드라이브 DB 전송 중...</span>';
+      syncStatusEl.innerHTML = '🔄 <span style="color: #4f46e5; font-weight: 800;">클라우드 DB 전송 중...</span>';
     }
 
     this.initSyllabusData();
@@ -357,11 +357,11 @@ const ProgressModule = {
         saveBtn.innerHTML = `💾 ${this.activeGrade}학년 진도 수정사항 저장하기`;
       }
       if (syncStatusEl) {
-        syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">구글 드라이브 DB 저장 완료!</span>';
+        syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">클라우드 DB 저장 완료!</span>';
         syncStatusEl.style.background = '#d1fae5';
         syncStatusEl.style.borderColor = '#6ee7b7';
       }
-      alert(`✅ ${this.activeGrade}학년 진도표 및 체크리스트가 구글 드라이브 DB에 성공적으로 저장되었습니다!`);
+      alert(`✅ ${this.activeGrade}학년 진도표 및 체크리스트가 클라우드 DB에 성공적으로 저장되었습니다!`);
     } catch (err) {
       if (saveBtn) {
         saveBtn.disabled = false;

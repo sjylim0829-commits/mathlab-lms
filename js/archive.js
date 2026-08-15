@@ -142,7 +142,7 @@ const ArchiveModule = {
               <h2 style="font-size: 1.6rem; font-weight: 800; color: #1e1b4b;">학생 수업 기록 아카이빙 & AI 세특 자동 생성</h2>
             </div>
             <p style="font-size: 0.85rem; color: #475569; margin-top: 0.3rem;">
-              담당: <strong style="color: #1e1b4b;">임종윤 교사</strong> | 구글 드라이브 DB 시트에 가입된 학생들의 탐구 수행 이력을 기반으로 생기부 세특(세부능력 및 특기사항)을 자동 작성합니다.
+              담당: <strong style="color: #1e1b4b;">임종윤 교사</strong> | Supabase 클라우드 DB에 가입된 학생들의 탐구 수행 이력을 기반으로 생기부 세특(세부능력 및 특기사항)을 자동 작성합니다.
             </p>
           </div>
 
@@ -367,7 +367,7 @@ const ArchiveModule = {
 
     const res = await CloudDB.resetStudentPassword(studentId, cleanPw);
     if (res && res.success) {
-      alert(`✅ [비밀번호 초기화 완료]\n\n학생: ${studentName} (${studentId})\n새 비밀번호: ${cleanPw}\n\nGoogle Sheets DB 및 시스템에 업데이트되었습니다.`);
+      alert(`✅ [비밀번호 초기화 완료]\n\n학생: ${studentName} (${studentId})\n새 비밀번호: ${cleanPw}\n\nSupabase Cloud DB 및 시스템에 업데이트되었습니다.`);
       const mainView = document.getElementById('teacher-main-view');
       if (mainView) mainView.innerHTML = this.renderView();
     } else {

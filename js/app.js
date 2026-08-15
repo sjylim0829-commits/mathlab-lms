@@ -87,7 +87,7 @@ const App = {
           score: score
         });
 
-        alert(`🎉 [math-app 탐구 제출 통합 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구활동: ${activityTitle}\n점수: ${score}점\n\n자동으로 구글 시트 [탐구활동결과] 탭 및 LMS DB에 기록되었습니다.`);
+        alert(`🎉 [math-app 탐구 제출 통합 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구활동: ${activityTitle}\n점수: ${score}점\n\n자동으로 Supabase 클라우드 DB에 기록되었습니다.`);
 
         if (typeof TeacherModule !== 'undefined' && TeacherModule.activeTab === 'analytics') {
           TeacherModule.switchTab('analytics');

@@ -265,10 +265,10 @@ const TeacherModule = {
         <div class="glass-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
-              📝 탐구 실습 결과 제출 및 구글 시트 저장
+              📝 탐구 실습 결과 제출 및 클라우드 DB 저장
             </h3>
             <span style="font-size: 0.75rem; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
-              구글 시트 & 드라이브 자동 연동
+              Supabase 클라우드 DB 실시간 연동
             </span>
           </div>
           <form onsubmit="TeacherModule.handleSubmitActivityResult(event)" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -292,7 +292,7 @@ const TeacherModule = {
             </div>
             <div style="display: flex; justify-content: flex-end;">
               <button type="submit" id="act-submit-btn" class="btn btn-primary" style="padding: 0.7rem 1.25rem;">
-                🚀 탐구 결과 제출 및 구글 시트 저장
+                🚀 탐구 결과 제출 및 클라우드 DB 저장
               </button>
             </div>
           </form>
@@ -316,9 +316,6 @@ const TeacherModule = {
           </div>
 
           <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;">
-            <a href="https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit" target="_blank" class="btn btn-emerald" style="padding: 0.6rem 1.1rem; font-size: 0.88rem; text-decoration: none; font-weight: 800; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);">
-              📊 전용 구글 시트 DB 바로가기 🔗
-            </a>
             <button class="btn btn-primary" onclick="TeacherModule.toggleEmbedForm()" style="font-weight: 800; padding: 0.6rem 1.1rem; border-radius: 10px;">
               ➕ 신규 GAS 탐구활동 주소 등록
             </button>
@@ -527,7 +524,7 @@ const TeacherModule = {
     const btn = document.getElementById('act-submit-btn');
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '⏳ 구글 시트 (탐구활동결과 탭) 저장 중...';
+      btn.innerHTML = '⏳ 클라우드 DB 저장 중...';
     }
 
     try {
@@ -536,7 +533,7 @@ const TeacherModule = {
       const activityTitle = document.getElementById('active-activity-title').innerText.trim();
       const answerText = document.getElementById('act-answer-text').value.trim();
 
-      const result = await CloudDB.saveActivityResult({
+      await CloudDB.saveActivityResult({
         studentId: studentId,
         studentName: studentName,
         grade: '2',
@@ -546,17 +543,13 @@ const TeacherModule = {
         score: 100
       });
 
-      if (result && result.driveFileUrl) {
-        alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n1. 구글 시트 [탐구활동결과] 탭에 성공적으로 기록되었습니다.\n2. 구글 드라이브 [탐구보고서] 폴더에 탐구보고서 파일이 생성되었습니다.`);
-      } else {
-        alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\n선생님 구글 시트의 [탐구활동결과] 탭에 성공적으로 기록되었습니다.`);
-      }
+      alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\nSupabase 클라우드 DB에 성공적으로 기록되었습니다.`);
     } catch (err) {
       alert('탐구 활동 결과 제출 중 오류가 발생했습니다.');
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '🚀 탐구 결과 제출 및 구글 시트 (탐구활동결과 탭) 저장';
+        btn.innerHTML = '🚀 탐구 결과 제출 및 클라우드 DB 저장';
       }
     }
   },
@@ -599,7 +592,7 @@ const TeacherModule = {
         <div class="glass-card" style="margin-bottom: 2rem; width: 100%;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--violet-bright);">
-              🎯 math-app & 탐구활동 자동 수집 결과 (구글 시트/드라이브 동기화)
+              🎯 math-app & 탐구활동 자동 수집 결과 (Supabase 클라우드 DB 연동)
             </h3>
             <span style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.12); color: var(--violet-bright); padding: 2px 10px; border-radius: 12px; font-weight: 700;">
               총 ${submissions.length}건 수집됨
@@ -622,7 +615,7 @@ const TeacherModule = {
                 ${submissions.length === 0 ? `
                   <tr>
                     <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                      아직 제출된 외부 math-app 탐구 자료가 없습니다. 웹 앱에서 탐구를 완료하면 실시간으로 이곳과 구글 시트 [탐구활동결과] 탭에 자동 기록됩니다.
+                      아직 제출된 외부 math-app 탐구 자료가 없습니다. 웹 앱에서 탐구를 완료하면 실시간으로 이곳과 Supabase 클라우드 DB에 자동 기록됩니다.
                     </td>
                   </tr>
                 ` : submissions.map(sub => `
@@ -637,7 +630,7 @@ const TeacherModule = {
                     <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--accent-emerald);">${sub.score}점</td>
                     <td style="padding: 0.75rem 1rem;">
                       <span style="font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; background: rgba(5, 150, 105, 0.12); color: var(--accent-emerald); font-weight: 700;">
-                        ✓ 구글 시트 저장완료
+                        ✓ Supabase DB 저장완료
                       </span>
                     </td>
                   </tr>

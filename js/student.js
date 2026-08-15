@@ -213,7 +213,7 @@ const StudentModule = {
       score: 100
     });
 
-    alert(`🎉 [제출 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구과제: ${activeTitle}\n제출 수식: ${answerText}\n\n교사 대시보드 및 구글 시트에 실시간 반영되었습니다.`);
+    alert(`🎉 [제출 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구과제: ${activeTitle}\n제출 수식: ${answerText}\n\n교사 대시보드 및 Supabase 클라우드 DB에 실시간 반영되었습니다.`);
   },
 
   toggleFullscreenEmbed() {

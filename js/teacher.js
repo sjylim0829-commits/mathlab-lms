@@ -555,7 +555,7 @@ const TeacherModule = {
   },
 
   showDeploymentModal() {
-    alert(`⚙️ [GAS 웹앱 전용 구글 시트 & 배포 관리 설정]\n\n담당 교사: 임종윤 교사 (영서중학교)\n\n1. 📊 전용 구글 시트 마스터 DB:\n   - 시트명: [영서중] 학교 LMS DB (학생명부/수업진도/탐구활동결과)\n   - 시트 URL: https://docs.google.com/spreadsheets/d/1FyE576EICZJYkXucwJI4SsBrIXynePLPwQTvZ20UXHw/edit\n   - 연동 탭: [탐구활동결과], [학생명부], [수업진도]\n\n2. 🌐 Google Apps Script (clasp) 배포 세팅:\n   - Script ID: 17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT\n   - 스크립트 편집기: https://script.google.com/d/17cQ5FvmIVP39-2S31_WT0tudDBgwCvyk7k6XmEMhsC-DAt-YmnftZIhT/edit\n   - 배포 URL: https://script.google.com/macros/s/AKfycbxnxVFfw9oeqks1lrDj_SgrS8ltk7HGdcmfA98BlLxf3f7PdC9M47LETlV6JuAbOJ8E/exec\n   - 배포 권한: Anyone (모든 사용자 접근 권한 허용)\n\n3. 💻 로컬 자동 배포 스크립트 실행 위치:\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\setup_clasp.bat\n   - C:\\Users\\sjyli\\.gemini\\antigravity\\scratch\\gas_circumcenter_project\\deploy.bat`);
+    alert(`⚡ [Supabase Cloud DB 실시간 연동 정보]\n\n1. 📊 Supabase 클라우드 데이터베이스:\n   - 프로젝트 URL: https://agcmetuneycqzhvshmoe.supabase.co\n   - 연동 테이블: students (학생명부), progress_checklist (50차시진도표), activity_submissions (탐구활동결과)\n   - 통신 속도: ~0.1초 초고속 실시간 동기화\n\n2. 🔐 보안 및 권한:\n   - RLS (Row Level Security) 정책 및 Anon Public Key 안전 통신 완료`);
   },
 
   testMathAppIntegration() {

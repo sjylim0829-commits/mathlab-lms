@@ -151,7 +151,25 @@ const CloudDB = {
             }
           }
 
-          console.log(`⚡ [Supabase Cloud DB] Loaded ${cleaned.length} students successfully!`);
+          // Fetch activity submissions from Supabase Cloud DB
+          const { data: subData, error: subErr } = await sb.from('activity_submissions').select('*').order('submitted_at', { ascending: false });
+          if (!subErr && Array.isArray(subData)) {
+            const mappedSubmissions = subData.map(sub => ({
+              studentId: String(sub.student_id || ''),
+              studentName: String(sub.student_name || ''),
+              grade: String(sub.grade || '1'),
+              classNum: String(sub.class_num || '1'),
+              activityTitle: String(sub.activity_title || ''),
+              answerText: String(sub.answer_text || ''),
+              score: Number(sub.score || 100),
+              submittedAt: sub.submitted_at ? new Date(sub.submitted_at).toLocaleString('ko-KR') : ''
+            }));
+            try {
+              localStorage.setItem(LOCAL_STORAGE_KEY_SUBMISSIONS, JSON.stringify(mappedSubmissions));
+            } catch(e) {}
+          }
+
+          console.log(`⚡ [Supabase Cloud DB] Loaded ${cleaned.length} students & submissions successfully!`);
           return cleaned;
         }
       } catch (err) {

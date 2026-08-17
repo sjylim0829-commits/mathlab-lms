@@ -202,13 +202,20 @@ const ProgressModule = {
       }
     });
 
-    this.markAsUnsaved();
+    this.hasUnsavedChanges = false;
     this.updateStatsUI();
+
+    const syncStatusEl = document.getElementById('cloud-sync-status');
+    if (syncStatusEl) {
+      syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">클라우드 DB 실시간 동기화 완료!</span>';
+      syncStatusEl.style.background = '#d1fae5';
+      syncStatusEl.style.borderColor = '#6ee7b7';
+    }
+
     const mainView = document.getElementById('teacher-main-view');
     if (mainView && document.querySelector('.syllabus-table')) {
       mainView.innerHTML = this.renderView();
     }
-    this.saveToCloudDB(true);
   },
 
   toggleCheck(period, classNum) {

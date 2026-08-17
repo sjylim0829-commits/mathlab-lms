@@ -139,7 +139,7 @@ const CloudDB = {
               mainUnit: item.main_unit || item.mainUnit,
               subUnit: item.sub_unit || item.subUnit,
               topic: item.topic,
-              checkedClasses: Array.isArray(item.checked_classes) ? item.checked_classes.join(',') : String(item.checked_classes || '')
+              checkedClasses: Array.isArray(item.checked_classes) ? item.checked_classes.map(Number) : String(item.checked_classes || '')
             }));
 
             try {

@@ -279,6 +279,7 @@ const ProgressModule = {
     if (target) {
       target[field] = value;
       this.markAsUnsaved();
+      this.saveToCloudDB(true);
     }
   },
 

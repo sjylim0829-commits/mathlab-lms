@@ -131,7 +131,7 @@ const CloudDB = {
           this.saveStudentsToLocal(cleaned);
 
           // Fetch progress checklist
-          const { data: sylData, error: sylErr } = await sb.from('progress_checklist').select('*');
+          const { data: sylData, error: sylErr } = await sb.from('progress_checklist').select('*').order('grade', { ascending: true }).order('period', { ascending: true });
           if (!sylErr && Array.isArray(sylData) && sylData.length > 0) {
             const mappedChecklist = sylData.map(item => ({
               grade: item.grade,
@@ -347,7 +347,7 @@ const CloudDB = {
 
   // Save 50-Period Syllabus Checkboard Data to Supabase Cloud DB
   async saveSyllabusChecklist(items) {
-    if (!Array.isArray(items)) return;
+    if (!Array.isArray(items)) return { success: false };
 
     const upsertPayload = items.map(item => ({
       grade: Number(item.grade || 2),
@@ -364,7 +364,23 @@ const CloudDB = {
       localStorage.setItem('mathlab_syllabus_checklist_cache', JSON.stringify(items));
     } catch (e) {}
 
-    // Direct REST API PostgREST Upsert to Supabase
+    // 1. Try Supabase Client SDK
+    const sb = this.getSupabase();
+    if (sb) {
+      try {
+        const { error } = await sb.from('progress_checklist').upsert(upsertPayload, { onConflict: 'grade,period' });
+        if (!error) {
+          console.log(`⚡ [Supabase Cloud DB] Saved ${upsertPayload.length} syllabus items via SDK!`);
+          return { success: true };
+        } else {
+          console.warn('[CloudDB] Supabase SDK upsert warning:', error);
+        }
+      } catch (err) {
+        console.warn('[CloudDB] Supabase SDK upsert error:', err);
+      }
+    }
+
+    // 2. Direct REST API PostgREST Upsert (Fail-safe)
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/progress_checklist?on_conflict=grade,period`, {
         method: 'POST',
@@ -377,7 +393,7 @@ const CloudDB = {
         body: JSON.stringify(upsertPayload)
       });
       if (res.ok) {
-        console.log(`⚡ [Supabase Cloud DB] Saved ${upsertPayload.length} syllabus items successfully!`);
+        console.log(`⚡ [Supabase Cloud DB] Saved ${upsertPayload.length} syllabus items via REST API!`);
         return { success: true };
       } else {
         const errText = await res.text();
@@ -386,6 +402,8 @@ const CloudDB = {
     } catch (err) {
       console.warn('[CloudDB] Supabase saveSyllabusChecklist error:', err);
     }
+
+    return { success: false };
   },
 
   // Reset student password (Teacher Action)

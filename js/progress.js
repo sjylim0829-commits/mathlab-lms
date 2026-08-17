@@ -271,6 +271,7 @@ const ProgressModule = {
     this.markAsUnsaved();
     this.renderTableOnly();
     this.updateStatsUI();
+    this.saveToCloudDB(true);
   },
 
   handleTextEdit(period, field, value) {
@@ -366,7 +367,7 @@ const ProgressModule = {
     });
 
     try {
-      if (window.CloudDB && CloudDB.saveSyllabusChecklist) {
+      if (typeof CloudDB !== 'undefined' && CloudDB.saveSyllabusChecklist) {
         await CloudDB.saveSyllabusChecklist(payloadItems);
       }
       this.hasUnsavedChanges = false;

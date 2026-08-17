@@ -134,6 +134,9 @@ const App = {
     try {
       const students = await CloudDB.fetchStudents();
       AppState.demoStudents = Array.isArray(students) ? students : [];
+      if (typeof CloudDB !== 'undefined' && CloudDB.fetchRegisteredActivities) {
+        await CloudDB.fetchRegisteredActivities();
+      }
     } catch (e) {
       console.warn('Sync failed, using fallback empty array', e);
       AppState.demoStudents = CloudDB.getStudentsFromLocal();

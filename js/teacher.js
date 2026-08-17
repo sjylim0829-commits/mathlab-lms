@@ -432,6 +432,10 @@ const TeacherModule = {
     this.saveActivities(activities);
     this.activeActivityId = newId;
 
+    if (typeof CloudDB !== 'undefined' && CloudDB.registerActivity) {
+      CloudDB.registerActivity(newAct);
+    }
+
     this.toggleEmbedForm();
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
@@ -456,6 +460,11 @@ const TeacherModule = {
     if (this.activeActivityId === actId) {
       this.activeActivityId = updated.length > 0 ? updated[0].id : null;
     }
+
+    if (typeof CloudDB !== 'undefined' && CloudDB.deleteActivity) {
+      CloudDB.deleteActivity(actId);
+    }
+
     const mainView = document.getElementById('teacher-main-view');
     if (mainView) {
       mainView.innerHTML = this.renderActivityBuilder();

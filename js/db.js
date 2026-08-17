@@ -169,7 +169,10 @@ const CloudDB = {
             } catch(e) {}
           }
 
-          console.log(`⚡ [Supabase Cloud DB] Loaded ${cleaned.length} students & submissions successfully!`);
+          // Fetch registered inquiry activities from Supabase Cloud DB
+          await this.fetchRegisteredActivities();
+
+          console.log(`⚡ [Supabase Cloud DB] Loaded ${cleaned.length} students & activities successfully!`);
           return cleaned;
         }
       } catch (err) {
@@ -427,6 +430,105 @@ const CloudDB = {
       return { success: true, message: '비밀번호가 성공적으로 초기화되었습니다.' };
     } catch (err) {
       return { success: true, message: '로컬 환경에 비밀번호가 반영되었습니다.' };
+    }
+  },
+
+  // ----------------------------------------------------
+  // Registered Inquiry Activities (registered_activities)
+  // ----------------------------------------------------
+  async fetchRegisteredActivities() {
+    const sb = this.getSupabase();
+    if (sb) {
+      try {
+        const { data, error } = await sb.from('registered_activities').select('*').order('created_at', { ascending: false });
+        if (!error && Array.isArray(data)) {
+          const mapped = data.map(act => ({
+            id: act.id,
+            title: act.title,
+            grade: act.grade,
+            targetGrade: act.target_grade || act.targetGrade || 'all',
+            url: act.url,
+            desc: act.description || act.desc || '',
+            type: act.activity_type || act.type || 'gas'
+          }));
+          try {
+            localStorage.setItem('mathlab_registered_activities', JSON.stringify(mapped));
+          } catch(e) {}
+          return mapped;
+        }
+      } catch (err) {
+        console.warn('[CloudDB] fetchRegisteredActivities error:', err);
+      }
+    }
+    try {
+      const cached = localStorage.getItem('mathlab_registered_activities');
+      return cached ? JSON.parse(cached) : [];
+    } catch(e) {
+      return [];
+    }
+  },
+
+  async registerActivity(actData) {
+    if (!actData || !actData.id || !actData.title || !actData.url) return;
+    
+    // Save to local cache first
+    try {
+      const cached = localStorage.getItem('mathlab_registered_activities');
+      let list = cached ? JSON.parse(cached) : [];
+      list = list.filter(a => a.id !== actData.id);
+      list.unshift(actData);
+      localStorage.setItem('mathlab_registered_activities', JSON.stringify(list));
+    } catch(e) {}
+
+    // Save to Supabase Cloud DB
+    const sb = this.getSupabase();
+    if (sb) {
+      try {
+        const payload = {
+          id: actData.id,
+          title: actData.title,
+          grade: actData.grade || '전체학년공통',
+          target_grade: actData.targetGrade || 'all',
+          url: actData.url,
+          description: actData.desc || '',
+          activity_type: actData.type || 'gas'
+        };
+        const { error } = await sb.from('registered_activities').upsert(payload);
+        if (!error) {
+          console.log('⚡ [Supabase Cloud DB] Registered activity saved:', actData.id);
+        } else {
+          console.warn('[CloudDB] Supabase registered_activities error:', error);
+        }
+      } catch (err) {
+        console.warn('[CloudDB] registerActivity error:', err);
+      }
+    }
+  },
+
+  async deleteActivity(actId) {
+    if (!actId) return;
+
+    // Delete from local cache
+    try {
+      const cached = localStorage.getItem('mathlab_registered_activities');
+      if (cached) {
+        let list = JSON.parse(cached);
+        list = list.filter(a => String(a.id) !== String(actId));
+        localStorage.setItem('mathlab_registered_activities', JSON.stringify(list));
+      }
+    } catch(e) {}
+
+    // Delete from Supabase Cloud DB
+    const sb = this.getSupabase();
+    if (sb) {
+      try {
+        const { error } = await sb.from('registered_activities').delete().eq('id', actId);
+        if (!error) {
+          console.log('⚡ [Supabase Cloud DB] Deleted activity:', actId);
+        }
+      } catch (err) {
+        console.warn('[CloudDB] deleteActivity error:', err);
+      }
     }
   }
 };

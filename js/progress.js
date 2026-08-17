@@ -126,23 +126,25 @@ const ProgressModule = {
   // 학년별 완료 체크리스트 컨테이너 ({ grade: { classNum: [periods] } })
   checklistData: {
     1: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] },
-    2: {
-      1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
-      2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
-      3: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
-      4: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
-      5: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
-      6: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
-      7: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
-      8: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
-    },
-    3: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
+    2: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] },
+    3: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] }
   },
 
   initSyllabusData() {
     if (!this.syllabusData[1]) this.syllabusData[1] = JSON.parse(JSON.stringify(this.defaultSyllabus1));
     if (!this.syllabusData[2]) this.syllabusData[2] = JSON.parse(JSON.stringify(this.defaultSyllabus2));
     if (!this.syllabusData[3]) this.syllabusData[3] = JSON.parse(JSON.stringify(this.defaultSyllabus3));
+
+    try {
+      const cached = localStorage.getItem('mathlab_syllabus_checklist_cache');
+      if (cached && !this._hasLoadedFromCache) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this._hasLoadedFromCache = true;
+          this.updateFromSheet(parsed);
+        }
+      }
+    } catch (e) {}
   },
 
   getCurrentSyllabus() {
@@ -167,6 +169,13 @@ const ProgressModule = {
   updateFromSheet(checklistItems) {
     if (!Array.isArray(checklistItems) || checklistItems.length === 0) return;
     this.initSyllabusData();
+
+    // Reset checklistData before populating synced DB items
+    this.checklistData = {
+      1: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] },
+      2: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] },
+      3: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [] }
+    };
 
     checklistItems.forEach(item => {
       const g = Number(item.grade) || 2;

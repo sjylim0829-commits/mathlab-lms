@@ -181,8 +181,7 @@ const ProgressModule = {
       const g = Number(item.grade) || 2;
       const p = Number(item.period);
       if (p >= 1 && g >= 1 && g <= 3) {
-        const checkedClassesStr = String(item.checkedClasses || '');
-        const classNums = checkedClassesStr.split(',').map(n => Number(n.trim ? n.trim() : n)).filter(n => n > 0);
+        const classNums = Array.isArray(item.checkedClasses) ? item.checkedClasses.map(Number) : String(item.checkedClasses || '').split(',').map(n => Number(n.trim ? n.trim() : n)).filter(n => n > 0);
         
         if (!this.checklistData[g]) this.checklistData[g] = {};
         classNums.forEach(c => {
@@ -203,10 +202,13 @@ const ProgressModule = {
       }
     });
 
+    this.markAsUnsaved();
+    this.updateStatsUI();
     const mainView = document.getElementById('teacher-main-view');
     if (mainView && document.querySelector('.syllabus-table')) {
       mainView.innerHTML = this.renderView();
     }
+    this.saveToCloudDB(true);
   },
 
   toggleCheck(period, classNum) {
@@ -227,6 +229,7 @@ const ProgressModule = {
 
     this.markAsUnsaved();
     this.updateStatsUI();
+    this.saveToCloudDB(true);
   },
 
   toggleAllForPeriod(period) {
@@ -319,10 +322,10 @@ const ProgressModule = {
     });
   },
 
-  async saveToCloudDB() {
+  async saveToCloudDB(silent = false) {
     const syncStatusEl = document.getElementById('cloud-sync-status');
     const saveBtn = document.getElementById('save-syllabus-btn');
-    if (saveBtn) {
+    if (!silent && saveBtn) {
       saveBtn.disabled = true;
       saveBtn.innerHTML = '⏳ 클라우드 DB 저장 중...';
     }
@@ -366,17 +369,21 @@ const ProgressModule = {
         saveBtn.innerHTML = `💾 ${this.activeGrade}학년 진도 수정사항 저장하기`;
       }
       if (syncStatusEl) {
-        syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">클라우드 DB 저장 완료!</span>';
+        syncStatusEl.innerHTML = '✅ <span style="color: #059669; font-weight: 800;">클라우드 DB 실시간 동기화 완료!</span>';
         syncStatusEl.style.background = '#d1fae5';
         syncStatusEl.style.borderColor = '#6ee7b7';
       }
-      alert(`✅ ${this.activeGrade}학년 진도표 및 체크리스트가 클라우드 DB에 성공적으로 저장되었습니다!`);
+      if (!silent) {
+        alert(`✅ ${this.activeGrade}학년 진도표 및 체크리스트가 클라우드 DB에 성공적으로 저장되었습니다!`);
+      }
     } catch (err) {
       if (saveBtn) {
         saveBtn.disabled = false;
         saveBtn.innerHTML = `💾 ${this.activeGrade}학년 진도 수정사항 저장하기`;
       }
-      alert('⚠️ 로컬에 임시 저장되었습니다.');
+      if (!silent) {
+        alert('⚠️ 로컬에 임시 저장되었습니다.');
+      }
     }
   },
 

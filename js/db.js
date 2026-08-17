@@ -349,39 +349,43 @@ const CloudDB = {
   async saveSyllabusChecklist(items) {
     if (!Array.isArray(items)) return;
 
-    const sb = this.getSupabase();
-    if (sb) {
-      try {
-        const upsertPayload = items.map(item => ({
-          grade: Number(item.grade || 2),
-          period: Number(item.period),
-          main_unit: String(item.mainUnit || ''),
-          sub_unit: String(item.subUnit || ''),
-          topic: String(item.topic || ''),
-          checked_classes: Array.isArray(item.checkedClasses) ? item.checkedClasses.map(Number) : [],
-          updated_at: new Date().toISOString()
-        }));
+    const upsertPayload = items.map(item => ({
+      grade: Number(item.grade || 2),
+      period: Number(item.period),
+      main_unit: String(item.mainUnit || ''),
+      sub_unit: String(item.subUnit || ''),
+      topic: String(item.topic || ''),
+      checked_classes: Array.isArray(item.checkedClasses) ? item.checkedClasses.map(Number) : [],
+      updated_at: new Date().toISOString()
+    }));
 
-        const { error } = await sb.from('progress_checklist').upsert(upsertPayload, { onConflict: 'grade,period' });
-        if (!error) {
-          console.log('⚡ [Supabase Cloud DB] 50-Period Syllabus checklist saved successfully!');
-          return;
-        } else {
-          console.warn('[CloudDB] Supabase checklist upsert warning:', error);
-        }
-      } catch (err) {
-        console.warn('[CloudDB] Supabase saveSyllabusChecklist error:', err);
-      }
-    }
-
-    // Fallback save to Google Sheets GAS
+    // Update local cache first
     try {
-      await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+      localStorage.setItem('mathlab_syllabus_checklist_cache', JSON.stringify(items));
+    } catch (e) {}
+
+    // Direct REST API PostgREST Upsert to Supabase
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/progress_checklist?on_conflict=grade,period`, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ type: 'syllabus_checklist_save', items: items })
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify(upsertPayload)
       });
-    } catch (err) {}
+      if (res.ok) {
+        console.log(`⚡ [Supabase Cloud DB] Saved ${upsertPayload.length} syllabus items successfully!`);
+        return { success: true };
+      } else {
+        const errText = await res.text();
+        console.warn('[CloudDB] Supabase syllabus REST upsert failed:', errText);
+      }
+    } catch (err) {
+      console.warn('[CloudDB] Supabase saveSyllabusChecklist error:', err);
+    }
   },
 
   // Reset student password (Teacher Action)

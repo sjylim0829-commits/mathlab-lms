@@ -11,8 +11,6 @@ const TeacherModule = {
   activeActivityId: null,
 
   getActivities() {
-    const defaultList = [];
-
     try {
       const raw = localStorage.getItem(LOCAL_STORAGE_KEY_ACTIVITIES);
       if (raw) {
@@ -20,14 +18,12 @@ const TeacherModule = {
         if (Array.isArray(parsed) && parsed.length > 0) {
           // 기존 REDBOOK 하드코딩 데이터 자동 정리
           const cleanList = parsed.filter(a => !a.id.startsWith('REDBOOK-'));
-          this.saveActivities(cleanList);
           return cleanList;
         }
       }
     } catch(e) {}
 
-    this.saveActivities(defaultList);
-    return defaultList;
+    return [];
   },
 
   saveActivities(list) {
@@ -417,7 +413,8 @@ const TeacherModule = {
     else if (targetGrade === '3') gradeLabel = '3학년전용';
 
     const activities = this.getActivities();
-    const newId = 'act-' + (activities.length + 1);
+    // Unique timestamp + random ID to guarantee no ID collisions or overwriting
+    const newId = 'act-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
     const newAct = {
       id: newId,
       title: title,
@@ -442,7 +439,7 @@ const TeacherModule = {
       mainView.innerHTML = this.renderActivityBuilder();
     }
 
-    alert(`🎉 [신규 탐구 활동 등록 완료!]\n\n제목: ${title}\nURL: ${url}\n\n등록된 탐구 활동 목록 카드에 추가되었으며 자동으로 선택되어 실행되었습니다.`);
+    alert(`🎉 [신규 탐구 활동 등록 완료!]\n\n제목: ${title}\n\n등록된 탐구 활동 목록 카드에 추가되었으며 자동으로 선택되어 실행되었습니다.`);
   },
 
   reloadInteractiveApp() {
@@ -718,3 +715,5 @@ const TeacherModule = {
     }
   }
 };
+
+window.TeacherModule = TeacherModule;

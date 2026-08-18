@@ -238,3 +238,5 @@ const StudentModule = {
     card.classList.toggle('fullscreen-active');
   }
 };
+
+window.StudentModule = StudentModule;

@@ -87,7 +87,7 @@ const App = {
           score: score
         });
 
-        alert(`🎉 [math-app 탐구 제출 통합 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구활동: ${activityTitle}\n점수: ${score}점\n\n자동으로 Supabase 클라우드 DB에 기록되었습니다.`);
+        console.log(`⚡ [Supabase Cloud DB] Silently saved student learning record: ${currentUser.name} (${currentUser.id}) - ${activityTitle}`);
 
         if (typeof TeacherModule !== 'undefined' && TeacherModule.activeTab === 'analytics') {
           TeacherModule.switchTab('analytics');

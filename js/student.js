@@ -203,6 +203,12 @@ const StudentModule = {
 
     const activeTitle = document.getElementById('student-active-title') ? document.getElementById('student-active-title').innerText : '수학 탐구활동';
 
+    const submitBtn = document.querySelector('button[onclick*="submitSolution"]');
+    if (submitBtn) {
+      submitBtn.innerHTML = '⏳ 저장 중...';
+      submitBtn.disabled = true;
+    }
+
     await CloudDB.saveActivityResult({
       studentId: currentUser.id,
       studentName: currentUser.name,
@@ -213,7 +219,17 @@ const StudentModule = {
       score: 100
     });
 
-    alert(`🎉 [제출 완료!]\n\n학생: ${currentUser.name} (${currentUser.id})\n탐구과제: ${activeTitle}\n제출 수식: ${answerText}\n\n교사 대시보드 및 Supabase 클라우드 DB에 실시간 반영되었습니다.`);
+    console.log(`⚡ [Supabase Cloud DB] Silently saved student learning record: ${currentUser.name} (${currentUser.id}) - ${activeTitle}`);
+
+    if (submitBtn) {
+      submitBtn.innerHTML = '✅ 클라우드 저장 완료';
+      submitBtn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '🚀 탐구 수식 제출하기';
+        submitBtn.style.background = '';
+      }, 2000);
+    }
   },
 
   toggleFullscreenEmbed() {

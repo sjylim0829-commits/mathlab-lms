@@ -552,14 +552,22 @@ const TeacherModule = {
         score: 100
       });
 
-      alert(`🎉 [탐구 활동 결과 제출 완료!]\n\n학생: ${studentName} (${studentId})\n활동: ${activityTitle}\n\nSupabase 클라우드 DB에 성공적으로 기록되었습니다.`);
-    } catch (err) {
-      alert('탐구 활동 결과 제출 중 오류가 발생했습니다.');
-    } finally {
+      console.log(`⚡ [Supabase Cloud DB] Silently saved student learning record: ${studentName} (${studentId}) - ${activityTitle}`);
+
       if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '🚀 탐구 결과 제출 및 클라우드 DB 저장';
+        btn.innerHTML = '✅ 클라우드 DB 저장 완료!';
+        btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
       }
+    } catch (err) {
+      console.warn('[TeacherModule] Activity submission error:', err);
+    } finally {
+      setTimeout(() => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '🚀 탐구 결과 제출 및 클라우드 DB 저장';
+          btn.style.background = '';
+        }
+      }, 2000);
     }
   },
 

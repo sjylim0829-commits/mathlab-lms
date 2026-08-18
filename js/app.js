@@ -223,18 +223,24 @@ const App = {
 
               <!-- Sidebar Footer User Profile -->
               <div class="sidebar-footer">
-                <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem; white-space: nowrap;" onclick="App.toggleUserRole()">
-                  🔄 ${isTeacher ? '학생 화면으로 전환' : '교사 대시보드로 전환'}
-                </button>
+                ${isTeacher ? `
+                  <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem; white-space: nowrap;" onclick="App.toggleUserRole()">
+                    🔄 학생 화면 미리보기
+                  </button>
+                ` : (AppState.currentUser && AppState.currentUser.isRealTeacher) ? `
+                  <button class="btn btn-outline-violet" style="width: 100%; margin-bottom: 0.8rem; font-size: 0.8rem; white-space: nowrap; background: #e0e7ff; color: #3730a3; border-color: #a5b4fc;" onclick="App.toggleUserRole()">
+                    🔄 교사 대시보드로 복귀
+                  </button>
+                ` : ''}
 
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: nowrap;">
                   <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #6366f1; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;">
-                      ${AppState.currentUser.name ? AppState.currentUser.name[0] : '임'}
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: ${isTeacher ? '#6366f1' : '#059669'}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;">
+                      ${AppState.currentUser.name ? AppState.currentUser.name[0] : (isTeacher ? '임' : '학')}
                     </div>
                     <div style="min-width: 0; overflow: hidden;">
                       <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${AppState.currentUser.name}</div>
-                      <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${isTeacher ? '교사' : '학생'}</div>
+                      <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${isTeacher ? '교사' : `${AppState.currentUser.grade || 1}학년 ${AppState.currentUser.classNum || 1}반 학생`}</div>
                     </div>
                   </div>
                   <button onclick="App.logout()" style="background: #fef2f2; border: 1px solid #fca5a5; color: #dc2626; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 800; padding: 5px 10px; white-space: nowrap; flex-shrink: 0; transition: all 0.15s ease;" title="안전하게 로그아웃">
@@ -455,18 +461,25 @@ const App = {
   toggleUserRole() {
     if (!AppState.currentUser) return;
 
+    // Only authenticated teachers can toggle/preview student mode
+    if (AppState.currentUser.role !== 'teacher' && !AppState.currentUser.isRealTeacher) {
+      console.warn('Unauthorized role switch attempt.');
+      return;
+    }
+
     if (AppState.currentUser.role === 'teacher') {
       AppState.currentUser = {
         id: '20328',
-        name: '홍길동',
+        name: '홍길동 (학생 모드 미리보기)',
         grade: '2',
         classNum: '3',
-        role: 'student'
+        role: 'student',
+        isRealTeacher: true
       };
-    } else {
+    } else if (AppState.currentUser.isRealTeacher) {
       AppState.currentUser = {
-        id: 'test',
-        name: '임종윤 교사 (영서중학교)',
+        id: 'sjylim',
+        name: '임종윤 교사',
         role: 'teacher'
       };
     }
